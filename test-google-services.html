@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google 服務測試 - 劉道玄醫師預約系統</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- 自定義樣式 -->
+    <link rel="stylesheet" href="css/main.css">
+    
+    <style>
+        .test-panel {
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 2px solid rgba(212, 175, 55, 0.3);
+        }
+        
+        .test-result {
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #d4af37;
+        }
+        
+        .test-success {
+            border-left-color: #28a745;
+            background: rgba(40, 167, 69, 0.1);
+        }
+        
+        .test-error {
+            border-left-color: #dc3545;
+            background: rgba(220, 53, 69, 0.1);
+        }
+        
+        .test-warning {
+            border-left-color: #ffc107;
+            background: rgba(255, 193, 7, 0.1);
+        }
+        
+        .test-btn {
+            background: linear-gradient(135deg, #d4af37 0%, #f1c40f 100%);
+            border: none;
+            border-radius: 25px;
+            padding: 12px 30px;
+            color: #1a1a2e;
+            font-weight: bold;
+            transition: all 0.3s;
+            margin: 5px;
+        }
+        
+        .test-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3);
+            color: #1a1a2e;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin: 5px;
+        }
+        
+        .status-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .status-error {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .status-testing {
+            background: #ffc107;
+            color: #1a1a2e;
+        }
+        
+        .log-container {
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            padding: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- 導航列 -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-user-md"></i> 劉道玄醫師預約系統
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="index.html">
+                    <i class="fas fa-home"></i> 返回首頁
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <!-- 頁面標題 -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h1 class="text-center mb-3">
+                    <i class="fas fa-vial text-warning"></i>
+                    Google 服務連接測試
+                </h1>
+                <p class="text-center text-muted">
+                    測試所有 Google 服務的連接狀態和功能
+                </p>
+            </div>
+        </div>
+
+        <!-- 服務狀態總覽 -->
+        <div class="test-panel">
+            <h3><i class="fas fa-tachometer-alt"></i> 服務狀態總覽</h3>
+            
+            <div class="row mt-4">
+                <div class="col-md-3">
+                    <div class="text-center">
+                        <h5>Google Sheets API</h5>
+                        <span id="sheetsStatus" class="status-indicator status-error">未測試</span>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="text-center">
+                        <h5>Google AI (Gemini)</h5>
+                        <span id="geminiStatus" class="status-indicator status-error">未測試</span>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="text-center">
+                        <h5>服務帳戶認證</h5>
+                        <span id="authStatus" class="status-indicator status-error">未測試</span>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="text-center">
+                        <h5>整體系統</h5>
+                        <span id="systemStatus" class="status-indicator status-error">未測試</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 測試控制面板 -->
+        <div class="test-panel">
+            <h3><i class="fas fa-play-circle"></i> 測試控制面板</h3>
+            
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <h5>基礎連接測試</h5>
+                    <button id="testAuthBtn" class="test-btn">
+                        <i class="fas fa-key"></i> 測試服務帳戶認證
+                    </button>
+                    <button id="testSheetsBtn" class="test-btn">
+                        <i class="fas fa-table"></i> 測試 Google Sheets
+                    </button>
+                    <button id="testGeminiBtn" class="test-btn">
+                        <i class="fas fa-brain"></i> 測試 Google AI
+                    </button>
+                </div>
+                <div class="col-md-6">
+                    <h5>功能測試</h5>
+                    <button id="testReadDataBtn" class="test-btn">
+                        <i class="fas fa-download"></i> 測試讀取資料
+                    </button>
+                    <button id="testWriteDataBtn" class="test-btn">
+                        <i class="fas fa-upload"></i> 測試寫入資料
+                    </button>
+                    <button id="testAIAnalysisBtn" class="test-btn">
+                        <i class="fas fa-magic"></i> 測試 AI 分析
+                    </button>
+                </div>
+            </div>
+            
+            <div class="row mt-3">
+                <div class="col-12">
+                    <button id="runAllTestsBtn" class="test-btn btn-lg">
+                        <i class="fas fa-rocket"></i> 執行完整測試
+                    </button>
+                    <button id="clearLogsBtn" class="test-btn btn-lg">
+                        <i class="fas fa-trash"></i> 清除日誌
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 測試結果 -->
+        <div class="test-panel">
+            <h3><i class="fas fa-clipboard-check"></i> 測試結果</h3>
+            <div id="testResults">
+                <div class="test-result">
+                    <i class="fas fa-info-circle"></i> 點擊上方按鈕開始測試...
+                </div>
+            </div>
+        </div>
+
+        <!-- 測試日誌 -->
+        <div class="test-panel">
+            <h3><i class="fas fa-terminal"></i> 測試日誌</h3>
+            <div class="log-container" id="testLogs">
+                <div class="text-muted">等待測試開始...</div>
+            </div>
+        </div>
+
+        <!-- 環境變數檢查 -->
+        <div class="test-panel">
+            <h3><i class="fas fa-cog"></i> 環境變數檢查</h3>
+            <div id="envCheck">
+                <div class="test-result">
+                    <i class="fas fa-spinner fa-spin"></i> 檢查環境變數配置...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript 庫 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // 測試管理器
+        class GoogleServicesTestManager {
+            constructor() {
+                this.testResults = [];
+                this.init();
+            }
+            
+            init() {
+                this.bindEventHandlers();
+                this.checkEnvironmentVariables();
+            }
+            
+            bindEventHandlers() {
+                document.getElementById('testAuthBtn').addEventListener('click', () => this.testAuthentication());
+                document.getElementById('testSheetsBtn').addEventListener('click', () => this.testGoogleSheets());
+                document.getElementById('testGeminiBtn').addEventListener('click', () => this.testGoogleAI());
+                document.getElementById('testReadDataBtn').addEventListener('click', () => this.testReadData());
+                document.getElementById('testWriteDataBtn').addEventListener('click', () => this.testWriteData());
+                document.getElementById('testAIAnalysisBtn').addEventListener('click', () => this.testAIAnalysis());
+                document.getElementById('runAllTestsBtn').addEventListener('click', () => this.runAllTests());
+                document.getElementById('clearLogsBtn').addEventListener('click', () => this.clearLogs());
+            }
+            
+            async checkEnvironmentVariables() {
+                this.log('檢查環境變數配置...', 'info');
+                
+                try {
+                    const response = await fetch('/.netlify/functions/google-sheets-api', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: 'check_env' })
+                    });
+                    
+                    const result = await response.json();
+                    
+                    const envCheck = document.getElementById('envCheck');
+                    if (result.success) {
+                        envCheck.innerHTML = `
+                            <div class="test-result test-success">
+                                <i class="fas fa-check-circle"></i> 環境變數配置正確
+                                <ul class="mt-2 mb-0">
+                                    <li>Google 服務帳戶: ✓</li>
+                                    <li>Google Sheets ID: ✓</li>
+                                    <li>Google AI API: ✓</li>
+                                </ul>
+                            </div>
+                        `;
+                    } else {
+                        envCheck.innerHTML = `
+                            <div class="test-result test-error">
+                                <i class="fas fa-exclamation-triangle"></i> 環境變數配置有問題
+                                <p class="mt-2 mb-0">錯誤: ${result.error}</p>
+                            </div>
+                        `;
+                    }
+                } catch (error) {
+                    this.log(`環境變數檢查失敗: ${error.message}`, 'error');
+                }
+            }
+            
+            async testAuthentication() {
+                this.updateStatus('authStatus', 'testing', '測試中...');
+                this.log('開始測試服務帳戶認證...', 'info');
+                
+                try {
+                    const response = await fetch('/.netlify/functions/google-sheets-api', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: 'test_auth' })
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        this.updateStatus('authStatus', 'success', '認證成功');
+                        this.addTestResult('服務帳戶認證', '成功', 'success');
+                        this.log('✅ 服務帳戶認證成功', 'success');
+                    } else {
+                        this.updateStatus('authStatus', 'error', '認證失敗');
+                        this.addTestResult('服務帳戶認證', `失敗: ${result.error}`, 'error');
+                        this.log(`❌ 服務帳戶認證失敗: ${result.error}`, 'error');
+                    }
+                } catch (error) {
+                    this.updateStatus('authStatus', 'error', '連接錯誤');
+                    this.addTestResult('服務帳戶認證', `連接錯誤: ${error.message}`, 'error');
+                    this.log(`❌ 認證測試連接錯誤: ${error.message}`, 'error');
+                }
+            }
+            
+            async testGoogleSheets() {
+                this.updateStatus('sheetsStatus', 'testing', '測試中...');
+                this.log('開始測試 Google Sheets API...', 'info');
+                
+                try {
+                    const response = await fetch('/.netlify/functions/google-sheets-api', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            action: 'read_sheet',
+                            data: { range: 'A1:A1' }
+                        })
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        this.updateStatus('sheetsStatus', 'success', '連接成功');
+                        this.addTestResult('Google Sheets API', '連接成功，可以讀取資料', 'success');
+                        this.log('✅ Google Sheets API 連接成功', 'success');
+                    } else {
+                        this.updateStatus('sheetsStatus', 'error', '連接失敗');
+                        this.addTestResult('Google Sheets API', `連接失敗: ${result.error}`, 'error');
+                        this.log(`❌ Google Sheets API 連接失敗: ${result.error}`, 'error');
+                    }
+                } catch (error) {
+                    this.updateStatus('sheetsStatus', 'error', '連接錯誤');
+                    this.addTestResult('Google Sheets API', `連接錯誤: ${error.message}`, 'error');
+                    this.log(`❌ Google Sheets 測試連接錯誤: ${error.message}`, 'error');
+                }
+            }
+            
+            async testGoogleAI() {
+                this.updateStatus('geminiStatus', 'testing', '測試中...');
+                this.log('開始測試 Google AI (Gemini)...', 'info');
+                
+                try {
+                    const response = await fetch('/.netlify/functions/google-sheets-api', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            action: 'analyze_chat_content',
+                            data: { 
+                                messageContent: '我想預約肉毒桿菌療程',
+                                customerInfo: { name: '測試客戶' }
+                            }
+                        })
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        this.updateStatus('geminiStatus', 'success', 'AI 正常');
+                        this.addTestResult('Google AI (Gemini)', 'AI 分析功能正常運作', 'success');
+                        this.log('✅ Google AI (Gemini) 測試成功', 'success');
+                        this.log(`AI 分析結果: ${JSON.stringify(result.analysis, null, 2)}`, 'info');
+                    } else {
+                        this.updateStatus('geminiStatus', 'error', 'AI 錯誤');
+                        this.addTestResult('Google AI (Gemini)', `AI 分析失敗: ${result.error}`, 'error');
+                        this.log(`❌ Google AI (Gemini) 測試失敗: ${result.error}`, 'error');
+                    }
+                } catch (error) {
+                    this.updateStatus('geminiStatus', 'error', '連接錯誤');
+                    this.addTestResult('Google AI (Gemini)', `連接錯誤: ${error.message}`, 'error');
+                    this.log(`❌ Google AI 測試連接錯誤: ${error.message}`, 'error');
+                }
+            }
+            
+            async testReadData() {
+                this.log('開始測試讀取 Google Sheets 資料...', 'info');
+                
+                try {
+                    const response = await fetch('/.netlify/functions/google-sheets-api', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            action: 'read_sheet',
+                            data: { range: 'A1:E10' }
+                        })
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        this.addTestResult('讀取資料測試', `成功讀取 ${result.data.length} 行資料`, 'success');
+                        this.log(`✅ 成功讀取 ${result.data.length} 行資料`, 'success');
+                        this.log(`資料預覽: ${JSON.stringify(result.data.slice(0, 3), null, 2)}`, 'info');
+                    } else {
+                        this.addTestResult('讀取資料測試', `讀取失敗: ${result.error}`, 'error');
+                        this.log(`❌ 讀取資料失敗: ${result.error}`, 'error');
+                    }
+                } catch (error) {
+                    this.addTestResult('讀取資料測試', `連接錯誤: ${error.message}`, 'error');
+                    this.log(`❌ 讀取資料連接錯誤: ${error.message}`, 'error');
+                }
+            }
+            
+            async testWriteData() {
+                this.log('開始測試寫入 Google Sheets 資料...', 'info');
+                
+                const testData = [
+                    ['測試時間', '測試平台', '測試客戶', '測試電話', '測試信箱'],
+                    [new Date().toISOString(), 'TEST', '測試客戶', '0900000000', 'test@example.com']
+                ];
+                
+                try {
+                    const response = await fetch('/.netlify/functions/google-sheets-api', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            action: 'append_sheet',
+                            data: { 
+                                range: 'A:E',
+                                values: testData
+                            }
+                        })
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        this.addTestResult('寫入資料測試', '成功寫入測試資料', 'success');
+                        this.log('✅ 成功寫入測試資料', 'success');
+                    } else {
+                        this.addTestResult('寫入資料測試', `寫入失敗: ${result.error}`, 'error');
+                        this.log(`❌ 寫入資料失敗: ${result.error}`, 'error');
+                    }
+                } catch (error) {
+                    this.addTestResult('寫入資料測試', `連接錯誤: ${error.message}`, 'error');
+                    this.log(`❌ 寫入資料連接錯誤: ${error.message}`, 'error');
+                }
+            }
+            
+            async testAIAnalysis() {
+                this.log('開始測試 AI 智能分析功能...', 'info');
+                
+                const testMessages = [
+                    '我想預約肉毒桿菌，請問價格多少？',
+                    '玻尿酸效果可以維持多久？',
+                    '下週三有空檔嗎？我想來諮詢'
+                ];
+                
+                for (let i = 0; i < testMessages.length; i++) {
+                    const message = testMessages[i];
+                    this.log(`測試訊息 ${i + 1}: "${message}"`, 'info');
+                    
+                    try {
+                        const response = await fetch('/.netlify/functions/google-sheets-api', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ 
+                                action: 'analyze_chat_content',
+                                data: { 
+                                    messageContent: message,
+                                    customerInfo: { name: `測試客戶${i + 1}` }
+                                }
+                            })
+                        });
+                        
+                        const result = await response.json();
+                        
+                        if (result.success) {
+                            this.log(`✅ 訊息 ${i + 1} 分析成功`, 'success');
+                            this.log(`分析結果: 詢問類型=${result.analysis.inquiryType}, 療程=${result.analysis.treatment}, 評分=${result.analysis.leadScore}`, 'info');
+                        } else {
+                            this.log(`❌ 訊息 ${i + 1} 分析失敗: ${result.error}`, 'error');
+                        }
+                    } catch (error) {
+                        this.log(`❌ 訊息 ${i + 1} 分析連接錯誤: ${error.message}`, 'error');
+                    }
+                    
+                    // 添加延遲避免 API 限制
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                }
+                
+                this.addTestResult('AI 分析測試', `完成 ${testMessages.length} 個測試訊息的分析`, 'success');
+            }
+            
+            async runAllTests() {
+                this.log('🚀 開始執行完整測試套件...', 'info');
+                this.clearResults();
+                
+                await this.testAuthentication();
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                await this.testGoogleSheets();
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                await this.testGoogleAI();
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                await this.testReadData();
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                await this.testWriteData();
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                await this.testAIAnalysis();
+                
+                this.updateSystemStatus();
+                this.log('🎉 完整測試套件執行完成！', 'success');
+            }
+            
+            updateSystemStatus() {
+                const authOk = document.getElementById('authStatus').textContent === '認證成功';
+                const sheetsOk = document.getElementById('sheetsStatus').textContent === '連接成功';
+                const geminiOk = document.getElementById('geminiStatus').textContent === 'AI 正常';
+                
+                if (authOk && sheetsOk && geminiOk) {
+                    this.updateStatus('systemStatus', 'success', '系統正常');
+                } else {
+                    this.updateStatus('systemStatus', 'error', '系統異常');
+                }
+            }
+            
+            updateStatus(elementId, status, text) {
+                const element = document.getElementById(elementId);
+                element.className = `status-indicator status-${status}`;
+                element.textContent = text;
+            }
+            
+            addTestResult(testName, result, type) {
+                const resultsContainer = document.getElementById('testResults');
+                const resultDiv = document.createElement('div');
+                resultDiv.className = `test-result test-${type}`;
+                
+                const icon = type === 'success' ? 'check-circle' : 
+                           type === 'error' ? 'exclamation-triangle' : 'info-circle';
+                
+                resultDiv.innerHTML = `
+                    <i class="fas fa-${icon}"></i>
+                    <strong>${testName}:</strong> ${result}
+                `;
+                
+                resultsContainer.appendChild(resultDiv);
+            }
+            
+            clearResults() {
+                document.getElementById('testResults').innerHTML = '';
+            }
+            
+            log(message, type = 'info') {
+                const logsContainer = document.getElementById('testLogs');
+                const timestamp = new Date().toLocaleTimeString('zh-TW');
+                const logDiv = document.createElement('div');
+                
+                const colors = {
+                    info: '#17a2b8',
+                    success: '#28a745',
+                    error: '#dc3545',
+                    warning: '#ffc107'
+                };
+                
+                logDiv.style.color = colors[type] || colors.info;
+                logDiv.textContent = `[${timestamp}] ${message}`;
+                
+                logsContainer.appendChild(logDiv);
+                logsContainer.scrollTop = logsContainer.scrollHeight;
+            }
+            
+            clearLogs() {
+                document.getElementById('testLogs').innerHTML = '<div class="text-muted">日誌已清除...</div>';
+            }
+        }
+        
+        // 初始化測試管理器
+        document.addEventListener('DOMContentLoaded', function() {
+            window.testManager = new GoogleServicesTestManager();
+        });
+    </script>
+</body>
+</html>

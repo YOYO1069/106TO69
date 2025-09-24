@@ -18,16 +18,16 @@
   "author": "劉道玄醫師預約系統",
   "license": "MIT",
   "dependencies": {
-    "node-fetch": "^2.6.7",
-    "crypto": "^1.0.1",
-    "airtable": "^0.12.2",
-    "@google/generative-ai": "^0.2.1",
     "@google-cloud/storage": "^7.7.0",
-    "google-auth-library": "^9.4.1",
-    "googleapis": "^129.0.0",
-    "openai": "^4.20.1",
+    "@google/generative-ai": "^0.2.1",
+    "airtable": "^0.12.2",
     "axios": "^1.6.2",
-    "form-data": "^4.0.0"
+    "crypto": "^1.0.1",
+    "form-data": "^4.0.0",
+    "google-auth-library": "^9.15.1",
+    "googleapis": "^129.0.0",
+    "node-fetch": "^2.6.7",
+    "openai": "^4.20.1"
   },
   "devDependencies": {
     "netlify-cli": "^17.0.0"
