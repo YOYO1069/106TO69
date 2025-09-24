@@ -1,0 +1,11 @@
+# Netlify redirects file
+# SPA fallback
+/*    /index.html   200
+
+# API routes
+/api/*  /.netlify/functions/:splat  200
+
+# Static assets
+/css/*  /css/:splat  200
+/js/*   /js/:splat   200
+/assets/*  /assets/:splat  200

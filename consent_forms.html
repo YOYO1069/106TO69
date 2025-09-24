@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>同意書管理 - 劉道玄醫美管理平台</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- 自定義樣式 -->
+    <link rel="stylesheet" href="css/main.css">
+    
+    <style>
+        .consent-header {
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+        
+        .consent-card {
+            border-left: 4px solid #27ae60;
+        }
+        
+        .consent-form-container {
+            background: var(--gradient-card);
+            border-radius: var(--radius-large);
+            padding: 2rem;
+            box-shadow: var(--shadow-medium);
+            /* 確保同意書介面完全靜態穩定 */
+            position: static;
+            transform: none;
+            transition: none;
+        }
+        
+        .consent-form-container:hover {
+            /* 移除所有懸停效果以保持穩定性 */
+            transform: none;
+            box-shadow: var(--shadow-medium);
+        }
+        
+        .consent-template {
+            border: 1px solid #e9ecef;
+            border-radius: var(--radius-small);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: border-color 0.2s ease;
+            /* 保持靜態，避免浮動效果 */
+            position: static;
+            transform: none;
+        }
+        
+        .consent-template:hover {
+            border-color: #27ae60;
+            /* 移除任何變形效果 */
+            transform: none;
+        }
+        
+        .consent-template.selected {
+            border-color: #27ae60;
+            background: #f8fff9;
+        }
+        
+        .consent-content {
+            background: #ffffff;
+            border: 1px solid #dee2e6;
+            border-radius: var(--radius-small);
+            padding: 2rem;
+            margin: 1rem 0;
+            font-family: 'Times New Roman', serif;
+            line-height: 1.8;
+            /* 確保內容區域完全穩定 */
+            position: static;
+            transform: none;
+        }
+        
+        .consent-title {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 2rem;
+            color: #2c3e50;
+        }
+        
+        .consent-section {
+            margin-bottom: 1.5rem;
+        }
+        
+        .consent-section h6 {
+            color: #27ae60;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        .signature-area {
+            border: 2px dashed #dee2e6;
+            border-radius: var(--radius-small);
+            padding: 2rem;
+            text-align: center;
+            margin: 1rem 0;
+            background: #f8f9fa;
+            /* 簽名區域保持完全靜態 */
+            position: static;
+            transform: none;
+        }
+        
+        .signature-area:hover {
+            /* 移除懸停效果 */
+            border-color: #dee2e6;
+            background: #f8f9fa;
+            transform: none;
+        }
+        
+        .signature-pad {
+            border: 1px solid #dee2e6;
+            border-radius: var(--radius-small);
+            background: white;
+            cursor: crosshair;
+        }
+        
+        .consent-status {
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-button);
+            font-weight: 600;
+            text-align: center;
+            /* 狀態標籤保持靜態 */
+            position: static;
+            transform: none;
+        }
+        
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .status-signed {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status-expired {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .consent-list-item {
+            border-bottom: 1px solid #eee;
+            padding: 1rem 0;
+            /* 列表項目保持靜態 */
+            position: static;
+            transform: none;
+        }
+        
+        .consent-list-item:last-child {
+            border-bottom: none;
+        }
+        
+        .consent-list-item:hover {
+            /* 移除懸停效果 */
+            background: transparent;
+            transform: none;
+        }
+        
+        .legal-notice {
+            background: #e8f5e8;
+            border: 1px solid #c3e6cb;
+            border-radius: var(--radius-small);
+            padding: 1rem;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+        }
+        
+        .form-check-input:checked {
+            background-color: #27ae60;
+            border-color: #27ae60;
+        }
+        
+        .btn-consent {
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+            border: none;
+            color: white;
+            padding: 0.75rem 2rem;
+            border-radius: var(--radius-button);
+            font-weight: 600;
+            /* 按鈕保持基本穩定，僅允許極輕微效果 */
+            transition: box-shadow 0.2s ease;
+        }
+        
+        .btn-consent:hover {
+            background: linear-gradient(135deg, #229954 0%, #1e8449 100%);
+            color: white;
+            /* 僅允許極輕微的陰影變化 */
+            box-shadow: 0 2px 8px rgba(39, 174, 96, 0.3);
+            transform: none;
+        }
+        
+        /* 確保所有互動元素都保持穩定 */
+        .consent-form-container * {
+            position: static;
+        }
+        
+        .consent-form-container *:hover {
+            transform: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- 導航列 -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-user-md"></i>
+                劉道玄醫師預約系統
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">
+                            <i class="fas fa-home"></i> 首頁
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="appointment_scheduling_system.html">
+                            <i class="fas fa-calendar-alt"></i> 預約管理
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="medical_records.html">
+                    <li class="nav-item">
+                        <a class="nav-link" href="treatment_management.html">
+                            <i class="fas fa-spa"></i> 療程管理
+                        </a>
+                    </li>
+                            <i class="fas fa-file-medical"></i> 病歷系統
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="consent_forms.html">
+                    <li class="nav-item">
+                        <a class="nav-link" href="data_statistics.html">
+                            <i class="fas fa-chart-bar"></i> 數據統計
+                        </a>
+                    </li>
+                            <i class="fas fa-file-signature"></i> 同意書
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="performance_management.html">
+                    <li class="nav-item">
+                        <a class="nav-link" href="price_management.html">
+                    <li class="nav-item">
+                        <a class="nav-link" href="smart_scheduling.html">
+                    <li class="nav-item">
+                        <a class="nav-link" href="employee_benefits.html">
+                            <i class="fas fa-gift"></i> 員工福利
+                        </a>
+                    </li>
+                            <i class="fas fa-brain"></i> 智能排程
+                        </a>
+                    </li>
+                            <i class="fas fa-tags"></i> 價格管理
+                        </a>
+                    </li>
+                            <i class="fas fa-chart-line"></i> 業績管理
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="logout()">
+                            <i class="fas fa-sign-out-alt"></i> 登出
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 同意書管理標題區 -->
+    <div class="consent-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1><i class="fas fa-file-signature"></i> 同意書管理系統</h1>
+                    <p class="mb-0">數位同意書・法規遵循・電子簽名・安全存儲</p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <div class="d-flex align-items-center justify-content-end gap-3">
+                        <div>
+                            <i class="fas fa-certificate"></i>
+                            <span>法規合規</span>
+                        </div>
+                        <div>
+                            <i class="fas fa-shield-alt"></i>
+                            <span>數位簽章</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主要內容 -->
+    <main class="main-content">
+        <div class="container">
+            <div class="row">
+                <!-- 同意書模板選擇 -->
+                <div class="col-lg-4 mb-4">
+                    <div class="card consent-card">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="fas fa-list"></i>
+                                同意書模板
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="consentTemplates">
+                                <div class="consent-template" onclick="selectTemplate('botox')">
+                                    <h6>肉毒桿菌注射同意書</h6>
+                                    <small class="text-muted">適用於肉毒桿菌素注射療程</small>
+                                </div>
+                                
+                                <div class="consent-template" onclick="selectTemplate('filler')">
+                                    <h6>玻尿酸填充同意書</h6>
+                                    <small class="text-muted">適用於玻尿酸填充療程</small>
+                                </div>
+                                
+                                <div class="consent-template" onclick="selectTemplate('laser')">
+                                    <h6>雷射治療同意書</h6>
+                                    <small class="text-muted">適用於各種雷射治療</small>
+                                </div>
+                                
+                                <div class="consent-template" onclick="selectTemplate('facial')">
+                                    <h6>臉部護理同意書</h6>
+                                    <small class="text-muted">適用於臉部護理療程</small>
+                                </div>
+                                
+                                <div class="consent-template" onclick="selectTemplate('iv_drip')">
+                                    <h6>點滴治療同意書</h6>
+                                    <small class="text-muted">適用於美白、營養點滴</small>
+                                </div>
+                                
+                                <div class="consent-template" onclick="selectTemplate('general')">
+                                    <h6>一般療程同意書</h6>
+                                    <small class="text-muted">適用於一般美容療程</small>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-3">
+                                <button class="btn btn-outline-success btn-sm w-100" onclick="createCustomTemplate()">
+                                    <i class="fas fa-plus"></i> 自訂模板
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 待簽署列表 -->
+                    <div class="card consent-card mt-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="fas fa-clock"></i>
+                                待簽署同意書
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="pendingConsentsList">
+                                <!-- 待簽署列表將由JavaScript動態生成 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 同意書內容 -->
+                <div class="col-lg-8 mb-4">
+                    <div class="consent-form-container" id="consentFormContainer" style="display: none;">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5>
+                                <i class="fas fa-file-contract"></i>
+                                同意書內容
+                            </h5>
+                            <div>
+                                <button class="btn btn-outline-secondary btn-sm" onclick="previewConsent()">
+                                    <i class="fas fa-eye"></i> 預覽
+                                </button>
+                                <button class="btn btn-outline-primary btn-sm" onclick="printConsent()">
+                                    <i class="fas fa-print"></i> 列印
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 患者資訊 -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label">患者姓名 *</label>
+                                <input type="text" class="form-control" id="patientName" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">身分證字號</label>
+                                <input type="text" class="form-control" id="patientIdCard">
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label">聯絡電話 *</label>
+                                <input type="tel" class="form-control" id="patientPhone" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">療程日期 *</label>
+                                <input type="date" class="form-control" id="treatmentDate" required>
+                            </div>
+                        </div>
+
+                        <!-- 同意書內容區域 -->
+                        <div class="consent-content" id="consentContent">
+                            <div class="consent-title" id="consentTitle">請選擇同意書模板</div>
+                            <div id="consentBody">
+                                <p class="text-center text-muted">請從左側選擇適合的同意書模板</p>
+                            </div>
+                        </div>
+
+                        <!-- 法律聲明 -->
+                        <div class="legal-notice">
+                            <h6><i class="fas fa-exclamation-triangle text-warning"></i> 重要聲明</h6>
+                            <ul class="mb-0">
+                                <li>本同意書具有法律效力，請仔細閱讀所有條款</li>
+                                <li>簽署前請確保完全理解療程內容、風險及注意事項</li>
+                                <li>如有任何疑問，請立即向醫護人員詢問</li>
+                                <li>簽署後即表示同意接受相關療程及承擔相應風險</li>
+                            </ul>
+                        </div>
+
+                        <!-- 確認事項 -->
+                        <div class="mb-4">
+                            <h6 class="text-success mb-3">患者確認事項</h6>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="confirmRead" required>
+                                <label class="form-check-label" for="confirmRead">
+                                    我已詳細閱讀並完全理解本同意書的所有內容
+                                </label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="confirmRisk" required>
+                                <label class="form-check-label" for="confirmRisk">
+                                    我已了解療程可能產生的風險及副作用
+                                </label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="confirmVoluntary" required>
+                                <label class="form-check-label" for="confirmVoluntary">
+                                    我是自願接受此療程，無任何強迫或誘導
+                                </label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="confirmQuestions" required>
+                                <label class="form-check-label" for="confirmQuestions">
+                                    我的所有疑問都已獲得滿意的解答
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- 簽名區域 -->
+                        <div class="signature-area" id="signatureArea">
+                            <h6 class="mb-3">患者簽名</h6>
+                            <canvas id="signaturePad" class="signature-pad" width="400" height="150"></canvas>
+                            <div class="mt-3">
+                                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="clearSignature()">
+                                    <i class="fas fa-eraser"></i> 清除簽名
+                                </button>
+                                <button type="button" class="btn btn-outline-info btn-sm" onclick="useDigitalSignature()">
+                                    <i class="fas fa-signature"></i> 數位簽名
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 見證人簽名 -->
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <label class="form-label">見證醫師</label>
+                                <select class="form-select" id="witnessDoctor">
+                                    <option value="">請選擇醫師</option>
+                                    <option value="dr_liu">劉醫師</option>
+                                    <option value="dr_chen">陳醫師</option>
+                                    <option value="dr_wang">王醫師</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">簽署時間</label>
+                                <input type="datetime-local" class="form-control" id="signatureTime">
+                            </div>
+                        </div>
+
+                        <!-- 提交按鈕 -->
+                        <div class="text-center mt-4">
+                            <button type="button" class="btn btn-outline-secondary me-2" onclick="saveDraft()">
+                                <i class="fas fa-save"></i> 儲存草稿
+                            </button>
+                            <button type="button" class="btn-consent" onclick="submitConsent()">
+                                <i class="fas fa-file-signature"></i> 完成簽署
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 已簽署同意書列表 -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card consent-card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">
+                                <i class="fas fa-check-circle"></i>
+                                已簽署同意書
+                            </h5>
+                            <div>
+                                <button class="btn btn-outline-primary btn-sm" onclick="refreshConsentList()">
+                                    <i class="fas fa-sync"></i> 刷新
+                                </button>
+                                <button class="btn btn-outline-success btn-sm" onclick="exportConsentList()">
+                                    <i class="fas fa-download"></i> 匯出
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div id="signedConsentsList">
+                                <!-- 已簽署列表將由JavaScript動態生成 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 返回首頁按鈕 -->
+            <div class="text-center mt-4">
+                <a href="index.html" class="nav-btn">
+                    <i class="fas fa-home"></i> 返回首頁
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- 自定義 JavaScript -->
+    <script src="js/main.js"></script>
+    <script src="js/social-integration.js"></script>
+    
+    <script>
+        let currentTemplate = null;
+        let signaturePad = null;
+        let consentForms = [];
+
+        // 同意書模板內容
+        const consentTemplates = {
+            botox: {
+                title: '肉毒桿菌注射同意書',
+                content: `
+                    <div class="consent-section">
+                        <h6>一、療程說明</h6>
+                        <p>肉毒桿菌素注射是一種非手術性的美容療程，主要用於改善動態皺紋，如額頭紋、魚尾紋、皺眉紋等。療程時間約15-30分鐘，效果通常可維持3-6個月。</p>
+                    </div>
+                    
+                    <div class="consent-section">
+                        <h6>二、可能風險與副作用</h6>
+                        <ul>
+                            <li>注射部位可能出現輕微紅腫、瘀血或疼痛</li>
+                            <li>極少數情況下可能出現眼瞼下垂或表情不對稱</li>
+                            <li>過敏反應（極罕見）</li>
+                            <li>效果可能因個人體質而有差異</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="consent-section">
+                        <h6>三、術後注意事項</h6>
+                        <ul>
+                            <li>術後4小時內避免平躺</li>
+                            <li>24小時內避免劇烈運動</li>
+                            <li>一週內避免按摩注射部位</li>
+                            <li>如有異常反應請立即聯絡診所</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="consent-section">
+                        <h6>四、患者同意</h6>
+                        <p>本人已充分了解肉毒桿菌注射的療程內容、可能風險及術後注意事項，並同意接受此項治療。</p>
+                    </div>
+                `
+            },
+            filler: {
+                title: '玻尿酸填充同意書',
+                content: `
+                    <div class="consent-section">
+                        <h6>一、療程說明</h6>
+                        <p>玻尿酸填充是一種非手術性的美容療程，用於改善皺紋、增加容積或修飾輪廓。玻尿酸是人體天然存在的物質，具有良好的生物相容性。</p>
+                    </div>
+                    
+                    <div class="consent-section">
+                        <h6>二、可能風險與副作用</h6>
+                        <ul>
+                            <li>注射部位可能出現紅腫、瘀血或疼痛</li>
+                            <li>可能出現結節或不平整</li>
+                            <li>極少數情況下可能發生血管栓塞</li>
+                            <li>過敏反應（罕見）</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="consent-section">
+                        <h6>三、術後注意事項</h6>
+                        <ul>
+                            <li>24小時內避免劇烈運動</li>
+                            <li>一週內避免高溫環境（桑拿、溫泉）</li>
+                            <li>避免過度按摩注射部位</li>
+                            <li>如有異常腫脹或疼痛請立即就醫</li>
+                        </ul>
+                    </div>
+                `
+            },
+            laser: {
+                title: '雷射治療同意書',
+                content: `
+                    <div class="consent-section">
+                        <h6>一、療程說明</h6>
+                        <p>雷射治療是利用特定波長的光能來改善皮膚問題，包括色素沉澱、細紋、毛孔粗大等。治療效果因個人膚質而異。</p>
+                    </div>
+                    
+                    <div class="consent-section">
+                        <h6>二、可能風險與副作用</h6>
+                        <ul>
+                            <li>治療部位可能出現紅腫、灼熱感</li>
+                            <li>可能出現暫時性色素沉澱或色素脫失</li>
+                            <li>極少數情況下可能留下疤痕</li>
+                            <li>需要多次治療才能達到理想效果</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="consent-section">
+                        <h6>三、術後注意事項</h6>
+                        <ul>
+                            <li>加強防曬，避免直接日曬</li>
+                            <li>使用溫和的清潔產品</li>
+                            <li>避免使用刺激性保養品</li>
+                            <li>按時回診追蹤</li>
+                        </ul>
+                    </div>
+                `
+            },
+            facial: {
+                title: '臉部護理同意書',
+                content: `
+                    <div class="consent-section">
+                        <h6>一、療程說明</h6>
+                        <p>臉部護理包括深層清潔、去角質、面膜敷用等步驟，旨在改善肌膚狀態，提升肌膚健康與美觀。</p>
+                    </div>
+                    
+                    <div class="consent-section">
+                        <h6>二、可能風險與副作用</h6>
+                        <ul>
+                            <li>敏感性肌膚可能出現輕微紅腫</li>
+                            <li>極少數情況下可能引起過敏反應</li>
+                            <li>暫時性的肌膚乾燥或緊繃感</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="consent-section">
+                        <h6>三、術後注意事項</h6>
+                        <ul>
+                            <li>24小時內避免使用刺激性產品</li>
+                            <li>加強保濕護理</li>
+                            <li>避免過度摩擦肌膚</li>
+                        </ul>
+                    </div>
+                `
+            },
+            iv_drip: {
+                title: '點滴治療同意書',
+                content: `
+                    <div class="consent-section">
+                        <h6>一、療程說明</h6>
+                        <p>點滴治療是透過靜脈注射方式，將維生素、礦物質等營養成分直接輸入體內，以達到美白、抗氧化或增強免疫力的效果。</p>
+                    </div>
+                    
+                    <div class="consent-section">
+                        <h6>二、可能風險與副作用</h6>
+                        <ul>
+                            <li>注射部位可能出現疼痛、紅腫或瘀血</li>
+                            <li>極少數情況下可能發生過敏反應</li>
+                            <li>可能出現血管炎或靜脈炎</li>
+                            <li>個別患者可能出現噁心、頭暈等症狀</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="consent-section">
+                        <h6>三、注意事項</h6>
+                        <ul>
+                            <li>治療前請告知過敏史及用藥情況</li>
+                            <li>治療期間如有不適請立即告知</li>
+                            <li>治療後多補充水分</li>
+                            <li>如有異常反應請立即就醫</li>
+                        </ul>
+                    </div>
+                `
+            },
+            general: {
+                title: '一般療程同意書',
+                content: `
+                    <div class="consent-section">
+                        <h6>一、療程說明</h6>
+                        <p>本人將接受美容相關療程，已充分了解療程內容、預期效果及可能風險。</p>
+                    </div>
+                    
+                    <div class="consent-section">
+                        <h6>二、一般風險說明</h6>
+                        <ul>
+                            <li>任何醫療行為都可能存在風險</li>
+                            <li>個人體質差異可能影響治療效果</li>
+                            <li>可能需要多次治療才能達到理想效果</li>
+                            <li>極少數情況下可能出現過敏反應</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="consent-section">
+                        <h6>三、患者責任</h6>
+                        <ul>
+                            <li>如實告知病史及過敏史</li>
+                            <li>遵循醫師指示及術後護理</li>
+                            <li>按時回診追蹤</li>
+                            <li>如有異常立即聯絡診所</li>
+                        </ul>
+                    </div>
+                `
+            }
+        };
+
+        // 頁面載入完成後初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeConsentForms();
+            setupSignaturePad();
+            loadConsentData();
+            setCurrentDateTime();
+        });
+
+        // 初始化同意書系統
+        function initializeConsentForms() {
+            // 檢查用戶權限
+            const currentUser = MedicalPlatform.getCurrentUser();
+            if (!currentUser) {
+                MedicalPlatform.showAlert('請先登入系統', 'warning');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 2000);
+                return;
+            }
+
+            // 檢查是否有同意書系統權限
+            const allowedRoles = ['admin', 'doctor', 'staff'];
+            if (!allowedRoles.includes(currentUser.role.id)) {
+                MedicalPlatform.showAlert('您沒有權限存取同意書系統', 'danger');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 2000);
+                return;
+            }
+        }
+
+        // 設置簽名板
+        function setupSignaturePad() {
+            const canvas = document.getElementById('signaturePad');
+            const ctx = canvas.getContext('2d');
+            
+            let isDrawing = false;
+            let lastX = 0;
+            let lastY = 0;
+
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', stopDrawing);
+            canvas.addEventListener('mouseout', stopDrawing);
+
+            // 觸控支援
+            canvas.addEventListener('touchstart', handleTouch);
+            canvas.addEventListener('touchmove', handleTouch);
+            canvas.addEventListener('touchend', stopDrawing);
+
+            function startDrawing(e) {
+                isDrawing = true;
+                [lastX, lastY] = getMousePos(e);
+            }
+
+            function draw(e) {
+                if (!isDrawing) return;
+                
+                const [currentX, currentY] = getMousePos(e);
+                
+                ctx.beginPath();
+                ctx.moveTo(lastX, lastY);
+                ctx.lineTo(currentX, currentY);
+                ctx.strokeStyle = '#000';
+                ctx.lineWidth = 2;
+                ctx.lineCap = 'round';
+                ctx.stroke();
+                
+                [lastX, lastY] = [currentX, currentY];
+            }
+
+            function stopDrawing() {
+                isDrawing = false;
+            }
+
+            function getMousePos(e) {
+                const rect = canvas.getBoundingClientRect();
+                return [
+                    e.clientX - rect.left,
+                    e.clientY - rect.top
+                ];
+            }
+
+            function handleTouch(e) {
+                e.preventDefault();
+                const touch = e.touches[0];
+                const mouseEvent = new MouseEvent(e.type === 'touchstart' ? 'mousedown' : 
+                                                 e.type === 'touchmove' ? 'mousemove' : 'mouseup', {
+                    clientX: touch.clientX,
+                    clientY: touch.clientY
+                });
+                canvas.dispatchEvent(mouseEvent);
+            }
+        }
+
+        // 選擇模板
+        function selectTemplate(templateType) {
+            // 移除之前的選中狀態
+            document.querySelectorAll('.consent-template').forEach(template => {
+                template.classList.remove('selected');
+            });
+
+            // 添加選中狀態
+            event.currentTarget.classList.add('selected');
+
+            currentTemplate = templateType;
+            const template = consentTemplates[templateType];
+
+            if (template) {
+                document.getElementById('consentTitle').textContent = template.title;
+                document.getElementById('consentBody').innerHTML = template.content;
+                document.getElementById('consentFormContainer').style.display = 'block';
+            }
+        }
+
+        // 設置當前日期時間
+        function setCurrentDateTime() {
+            const now = new Date();
+            const today = now.toISOString().split('T')[0];
+            const currentDateTime = now.toISOString().slice(0, 16);
+            
+            document.getElementById('treatmentDate').value = today;
+            document.getElementById('signatureTime').value = currentDateTime;
+        }
+
+        // 載入同意書數據
+        function loadConsentData() {
+            // 模擬同意書數據
+            consentForms = [
+                {
+                    id: 'CF001',
+                    patientName: '王小明',
+                    phone: '0912-345-678',
+                    treatmentType: '肉毒桿菌注射',
+                    date: '2024-09-24',
+                    status: 'pending',
+                    doctor: '劉醫師'
+                },
+                {
+                    id: 'CF002',
+                    patientName: '李美麗',
+                    phone: '0987-654-321',
+                    treatmentType: '玻尿酸填充',
+                    date: '2024-09-23',
+                    status: 'signed',
+                    doctor: '陳醫師',
+                    signedAt: '2024-09-23 14:30'
+                },
+                {
+                    id: 'CF003',
+                    patientName: '張先生',
+                    phone: '0955-123-456',
+                    treatmentType: '雷射治療',
+                    date: '2024-09-22',
+                    status: 'signed',
+                    doctor: '王醫師',
+                    signedAt: '2024-09-22 16:15'
+                }
+            ];
+
+            displayPendingConsents();
+            displaySignedConsents();
+        }
+
+        // 顯示待簽署同意書
+        function displayPendingConsents() {
+            const pendingList = document.getElementById('pendingConsentsList');
+            const pendingForms = consentForms.filter(form => form.status === 'pending');
+
+            let html = '';
+            pendingForms.forEach(form => {
+                html += `
+                    <div class="consent-list-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1">${form.patientName}</h6>
+                                <small class="text-muted">${form.treatmentType}</small><br>
+                                <small class="text-muted">${form.date}</small>
+                            </div>
+                            <div>
+                                <button class="btn btn-sm btn-outline-primary" onclick="loadConsentForm('${form.id}')">
+                                    <i class="fas fa-edit"></i> 簽署
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            if (html === '') {
+                html = '<p class="text-muted text-center">目前沒有待簽署的同意書</p>';
+            }
+
+            pendingList.innerHTML = html;
+        }
+
+        // 顯示已簽署同意書
+        function displaySignedConsents() {
+            const signedList = document.getElementById('signedConsentsList');
+            const signedForms = consentForms.filter(form => form.status === 'signed');
+
+            let html = '';
+            signedForms.forEach(form => {
+                html += `
+                    <div class="consent-list-item">
+                        <div class="row align-items-center">
+                            <div class="col-md-3">
+                                <strong>${form.patientName}</strong><br>
+                                <small class="text-muted">${form.phone}</small>
+                            </div>
+                            <div class="col-md-2">
+                                ${form.treatmentType}
+                            </div>
+                            <div class="col-md-2">
+                                ${form.date}
+                            </div>
+                            <div class="col-md-2">
+                                <span class="consent-status status-signed">已簽署</span>
+                            </div>
+                            <div class="col-md-2">
+                                <small class="text-muted">${form.signedAt}</small>
+                            </div>
+                            <div class="col-md-1">
+                                <button class="btn btn-sm btn-outline-primary" onclick="viewConsent('${form.id}')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            signedList.innerHTML = html;
+        }
+
+        // 載入同意書表單
+        function loadConsentForm(formId) {
+            const form = consentForms.find(f => f.id === formId);
+            if (form) {
+                document.getElementById('patientName').value = form.patientName;
+                document.getElementById('patientPhone').value = form.phone;
+                document.getElementById('treatmentDate').value = form.date;
+                document.getElementById('witnessDoctor').value = form.doctor === '劉醫師' ? 'dr_liu' : 
+                                                                  form.doctor === '陳醫師' ? 'dr_chen' : 'dr_wang';
+
+                // 根據療程類型選擇模板
+                const templateMap = {
+                    '肉毒桿菌注射': 'botox',
+                    '玻尿酸填充': 'filler',
+                    '雷射治療': 'laser',
+                    '臉部護理': 'facial',
+                    '點滴治療': 'iv_drip'
+                };
+
+                const templateType = templateMap[form.treatmentType] || 'general';
+                selectTemplate(templateType);
+            }
+        }
+
+        // 清除簽名
+        function clearSignature() {
+            const canvas = document.getElementById('signaturePad');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        // 使用數位簽名
+        function useDigitalSignature() {
+            const patientName = document.getElementById('patientName').value;
+            if (!patientName) {
+                MedicalPlatform.showAlert('請先填入患者姓名', 'warning');
+                return;
+            }
+
+            const canvas = document.getElementById('signaturePad');
+            const ctx = canvas.getContext('2d');
+            
+            // 清除畫布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 繪製數位簽名
+            ctx.font = '24px cursive';
+            ctx.fillStyle = '#000';
+            ctx.textAlign = 'center';
+            ctx.fillText(patientName, canvas.width / 2, canvas.height / 2 + 8);
+            
+            MedicalPlatform.showAlert('數位簽名已生成', 'success');
+        }
+
+        // 驗證表單
+        function validateForm() {
+            const requiredFields = ['patientName', 'patientPhone', 'treatmentDate'];
+            const checkboxes = ['confirmRead', 'confirmRisk', 'confirmVoluntary', 'confirmQuestions'];
+
+            // 檢查必填欄位
+            for (let field of requiredFields) {
+                if (!document.getElementById(field).value) {
+                    MedicalPlatform.showAlert('請填寫所有必要資訊', 'warning');
+                    return false;
+                }
+            }
+
+            // 檢查確認事項
+            for (let checkbox of checkboxes) {
+                if (!document.getElementById(checkbox).checked) {
+                    MedicalPlatform.showAlert('請確認所有同意事項', 'warning');
+                    return false;
+                }
+            }
+
+            // 檢查簽名
+            const canvas = document.getElementById('signaturePad');
+            const ctx = canvas.getContext('2d');
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const hasSignature = imageData.data.some(channel => channel !== 0);
+
+            if (!hasSignature) {
+                MedicalPlatform.showAlert('請提供患者簽名', 'warning');
+                return false;
+            }
+
+            return true;
+        }
+
+        // 提交同意書
+        function submitConsent() {
+            if (!validateForm()) {
+                return;
+            }
+
+            MedicalPlatform.showAlert('正在提交同意書...', 'info');
+
+            // 模擬提交過程
+            setTimeout(() => {
+                const formData = {
+                    id: 'CF' + String(consentForms.length + 1).padStart(3, '0'),
+                    patientName: document.getElementById('patientName').value,
+                    phone: document.getElementById('patientPhone').value,
+                    treatmentType: currentTemplate ? consentTemplates[currentTemplate].title : '一般療程',
+                    date: document.getElementById('treatmentDate').value,
+                    status: 'signed',
+                    doctor: getDoctorName(document.getElementById('witnessDoctor').value),
+                    signedAt: new Date().toLocaleString('zh-TW')
+                };
+
+                consentForms.push(formData);
+                displaySignedConsents();
+                displayPendingConsents();
+
+                // 清空表單
+                clearConsentForm();
+
+                MedicalPlatform.showAlert('同意書已成功提交並儲存', 'success');
+            }, 2000);
+        }
+
+        // 獲取醫師姓名
+        function getDoctorName(doctorId) {
+            const doctorNames = {
+                'dr_liu': '劉醫師',
+                'dr_chen': '陳醫師',
+                'dr_wang': '王醫師'
+            };
+            return doctorNames[doctorId] || '未指定';
+        }
+
+        // 儲存草稿
+        function saveDraft() {
+            MedicalPlatform.showAlert('同意書草稿已儲存', 'info');
+        }
+
+        // 清空同意書表單
+        function clearConsentForm() {
+            document.getElementById('patientName').value = '';
+            document.getElementById('patientIdCard').value = '';
+            document.getElementById('patientPhone').value = '';
+            document.getElementById('treatmentDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('witnessDoctor').value = '';
+            
+            // 清除確認選項
+            ['confirmRead', 'confirmRisk', 'confirmVoluntary', 'confirmQuestions'].forEach(id => {
+                document.getElementById(id).checked = false;
+            });
+            
+            // 清除簽名
+            clearSignature();
+            
+            // 重置模板選擇
+            document.querySelectorAll('.consent-template').forEach(template => {
+                template.classList.remove('selected');
+            });
+            
+            currentTemplate = null;
+            document.getElementById('consentFormContainer').style.display = 'none';
+        }
+
+        // 其他功能函數
+        function createCustomTemplate() {
+            MedicalPlatform.showAlert('自訂模板功能開發中', 'info');
+        }
+
+        function previewConsent() {
+            if (!currentTemplate) {
+                MedicalPlatform.showAlert('請先選擇同意書模板', 'warning');
+                return;
+            }
+            MedicalPlatform.showAlert('預覽功能開發中', 'info');
+        }
+
+        function printConsent() {
+            if (!currentTemplate) {
+                MedicalPlatform.showAlert('請先選擇同意書模板', 'warning');
+                return;
+            }
+            window.print();
+        }
+
+        function viewConsent(formId) {
+            MedicalPlatform.showAlert(`查看同意書 ${formId} 功能開發中`, 'info');
+        }
+
+        function refreshConsentList() {
+            loadConsentData();
+            MedicalPlatform.showAlert('同意書列表已刷新', 'success');
+        }
+
+        function exportConsentList() {
+            MedicalPlatform.showAlert('匯出同意書列表功能開發中', 'info');
+        }
+
+        function logout() {
+            MedicalPlatform.logout();
+        }
+    </script>
+</body>
+</html>

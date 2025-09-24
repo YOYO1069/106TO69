@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>預約管理系統 - 劉道玄醫美管理平台</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- FullCalendar CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
+    
+    <!-- 自定義樣式 -->
+    <link rel="stylesheet" href="css/main.css">
+    
+    <style>
+        .appointment-header {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+        
+        .appointment-card {
+            border-left: 4px solid #e74c3c;
+        }
+        
+        .calendar-container {
+            background: white;
+            border-radius: var(--radius-large);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-medium);
+        }
+        
+        .time-slot {
+            padding: 0.5rem;
+            margin: 0.25rem;
+            border: 1px solid #ddd;
+            border-radius: var(--radius-small);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .time-slot:hover {
+            background: #e3f2fd;
+            border-color: #2196f3;
+        }
+        
+        .time-slot.selected {
+            background: #2196f3;
+            color: white;
+            border-color: #1976d2;
+        }
+        
+        .time-slot.occupied {
+            background: #ffebee;
+            color: #c62828;
+            border-color: #e57373;
+            cursor: not-allowed;
+        }
+        
+        .time-slot.doctor-unavailable {
+            background: #fff3e0;
+            color: #ef6c00;
+            border-color: #ffb74d;
+            cursor: not-allowed;
+        }
+        
+        .appointment-form {
+            background: var(--gradient-card);
+            border-radius: var(--radius-large);
+            padding: 2rem;
+            box-shadow: var(--shadow-medium);
+        }
+        
+        .doctor-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .doctor-available {
+            color: #27ae60;
+        }
+        
+        .doctor-unavailable {
+            color: #e74c3c;
+        }
+        
+        .appointment-list-item {
+            border-bottom: 1px solid #eee;
+            padding: 1rem 0;
+        }
+        
+        .appointment-list-item:last-child {
+            border-bottom: none;
+        }
+        
+        .appointment-status {
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-confirmed {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-cancelled {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .liu-daoxuan-section {
+            background: linear-gradient(135deg, #8e44ad 0%, #9b59b6 100%);
+            color: white;
+            border-radius: var(--radius-large);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .treatment-warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: var(--radius-small);
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .fc-event {
+            border: none !important;
+            border-radius: 4px !important;
+        }
+        
+        .fc-event-title {
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <!-- 導航列 -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-user-md"></i>
+                劉道玄醫師預約系統
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">
+                            <i class="fas fa-home"></i> 首頁
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="appointment_scheduling_system.html">
+                            <i class="fas fa-calendar-alt"></i> 預約管理
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="medical_records.html">
+                    <li class="nav-item">
+                        <a class="nav-link" href="treatment_management.html">
+                            <i class="fas fa-spa"></i> 療程管理
+                        </a>
+                    </li>
+                            <i class="fas fa-file-medical"></i> 病歷系統
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="logout()">
+                            <i class="fas fa-sign-out-alt"></i> 登出
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 預約管理標題區 -->
+    <div class="appointment-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1><i class="fas fa-calendar-alt"></i> 劉道玄醫師預約行事曆</h1>
+                    <p class="mb-0">智能排程・醫師在場檢查・15分鐘時段・最大2人預約</p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <div class="doctor-status">
+                        <i class="fas fa-user-md"></i>
+                        <span id="doctorStatus" class="doctor-available">醫師在場</span>
+                    </div>
+                    <small>營業時間: 週二-五 12:00-20:00，週六 11:00-20:00</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主要內容 -->
+    <main class="main-content">
+        <div class="container">
+            <!-- 劉道玄預約機器貓區域 -->
+            <div class="liu-daoxuan-section">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h4><i class="fas fa-robot"></i> 劉道玄預約機器貓</h4>
+                        <p class="mb-0">專為劉道玄客戶設計的智能預約系統，整合夯客平台預約資料</p>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        <button class="btn btn-light" onclick="showLiuDaoxuanCalendar()">
+                            <i class="fas fa-calendar-plus"></i> 顯示專屬日曆
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 醫療行為警告 -->
+            <div class="treatment-warning">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                    <strong>重要提醒：</strong>
+                    護理師在醫師不在場時，不得為客人施做療程（點滴、震波、醫療器材操作）。
+                    排程時務必確認醫師在場時間。
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- 日曆區域 -->
+                <div class="col-lg-8 mb-4">
+                    <div class="calendar-container">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5><i class="fas fa-calendar"></i> 預約日曆</h5>
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-outline-primary btn-sm" onclick="changeCalendarView('dayGridMonth')">月</button>
+                                <button type="button" class="btn btn-outline-primary btn-sm" onclick="changeCalendarView('timeGridWeek')">週</button>
+                                <button type="button" class="btn btn-outline-primary btn-sm" onclick="changeCalendarView('timeGridDay')">日</button>
+                            </div>
+                        </div>
+                        <div id="calendar"></div>
+                    </div>
+                </div>
+
+                <!-- 預約表單 -->
+                <div class="col-lg-4 mb-4">
+                    <div class="appointment-form">
+                        <h5 class="mb-3">
+                            <i class="fas fa-plus-circle"></i>
+                            新增預約
+                        </h5>
+                        
+                        <form id="appointmentForm">
+                            <div class="mb-3">
+                                <label class="form-label">客戶姓名 *</label>
+                                <input type="text" class="form-control" id="customerName" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">聯絡電話 *</label>
+                                <input type="tel" class="form-control" id="customerPhone" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">預約日期 *</label>
+                                <input type="date" class="form-control" id="appointmentDate" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">預約時間 * (15分鐘間隔)</label>
+                                <select class="form-select" id="appointmentTime" required>
+                                    <option value="">請選擇時間</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">療程項目 *</label>
+                                <select class="form-select" id="treatmentType" required>
+                                    <option value="">請選擇療程</option>
+                                    <option value="consultation">諮詢</option>
+                                    <option value="botox">肉毒桿菌注射</option>
+                                    <option value="filler">玻尿酸填充</option>
+                                    <option value="laser">雷射治療</option>
+                                    <option value="facial">臉部護理</option>
+                                    <option value="iv_drip">點滴治療</option>
+                                    <option value="shockwave">震波治療</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">預約類型</label>
+                                <select class="form-select" id="appointmentType">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label for="socialSource" class="form-label">預約來源</label>
+                            <select class="form-select" id="socialSource">
+                                <option value="line">LINE 官方帳號</option>
+                                <option value="instagram">Instagram DM</option>
+                                <option value="facebook">Facebook 私訊</option>
+                                <option value="phone">電話預約</option>
+                                <option value="walk-in">現場預約</option>
+                                    <option value="individual">個人預約</option>
+                                    <option value="group">朋友相約 (團體預約)</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3" id="groupSizeContainer" style="display: none;">
+                                <label class="form-label">人數</label>
+                                <select class="form-select" id="groupSize">
+                                    <option value="2">2人</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">來源管道</label>
+                                <select class="form-select" id="referralSource">
+                                    <option value="">請選擇</option>
+                                    <option value="walk_in">直接來訪</option>
+                                    <option value="phone">電話預約</option>
+                                    <option value="line">LINE官方帳號</option>
+                                    <option value="website">官方網站</option>
+                                    <option value="partner">合作夥伴推薦</option>
+                                    <option value="liu_daoxuan">劉道玄推薦</option>
+                                    <option value="hanke">夯客平台</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">備註</label>
+                                <textarea class="form-control" id="appointmentNotes" rows="3" placeholder="特殊需求或注意事項"></textarea>
+                            </div>
+                            
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> 確認預約
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary" onclick="clearAppointmentForm()">
+                                    <i class="fas fa-eraser"></i> 清除表單
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 今日預約列表 -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card appointment-card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">
+                                <i class="fas fa-list"></i>
+                                今日預約列表
+                            </h5>
+                            <div>
+                                <button class="btn btn-outline-primary btn-sm" onclick="refreshAppointments()">
+                                    <i class="fas fa-sync"></i> 刷新
+                                </button>
+                                <button class="btn btn-outline-success btn-sm" onclick="exportAppointments()">
+                                    <i class="fas fa-download"></i> 匯出
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div id="todayAppointmentsList">
+                                <!-- 預約列表將由JavaScript動態生成 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 返回首頁按鈕 -->
+            <div class="text-center mt-4">
+                <a href="index.html" class="nav-btn">
+                    <i class="fas fa-home"></i> 返回首頁
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <!-- 預約詳情模態框 -->
+    <div class="modal fade" id="appointmentDetailModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">預約詳情</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="appointmentDetailContent">
+                    <!-- 詳情內容將由JavaScript動態生成 -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
+                    <button type="button" class="btn btn-warning" onclick="editAppointment()">編輯</button>
+                    <button type="button" class="btn btn-danger" onclick="cancelAppointment()">取消預約</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- FullCalendar JS -->
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/locales/zh-tw.global.min.js"></script>
+    
+    <!-- 自定義 JavaScript -->
+    <script src="js/main.js"></script>
+    <script src="js/ai-assistant.js"></script>
+    <script src="js/integration-manager.js"></script>
+    <script src="js/quad-integration-manager.js"></script>
+    <script src="js/social-integration.js"></script>
+    <script src="js/calendar.js"></script>
+    
+    <script>
+        let calendar;
+        let currentSelectedDate = null;
+        let appointments = [];
+
+        // 頁面載入完成後初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeAppointmentSystem();
+            setupEventListeners();
+            loadTodayAppointments();
+        });
+
+        // 初始化預約系統
+        function initializeAppointmentSystem() {
+            // 檢查用戶權限
+            const currentUser = MedicalPlatform.getCurrentUser();
+            if (!currentUser) {
+                MedicalPlatform.showAlert('請先登入系統', 'warning');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 2000);
+                return;
+            }
+
+            initializeCalendar();
+            setMinDate();
+            updateDoctorStatus();
+            generateTimeSlots();
+        }
+
+        // 初始化日曆
+        function initializeCalendar() {
+            const calendarEl = document.getElementById('calendar');
+            
+            calendar = new FullCalendar.Calendar(calendarEl, {
+                locale: 'zh-tw',
+                initialView: 'timeGridWeek',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                slotMinTime: '11:00:00',
+                slotMaxTime: '21:00:00',
+                slotDuration: '00:15:00',
+                businessHours: [
+                    {
+                        daysOfWeek: [2, 3, 4, 5], // 週二到週五
+                        startTime: '12:00',
+                        endTime: '20:00'
+                    },
+                    {
+                        daysOfWeek: [6], // 週六
+                        startTime: '11:00',
+                        endTime: '20:00'
+                    }
+                ],
+                events: generateMockAppointments(),
+                eventClick: function(info) {
+                    showAppointmentDetail(info.event);
+                },
+                dateClick: function(info) {
+                    selectDate(info.dateStr);
+                },
+                eventDidMount: function(info) {
+                    // 根據預約類型設置顏色
+                    const eventType = info.event.extendedProps.type;
+                    switch(eventType) {
+                        case 'consultation':
+                            info.el.style.backgroundColor = '#3498db';
+                            break;
+                        case 'treatment':
+                            info.el.style.backgroundColor = '#e74c3c';
+                            break;
+                        case 'liu_daoxuan':
+                            info.el.style.backgroundColor = '#9b59b6';
+                            break;
+                        default:
+                            info.el.style.backgroundColor = '#27ae60';
+                    }
+                }
+            });
+            
+            calendar.render();
+        }
+
+        // 生成模擬預約數據
+        function generateMockAppointments() {
+            const today = new Date();
+            const events = [];
+            
+            // 今日預約
+            events.push({
+                title: '王小明 - 肉毒桿菌',
+                start: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 14, 0),
+                end: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 14, 30),
+                extendedProps: {
+                    type: 'treatment',
+                    customer: '王小明',
+                    phone: '0912-345-678',
+                    treatment: '肉毒桿菌注射',
+                    status: 'confirmed'
+                }
+            });
+            
+            events.push({
+                title: '李美麗 - 諮詢',
+                start: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 15, 30),
+                end: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 16, 0),
+                extendedProps: {
+                    type: 'consultation',
+                    customer: '李美麗',
+                    phone: '0987-654-321',
+                    treatment: '諮詢',
+                    status: 'pending'
+                }
+            });
+            
+            // 劉道玄預約
+            events.push({
+                title: '劉道玄客戶 - 玻尿酸',
+                start: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1, 13, 0),
+                end: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1, 13, 45),
+                extendedProps: {
+                    type: 'liu_daoxuan',
+                    customer: '張先生',
+                    phone: '0955-123-456',
+                    treatment: '玻尿酸填充',
+                    status: 'confirmed',
+                    source: '劉道玄推薦'
+                }
+            });
+            
+            return events;
+        }
+
+        // 設置最小日期
+        function setMinDate() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('appointmentDate').min = today;
+        }
+
+        // 更新醫師狀態
+        function updateDoctorStatus() {
+            const now = new Date();
+            const hour = now.getHours();
+            const day = now.getDay();
+            
+            const statusElement = document.getElementById('doctorStatus');
+            
+            // 檢查營業時間和醫師在場時間
+            let isAvailable = false;
+            
+            if (day >= 2 && day <= 5) { // 週二到週五
+                isAvailable = hour >= 12 && hour < 20;
+            } else if (day === 6) { // 週六
+                isAvailable = hour >= 11 && hour < 20;
+            }
+            
+            if (isAvailable) {
+                statusElement.textContent = '醫師在場';
+                statusElement.className = 'doctor-available';
+            } else {
+                statusElement.textContent = '醫師不在場';
+                statusElement.className = 'doctor-unavailable';
+            }
+        }
+
+        // 生成時間選項
+        function generateTimeSlots() {
+            const timeSelect = document.getElementById('appointmentTime');
+            const selectedDate = document.getElementById('appointmentDate').value;
+            
+            if (!selectedDate) return;
+            
+            const date = new Date(selectedDate);
+            const day = date.getDay();
+            
+            // 清空現有選項
+            timeSelect.innerHTML = '<option value="">請選擇時間</option>';
+            
+            let startHour, endHour;
+            
+            // 根據星期設定營業時間
+            if (day >= 2 && day <= 5) { // 週二到週五
+                startHour = 12;
+                endHour = 20;
+            } else if (day === 6) { // 週六
+                startHour = 11;
+                endHour = 20;
+            } else {
+                // 週日和週一不營業
+                timeSelect.innerHTML = '<option value="">今日不營業</option>';
+                return;
+            }
+            
+            // 生成15分鐘間隔的時間選項
+            for (let hour = startHour; hour < endHour; hour++) {
+                for (let minute = 0; minute < 60; minute += 15) {
+                    const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+                    const option = document.createElement('option');
+                    option.value = timeString;
+                    option.textContent = timeString;
+                    timeSelect.appendChild(option);
+                }
+            }
+        }
+
+        // 設置事件監聽器
+        function setupEventListeners() {
+            // 日期變更時重新生成時間選項
+            document.getElementById('appointmentDate').addEventListener('change', generateTimeSlots);
+            
+            // 預約類型變更
+            document.getElementById('appointmentType').addEventListener('change', function() {
+                const groupContainer = document.getElementById('groupSizeContainer');
+                if (this.value === 'group') {
+                    groupContainer.style.display = 'block';
+                } else {
+                    groupContainer.style.display = 'none';
+                }
+            });
+            
+            // 療程類型變更時檢查醫師需求
+            document.getElementById('treatmentType').addEventListener('change', function() {
+                checkDoctorRequirement(this.value);
+            });
+            
+            // 表單提交
+            document.getElementById('appointmentForm').addEventListener('submit', handleAppointmentSubmit);
+        }
+
+        // 檢查醫師需求
+        function checkDoctorRequirement(treatmentType) {
+            const doctorRequiredTreatments = ['botox', 'filler', 'iv_drip', 'shockwave'];
+            const warningElement = document.querySelector('.treatment-warning');
+            
+            if (doctorRequiredTreatments.includes(treatmentType)) {
+                warningElement.style.display = 'block';
+            } else {
+                warningElement.style.display = 'none';
+            }
+        }
+
+        // 處理預約提交
+        function handleAppointmentSubmit(e) {
+            e.preventDefault();
+            
+            const formData = {
+                customerName: document.getElementById('customerName').value,
+                customerPhone: document.getElementById('customerPhone').value,
+                appointmentDate: document.getElementById('appointmentDate').value,
+                appointmentTime: document.getElementById('appointmentTime').value,
+                treatmentType: document.getElementById('treatmentType').value,
+                appointmentType: document.getElementById('appointmentType').value,
+                groupSize: document.getElementById('groupSize').value,
+                referralSource: document.getElementById('referralSource').value,
+                notes: document.getElementById('appointmentNotes').value
+            };
+            
+            // 驗證醫師在場需求
+            if (!validateDoctorAvailability(formData)) {
+                return;
+            }
+            
+            // 檢查時段容量
+            if (!validateTimeSlotCapacity(formData)) {
+                return;
+            }
+            
+            // 提交預約
+            submitAppointment(formData);
+        }
+
+        // 驗證醫師可用性
+        function validateDoctorAvailability(formData) {
+            const doctorRequiredTreatments = ['botox', 'filler', 'iv_drip', 'shockwave'];
+            
+            if (doctorRequiredTreatments.includes(formData.treatmentType)) {
+                // 這裡應該檢查醫師在指定時間是否在場
+                // 目前簡化為營業時間檢查
+                const appointmentDate = new Date(formData.appointmentDate);
+                const day = appointmentDate.getDay();
+                
+                if (day < 2 || day > 6) {
+                    MedicalPlatform.showAlert('此療程需要醫師在場，但選定日期診所不營業', 'danger');
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+
+        // 驗證時段容量
+        function validateTimeSlotCapacity(formData) {
+            // 檢查該時段是否已滿
+            const maxCapacity = 2;
+            const currentBookings = 1; // 模擬當前預約數
+            const requestedSlots = formData.appointmentType === 'group' ? parseInt(formData.groupSize) : 1;
+            
+            if (currentBookings + requestedSlots > maxCapacity) {
+                MedicalPlatform.showAlert('該時段預約已滿，請選擇其他時間', 'warning');
+                return false;
+            }
+            
+            return true;
+        }
+
+        // 提交預約
+        function submitAppointment(formData) {
+            MedicalPlatform.showAlert('正在提交預約...', 'info');
+            
+            // 模擬API調用
+            setTimeout(() => {
+                // 添加到日曆
+                const appointmentDateTime = new Date(`${formData.appointmentDate}T${formData.appointmentTime}`);
+                const endDateTime = new Date(appointmentDateTime.getTime() + (30 * 60000)); // 30分鐘後
+                
+                calendar.addEvent({
+                    title: `${formData.customerName} - ${getTreatmentName(formData.treatmentType)}`,
+                    start: appointmentDateTime,
+                    end: endDateTime,
+                    extendedProps: {
+                        type: formData.treatmentType,
+                        customer: formData.customerName,
+                        phone: formData.customerPhone,
+                        treatment: getTreatmentName(formData.treatmentType),
+                        status: 'pending',
+                        source: formData.referralSource,
+                        notes: formData.notes
+                    }
+                });
+                
+                MedicalPlatform.showAlert('預約提交成功！', 'success');
+                clearAppointmentForm();
+                loadTodayAppointments();
+            }, 2000);
+        }
+
+        // 獲取療程名稱
+        function getTreatmentName(type) {
+            const treatments = {
+                'consultation': '諮詢',
+                'botox': '肉毒桿菌注射',
+                'filler': '玻尿酸填充',
+                'laser': '雷射治療',
+                'facial': '臉部護理',
+                'iv_drip': '點滴治療',
+                'shockwave': '震波治療'
+            };
+            
+            return treatments[type] || type;
+        }
+
+        // 清除預約表單
+        function clearAppointmentForm() {
+            document.getElementById('appointmentForm').reset();
+            document.getElementById('groupSizeContainer').style.display = 'none';
+        }
+
+        // 載入今日預約
+        function loadTodayAppointments() {
+            const appointmentsList = document.getElementById('todayAppointmentsList');
+            
+            // 模擬今日預約數據
+            const todayAppointments = [
+                {
+                    id: 'A001',
+                    time: '14:00',
+                    customer: '王小明',
+                    phone: '0912-345-678',
+                    treatment: '肉毒桿菌注射',
+                    status: 'confirmed',
+                    source: '電話預約'
+                },
+                {
+                    id: 'A002',
+                    time: '15:30',
+                    customer: '李美麗',
+                    phone: '0987-654-321',
+                    treatment: '諮詢',
+                    status: 'pending',
+                    source: 'LINE官方帳號'
+                },
+                {
+                    id: 'A003',
+                    time: '16:45',
+                    customer: '張先生',
+                    phone: '0955-123-456',
+                    treatment: '玻尿酸填充',
+                    status: 'confirmed',
+                    source: '劉道玄推薦'
+                }
+            ];
+            
+            let html = '';
+            todayAppointments.forEach(appointment => {
+                html += `
+                    <div class="appointment-list-item">
+                        <div class="row align-items-center">
+                            <div class="col-md-2">
+                                <strong>${appointment.time}</strong>
+                            </div>
+                            <div class="col-md-2">
+                                ${appointment.customer}<br>
+                                <small class="text-muted">${appointment.phone}</small>
+                            </div>
+                            <div class="col-md-2">
+                                ${appointment.treatment}
+                            </div>
+                            <div class="col-md-2">
+                                <span class="appointment-status status-${appointment.status}">
+                                    ${getStatusText(appointment.status)}
+                                </span>
+                            </div>
+                            <div class="col-md-2">
+                                <small class="text-muted">${appointment.source}</small>
+                            </div>
+                            <div class="col-md-2">
+                                <button class="btn btn-sm btn-outline-primary" onclick="showAppointmentDetailById('${appointment.id}')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-success" onclick="confirmAppointment('${appointment.id}')">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            appointmentsList.innerHTML = html;
+        }
+
+        // 獲取狀態文字
+        function getStatusText(status) {
+            const statusTexts = {
+                'pending': '待確認',
+                'confirmed': '已確認',
+                'completed': '已完成',
+                'cancelled': '已取消'
+            };
+            
+            return statusTexts[status] || status;
+        }
+
+        // 顯示劉道玄專屬日曆
+        function showLiuDaoxuanCalendar() {
+            MedicalPlatform.showAlert('正在載入劉道玄預約機器貓日曆...', 'info');
+            
+            // 篩選顯示劉道玄相關預約
+            const events = calendar.getEvents();
+            events.forEach(event => {
+                if (event.extendedProps.type === 'liu_daoxuan') {
+                    event.setProp('display', 'block');
+                } else {
+                    event.setProp('display', 'none');
+                }
+            });
+            
+            setTimeout(() => {
+                MedicalPlatform.showAlert('劉道玄專屬日曆已顯示', 'success');
+            }, 1000);
+        }
+
+        // 其他功能函數
+        function changeCalendarView(view) {
+            calendar.changeView(view);
+        }
+
+        function refreshAppointments() {
+            loadTodayAppointments();
+            MedicalPlatform.showAlert('預約列表已刷新', 'success');
+        }
+
+        function exportAppointments() {
+            MedicalPlatform.showAlert('預約資料匯出功能開發中', 'info');
+        }
+
+        function showAppointmentDetailById(appointmentId) {
+            MedicalPlatform.showAlert(`顯示預約 ${appointmentId} 詳情功能開發中`, 'info');
+        }
+
+        function confirmAppointment(appointmentId) {
+            MedicalPlatform.showAlert(`確認預約 ${appointmentId} 功能開發中`, 'success');
+        }
+
+        function logout() {
+            MedicalPlatform.logout();
+        }
+    </script>
+</body>
+</html>

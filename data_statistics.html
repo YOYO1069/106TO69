@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>數據統計 - 劉道玄醫美管理平台</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- 自定義樣式 -->
+    <link rel="stylesheet" href="css/main.css">
+    
+    <style>
+        .statistics-header {
+            background: linear-gradient(135deg, #0e1a40 0%, #4682b4 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+        
+        .stats-card {
+            border-left: 4px solid #4682b4;
+            /* 添加浮動效果 */
+            transition: all 0.3s ease;
+            transform: translateY(0);
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-magic);
+        }
+        
+        .chart-container {
+            background: var(--gradient-card);
+            border-radius: var(--radius-large);
+            padding: 2rem;
+            box-shadow: var(--shadow-medium);
+            margin-bottom: 2rem;
+            border: 2px solid var(--warning-color);
+            /* 添加浮動效果 */
+            transition: all 0.3s ease;
+            transform: translateY(0);
+        }
+        
+        .chart-container:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-magic);
+            border-color: var(--text-light);
+        }
+        
+        .metric-card {
+            background: var(--gradient-card);
+            border-radius: var(--radius-large);
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: var(--shadow-medium);
+            border: 2px solid var(--warning-color);
+            /* 添加浮動效果 */
+            transition: all 0.3s ease;
+            transform: translateY(0);
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-magic);
+            border-color: var(--text-light);
+        }
+        
+        .metric-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        .metric-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .metric-change {
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+        }
+        
+        .metric-change.positive {
+            color: var(--success-color);
+        }
+        
+        .metric-change.negative {
+            color: var(--danger-color);
+        }
+        
+        .filter-section {
+            background: #f8f9fa;
+            border-radius: var(--radius-medium);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .nav-btn {
+            background: var(--gradient-nav);
+            color: white;
+            padding: 0.75rem 2rem;
+            border-radius: var(--radius-button);
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            /* 添加浮動效果 */
+            transition: all 0.3s ease;
+            transform: translateY(0);
+            box-shadow: var(--shadow-light);
+        }
+        
+        .nav-btn:hover {
+            color: white;
+            text-decoration: none;
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-medium);
+        }
+        
+        .data-table {
+            background: var(--gradient-card);
+            border-radius: var(--radius-large);
+            padding: 2rem;
+            box-shadow: var(--shadow-medium);
+            border: 2px solid var(--warning-color);
+        }
+        
+        .table-dark {
+            background-color: var(--primary-color);
+        }
+        
+        .table-dark th {
+            border-color: var(--warning-color);
+            color: var(--text-light);
+        }
+        
+        .table-dark td {
+            border-color: var(--secondary-color);
+            color: var(--text-light);
+        }
+    </style>
+</head>
+<body>
+    <!-- 導航列 -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-user-md"></i>
+                劉道玄醫師預約系統
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">
+                            <i class="fas fa-home"></i> 首頁
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="appointment_scheduling_system.html">
+                            <i class="fas fa-calendar-alt"></i> 預約管理
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="medical_records.html">
+                            <i class="fas fa-file-medical"></i> 病歷系統
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="treatment_management.html">
+                            <i class="fas fa-spa"></i> 療程管理
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="consent_forms.html">
+                            <i class="fas fa-file-signature"></i> 同意書
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="data_statistics.html">
+                            <i class="fas fa-chart-bar"></i> 數據統計
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="performance_management.html">
+                            <i class="fas fa-chart-line"></i> 業績管理
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="price_management.html">
+                            <i class="fas fa-tags"></i> 價格管理
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="logout()">
+                            <i class="fas fa-sign-out-alt"></i> 登出
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 數據統計標題區 -->
+    <div class="statistics-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1><i class="fas fa-chart-bar"></i> 數據統計分析</h1>
+                    <p class="mb-0">營運分析・趨勢預測・績效評估・智能洞察</p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <div class="d-flex align-items-center justify-content-end gap-3">
+                        <div>
+                            <i class="fas fa-chart-line"></i>
+                            <span>即時數據</span>
+                        </div>
+                        <div>
+                            <i class="fas fa-brain"></i>
+                            <span>智能分析</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主要內容 -->
+    <main class="main-content">
+        <div class="container">
+            <!-- 篩選區域 -->
+            <div class="filter-section">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label class="form-label">時間範圍</label>
+                                <select class="form-select" id="timeRange" onchange="updateStatistics()">
+                                    <option value="today">今日</option>
+                                    <option value="week">本週</option>
+                                    <option value="month" selected>本月</option>
+                                    <option value="quarter">本季</option>
+                                    <option value="year">本年</option>
+                                    <option value="custom">自定義</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">數據類型</label>
+                                <select class="form-select" id="dataType" onchange="updateStatistics()">
+                                    <option value="all">全部數據</option>
+                                    <option value="appointments">預約數據</option>
+                                    <option value="revenue">營收數據</option>
+                                    <option value="treatments">療程數據</option>
+                                    <option value="customers">客戶數據</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">比較基準</label>
+                                <select class="form-select" id="comparison" onchange="updateStatistics()">
+                                    <option value="previous">與上期比較</option>
+                                    <option value="year">與去年同期</option>
+                                    <option value="target">與目標比較</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">顯示方式</label>
+                                <select class="form-select" id="displayMode" onchange="updateStatistics()">
+                                    <option value="chart">圖表模式</option>
+                                    <option value="table">表格模式</option>
+                                    <option value="both">圖表+表格</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        <button class="btn btn-primary" onclick="exportReport()">
+                            <i class="fas fa-download"></i> 匯出報告
+                        </button>
+                        <button class="btn btn-success" onclick="scheduleReport()">
+                            <i class="fas fa-clock"></i> 定期報告
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 關鍵指標 -->
+            <div class="row mb-4">
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="metric-card">
+                        <div class="metric-number" style="color: #4682b4;" id="totalRevenue">$125,000</div>
+                        <div class="metric-label">總營收</div>
+                        <div class="metric-change positive">
+                            <i class="fas fa-arrow-up"></i> +15.2%
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="metric-card">
+                        <div class="metric-number" style="color: #228b22;" id="totalAppointments">156</div>
+                        <div class="metric-label">總預約數</div>
+                        <div class="metric-change positive">
+                            <i class="fas fa-arrow-up"></i> +8.7%
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="metric-card">
+                        <div class="metric-number" style="color: #daa520;" id="newCustomers">42</div>
+                        <div class="metric-label">新客戶</div>
+                        <div class="metric-change positive">
+                            <i class="fas fa-arrow-up"></i> +12.3%
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="metric-card">
+                        <div class="metric-number" style="color: #dc143c;" id="satisfactionRate">96%</div>
+                        <div class="metric-label">滿意度</div>
+                        <div class="metric-change positive">
+                            <i class="fas fa-arrow-up"></i> +2.1%
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 圖表區域 -->
+            <div class="row mb-4">
+                <div class="col-lg-8 mb-3">
+                    <div class="chart-container">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5>
+                                <i class="fas fa-chart-line"></i>
+                                營收趨勢分析
+                            </h5>
+                            <div class="btn-group btn-group-sm" role="group">
+                                <button type="button" class="btn btn-outline-primary active" onclick="switchChart('revenue')">營收</button>
+                                <button type="button" class="btn btn-outline-primary" onclick="switchChart('appointments')">預約</button>
+                                <button type="button" class="btn btn-outline-primary" onclick="switchChart('customers')">客戶</button>
+                            </div>
+                        </div>
+                        <canvas id="trendChart" height="300"></canvas>
+                    </div>
+                </div>
+                <div class="col-lg-4 mb-3">
+                    <div class="chart-container">
+                        <h5 class="mb-3">
+                            <i class="fas fa-chart-pie"></i>
+                            療程分布
+                        </h5>
+                        <canvas id="treatmentChart" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-lg-6 mb-3">
+                    <div class="chart-container">
+                        <h5 class="mb-3">
+                            <i class="fas fa-chart-bar"></i>
+                            客戶來源分析
+                        </h5>
+                        <canvas id="sourceChart" height="250"></canvas>
+                    </div>
+                </div>
+                <div class="col-lg-6 mb-3">
+                    <div class="chart-container">
+                        <h5 class="mb-3">
+                            <i class="fas fa-clock"></i>
+                            預約時段分布
+                        </h5>
+                        <canvas id="timeSlotChart" height="250"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 詳細數據表格 -->
+            <div class="data-table">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5>
+                        <i class="fas fa-table"></i>
+                        詳細數據報表
+                    </h5>
+                    <div>
+                        <button class="btn btn-outline-primary btn-sm" onclick="refreshData()">
+                            <i class="fas fa-sync-alt"></i> 刷新
+                        </button>
+                        <button class="btn btn-outline-success btn-sm" onclick="exportTable()">
+                            <i class="fas fa-file-excel"></i> 匯出Excel
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table table-dark table-striped">
+                        <thead>
+                            <tr>
+                                <th>日期</th>
+                                <th>預約數</th>
+                                <th>完成數</th>
+                                <th>取消數</th>
+                                <th>營收</th>
+                                <th>新客戶</th>
+                                <th>滿意度</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dataTableBody">
+                            <!-- 數據將由JavaScript動態生成 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 返回首頁按鈕 -->
+            <div class="text-center mt-4">
+                <a href="index.html" class="nav-btn">
+                    <i class="fas fa-home"></i> 返回首頁
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- 自定義 JavaScript -->
+    <script src="js/main.js"></script>
+    <script src="js/social-integration.js"></script>
+    
+    <script>
+        let charts = {};
+        let statisticsData = {};
+
+        // 頁面載入完成後初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeStatistics();
+            loadStatisticsData();
+            initializeCharts();
+        });
+
+        // 初始化數據統計系統
+        function initializeStatistics() {
+            // 檢查用戶權限
+            const currentUser = MedicalPlatform.getCurrentUser();
+            if (!currentUser) {
+                MedicalPlatform.showAlert('請先登入系統', 'warning');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 2000);
+                return;
+            }
+        }
+
+        // 載入統計數據
+        function loadStatisticsData() {
+            // 模擬統計數據
+            statisticsData = {
+                revenue: {
+                    labels: ['1月', '2月', '3月', '4月', '5月', '6月'],
+                    data: [85000, 92000, 78000, 105000, 118000, 125000]
+                },
+                appointments: {
+                    labels: ['1月', '2月', '3月', '4月', '5月', '6月'],
+                    data: [120, 135, 98, 142, 158, 156]
+                },
+                customers: {
+                    labels: ['1月', '2月', '3月', '4月', '5月', '6月'],
+                    data: [25, 32, 18, 38, 45, 42]
+                },
+                treatments: {
+                    labels: ['肉毒桿菌', '玻尿酸', '皮秒雷射', '美白點滴', '臉部護理', '電波拉皮'],
+                    data: [35, 28, 22, 15, 12, 8]
+                },
+                sources: {
+                    labels: ['LINE官方', '網路搜尋', '朋友推薦', '社群媒體', '廣告', '其他'],
+                    data: [40, 25, 20, 10, 3, 2]
+                },
+                timeSlots: {
+                    labels: ['09:00', '11:00', '13:00', '15:00', '17:00', '19:00'],
+                    data: [15, 25, 35, 30, 28, 22]
+                },
+                dailyData: [
+                    { date: '2024-09-01', appointments: 12, completed: 11, cancelled: 1, revenue: 45000, newCustomers: 3, satisfaction: 95 },
+                    { date: '2024-09-02', appointments: 15, completed: 14, cancelled: 1, revenue: 52000, newCustomers: 4, satisfaction: 97 },
+                    { date: '2024-09-03', appointments: 8, completed: 8, cancelled: 0, revenue: 38000, newCustomers: 2, satisfaction: 98 },
+                    { date: '2024-09-04', appointments: 18, completed: 16, cancelled: 2, revenue: 68000, newCustomers: 5, satisfaction: 94 },
+                    { date: '2024-09-05', appointments: 14, completed: 13, cancelled: 1, revenue: 48000, newCustomers: 3, satisfaction: 96 }
+                ]
+            };
+
+            updateDataTable();
+        }
+
+        // 初始化圖表
+        function initializeCharts() {
+            // 趨勢圖表
+            const trendCtx = document.getElementById('trendChart').getContext('2d');
+            charts.trend = new Chart(trendCtx, {
+                type: 'line',
+                data: {
+                    labels: statisticsData.revenue.labels,
+                    datasets: [{
+                        label: '營收 (NT$)',
+                        data: statisticsData.revenue.data,
+                        borderColor: '#4682b4',
+                        backgroundColor: 'rgba(70, 130, 180, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#d4af37'
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: '#d4af37',
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString();
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(212, 175, 55, 0.2)'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#d4af37'
+                            },
+                            grid: {
+                                color: 'rgba(212, 175, 55, 0.2)'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 療程分布圓餅圖
+            const treatmentCtx = document.getElementById('treatmentChart').getContext('2d');
+            charts.treatment = new Chart(treatmentCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: statisticsData.treatments.labels,
+                    datasets: [{
+                        data: statisticsData.treatments.data,
+                        backgroundColor: [
+                            '#4682b4',
+                            '#228b22',
+                            '#daa520',
+                            '#dc143c',
+                            '#8b4513',
+                            '#2c1810'
+                        ],
+                        borderWidth: 2,
+                        borderColor: '#d4af37'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#d4af37',
+                                padding: 15
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 客戶來源圖表
+            const sourceCtx = document.getElementById('sourceChart').getContext('2d');
+            charts.source = new Chart(sourceCtx, {
+                type: 'bar',
+                data: {
+                    labels: statisticsData.sources.labels,
+                    datasets: [{
+                        label: '客戶數量',
+                        data: statisticsData.sources.data,
+                        backgroundColor: [
+                            '#4682b4',
+                            '#228b22',
+                            '#daa520',
+                            '#dc143c',
+                            '#8b4513',
+                            '#2c1810'
+                        ],
+                        borderColor: '#d4af37',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: '#d4af37'
+                            },
+                            grid: {
+                                color: 'rgba(212, 175, 55, 0.2)'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#d4af37'
+                            },
+                            grid: {
+                                color: 'rgba(212, 175, 55, 0.2)'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 預約時段圖表
+            const timeSlotCtx = document.getElementById('timeSlotChart').getContext('2d');
+            charts.timeSlot = new Chart(timeSlotCtx, {
+                type: 'radar',
+                data: {
+                    labels: statisticsData.timeSlots.labels,
+                    datasets: [{
+                        label: '預約數量',
+                        data: statisticsData.timeSlots.data,
+                        borderColor: '#4682b4',
+                        backgroundColor: 'rgba(70, 130, 180, 0.2)',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#daa520',
+                        pointBorderColor: '#d4af37',
+                        pointRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#d4af37'
+                            }
+                        }
+                    },
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: '#d4af37'
+                            },
+                            grid: {
+                                color: 'rgba(212, 175, 55, 0.2)'
+                            },
+                            angleLines: {
+                                color: 'rgba(212, 175, 55, 0.2)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 切換圖表數據
+        function switchChart(type) {
+            const buttons = document.querySelectorAll('.btn-group .btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            const data = statisticsData[type];
+            charts.trend.data.labels = data.labels;
+            charts.trend.data.datasets[0].data = data.data;
+            
+            // 更新標籤
+            switch(type) {
+                case 'revenue':
+                    charts.trend.data.datasets[0].label = '營收 (NT$)';
+                    break;
+                case 'appointments':
+                    charts.trend.data.datasets[0].label = '預約數量';
+                    break;
+                case 'customers':
+                    charts.trend.data.datasets[0].label = '新客戶數';
+                    break;
+            }
+            
+            charts.trend.update();
+        }
+
+        // 更新數據表格
+        function updateDataTable() {
+            const tbody = document.getElementById('dataTableBody');
+            let html = '';
+
+            statisticsData.dailyData.forEach(row => {
+                html += `
+                    <tr>
+                        <td>${row.date}</td>
+                        <td>${row.appointments}</td>
+                        <td>${row.completed}</td>
+                        <td>${row.cancelled}</td>
+                        <td>$${row.revenue.toLocaleString()}</td>
+                        <td>${row.newCustomers}</td>
+                        <td>${row.satisfaction}%</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary" onclick="viewDetails('${row.date}')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tbody.innerHTML = html;
+        }
+
+        // 更新統計數據
+        function updateStatistics() {
+            const timeRange = document.getElementById('timeRange').value;
+            const dataType = document.getElementById('dataType').value;
+            
+            MedicalPlatform.showAlert(`正在更新 ${timeRange} 的 ${dataType} 數據...`, 'info');
+            
+            // 模擬數據更新
+            setTimeout(() => {
+                MedicalPlatform.showAlert('數據已更新', 'success');
+            }, 1500);
+        }
+
+        // 其他功能函數
+        function exportReport() {
+            MedicalPlatform.showAlert('正在匯出統計報告...', 'info');
+            setTimeout(() => {
+                MedicalPlatform.showAlert('報告已匯出', 'success');
+            }, 2000);
+        }
+
+        function scheduleReport() {
+            MedicalPlatform.showAlert('定期報告設定功能開發中', 'info');
+        }
+
+        function refreshData() {
+            MedicalPlatform.showAlert('正在刷新數據...', 'info');
+            setTimeout(() => {
+                loadStatisticsData();
+                Object.values(charts).forEach(chart => chart.update());
+                MedicalPlatform.showAlert('數據已刷新', 'success');
+            }, 1500);
+        }
+
+        function exportTable() {
+            MedicalPlatform.showAlert('正在匯出Excel檔案...', 'info');
+            setTimeout(() => {
+                MedicalPlatform.showAlert('Excel檔案已匯出', 'success');
+            }, 2000);
+        }
+
+        function viewDetails(date) {
+            MedicalPlatform.showAlert(`查看 ${date} 詳細數據功能開發中`, 'info');
+        }
+
+        function logout() {
+            MedicalPlatform.logout();
+        }
+    </script>
+</body>
+</html>

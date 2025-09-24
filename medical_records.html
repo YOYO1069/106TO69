@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>病歷系統 - 劉道玄醫美管理平台</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- 自定義樣式 -->
+    <link rel="stylesheet" href="css/main.css">
+    
+    <style>
+        .medical-header {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+        
+        .medical-card {
+            border-left: 4px solid #3498db;
+        }
+        
+        .patient-search {
+            background: var(--gradient-card);
+            border-radius: var(--radius-large);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-medium);
+            margin-bottom: 2rem;
+        }
+        
+        .patient-card {
+            border: 1px solid #e9ecef;
+            border-radius: var(--radius-medium);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .patient-card:hover {
+            border-color: #3498db;
+            box-shadow: var(--shadow-light);
+            transform: translateY(-2px);
+        }
+        
+        .patient-card.selected {
+            border-color: #3498db;
+            background: #e3f2fd;
+        }
+        
+        .medical-record-form {
+            background: var(--gradient-card);
+            border-radius: var(--radius-large);
+            padding: 2rem;
+            box-shadow: var(--shadow-medium);
+        }
+        
+        .treatment-history {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .treatment-item {
+            border-bottom: 1px solid #eee;
+            padding: 1rem 0;
+        }
+        
+        .treatment-item:last-child {
+            border-bottom: none;
+        }
+        
+        .treatment-date {
+            font-weight: bold;
+            color: #3498db;
+        }
+        
+        .treatment-type {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            display: inline-block;
+            margin-bottom: 0.5rem;
+        }
+        
+        .vital-signs {
+            background: #f8f9fa;
+            border-radius: var(--radius-small);
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .vital-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .vital-item:last-child {
+            border-bottom: none;
+        }
+        
+        .photo-upload {
+            border: 2px dashed #dee2e6;
+            border-radius: var(--radius-small);
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .photo-upload:hover {
+            border-color: #3498db;
+            background: #f8f9fa;
+        }
+        
+        .photo-preview {
+            max-width: 100px;
+            max-height: 100px;
+            border-radius: var(--radius-small);
+            margin: 0.25rem;
+        }
+        
+        .allergy-tag {
+            background: #ffebee;
+            color: #c62828;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin: 0.25rem;
+            display: inline-block;
+        }
+        
+        .record-status {
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .status-draft {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-reviewed {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+    </style>
+</head>
+<body>
+    <!-- 導航列 -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-user-md"></i>
+                劉道玄醫師預約系統
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">
+                            <i class="fas fa-home"></i> 首頁
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="appointment_scheduling_system.html">
+                            <i class="fas fa-calendar-alt"></i> 預約管理
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="medical_records.html">
+                    <li class="nav-item">
+                        <a class="nav-link" href="treatment_management.html">
+                            <i class="fas fa-spa"></i> 療程管理
+                        </a>
+                    </li>
+                            <i class="fas fa-file-medical"></i> 病歷系統
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="consent_forms.html">
+                    <li class="nav-item">
+                        <a class="nav-link" href="data_statistics.html">
+                            <i class="fas fa-chart-bar"></i> 數據統計
+                        </a>
+                    </li>
+                            <i class="fas fa-file-signature"></i> 同意書
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="logout()">
+                            <i class="fas fa-sign-out-alt"></i> 登出
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 病歷系統標題區 -->
+    <div class="medical-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1><i class="fas fa-file-medical"></i> 病歷系統</h1>
+                    <p class="mb-0">電子病歷・療程記錄・數位化管理・安全存儲</p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <div class="d-flex align-items-center justify-content-end gap-3">
+                        <div>
+                            <i class="fas fa-shield-alt"></i>
+                            <span>HIPAA合規</span>
+                        </div>
+                        <div>
+                            <i class="fas fa-lock"></i>
+                            <span>加密存儲</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主要內容 -->
+    <main class="main-content">
+        <div class="container">
+            <!-- 患者搜尋區 -->
+            <div class="patient-search">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h5 class="mb-3">
+                            <i class="fas fa-search"></i>
+                            患者搜尋
+                        </h5>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <input type="text" class="form-control" id="searchName" placeholder="姓名">
+                            </div>
+                            <div class="col-md-4">
+                                <input type="tel" class="form-control" id="searchPhone" placeholder="電話">
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" class="form-control" id="searchId" placeholder="病歷號">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        <button class="btn btn-primary" onclick="searchPatients()">
+                            <i class="fas fa-search"></i> 搜尋
+                        </button>
+                        <button class="btn btn-success" onclick="addNewPatient()">
+                            <i class="fas fa-plus"></i> 新增患者
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- 患者列表 -->
+                <div class="col-lg-4 mb-4">
+                    <div class="card medical-card">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="fas fa-users"></i>
+                                患者列表
+                            </h5>
+                        </div>
+                        <div class="card-body" style="max-height: 600px; overflow-y: auto;">
+                            <div id="patientsList">
+                                <!-- 患者列表將由JavaScript動態生成 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 病歷詳情 -->
+                <div class="col-lg-8 mb-4">
+                    <div class="medical-record-form" id="medicalRecordForm" style="display: none;">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5>
+                                <i class="fas fa-file-medical-alt"></i>
+                                病歷記錄
+                            </h5>
+                            <div>
+                                <span class="record-status status-draft" id="recordStatus">草稿</span>
+                                <button class="btn btn-outline-primary btn-sm ms-2" onclick="printRecord()">
+                                    <i class="fas fa-print"></i> 列印
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 患者基本資訊 -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <h6 class="text-primary">患者基本資訊</h6>
+                                <div class="mb-2">
+                                    <strong>姓名：</strong>
+                                    <span id="patientName">-</span>
+                                </div>
+                                <div class="mb-2">
+                                    <strong>性別：</strong>
+                                    <span id="patientGender">-</span>
+                                </div>
+                                <div class="mb-2">
+                                    <strong>年齡：</strong>
+                                    <span id="patientAge">-</span>
+                                </div>
+                                <div class="mb-2">
+                                    <strong>電話：</strong>
+                                    <span id="patientPhone">-</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-primary">病歷資訊</h6>
+                                <div class="mb-2">
+                                    <strong>病歷號：</strong>
+                                    <span id="patientRecordId">-</span>
+                                </div>
+                                <div class="mb-2">
+                                    <strong>初診日期：</strong>
+                                    <span id="firstVisitDate">-</span>
+                                </div>
+                                <div class="mb-2">
+                                    <strong>總療程次數：</strong>
+                                    <span id="totalTreatments">-</span>
+                                </div>
+                                <div class="mb-2">
+                                    <strong>最後就診：</strong>
+                                    <span id="lastVisitDate">-</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 過敏史 -->
+                        <div class="mb-4">
+                            <h6 class="text-primary">過敏史</h6>
+                            <div id="allergyList">
+                                <span class="allergy-tag">青黴素</span>
+                                <span class="allergy-tag">海鮮</span>
+                            </div>
+                            <button class="btn btn-outline-secondary btn-sm mt-2" onclick="editAllergies()">
+                                <i class="fas fa-edit"></i> 編輯過敏史
+                            </button>
+                        </div>
+
+                        <!-- 生命徵象 -->
+                        <div class="vital-signs mb-4">
+                            <h6 class="text-primary mb-3">生命徵象</h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="vital-item">
+                                        <span>血壓</span>
+                                        <input type="text" class="form-control form-control-sm" style="width: 100px;" placeholder="120/80">
+                                    </div>
+                                    <div class="vital-item">
+                                        <span>心率</span>
+                                        <input type="number" class="form-control form-control-sm" style="width: 100px;" placeholder="72">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="vital-item">
+                                        <span>體溫</span>
+                                        <input type="number" class="form-control form-control-sm" style="width: 100px;" placeholder="36.5" step="0.1">
+                                    </div>
+                                    <div class="vital-item">
+                                        <span>體重</span>
+                                        <input type="number" class="form-control form-control-sm" style="width: 100px;" placeholder="60" step="0.1">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 本次療程記錄 -->
+                        <form id="treatmentRecordForm">
+                            <h6 class="text-primary mb-3">本次療程記錄</h6>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">療程日期</label>
+                                    <input type="date" class="form-control" id="treatmentDate" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">療程類型</label>
+                                    <select class="form-select" id="treatmentType" required>
+                                        <option value="">請選擇療程</option>
+                                        <option value="consultation">諮詢</option>
+                                        <option value="botox">肉毒桿菌注射</option>
+                                        <option value="filler">玻尿酸填充</option>
+                                        <option value="laser">雷射治療</option>
+                                        <option value="facial">臉部護理</option>
+                                        <option value="iv_drip">點滴治療</option>
+                                        <option value="shockwave">震波治療</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">執行醫師</label>
+                                    <select class="form-select" id="attendingDoctor" required>
+                                        <option value="">請選擇醫師</option>
+                                        <option value="dr_liu">劉醫師</option>
+                                        <option value="dr_chen">陳醫師</option>
+                                        <option value="dr_wang">王醫師</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">療程費用</label>
+                                    <input type="number" class="form-control" id="treatmentCost" placeholder="0">
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">主訴</label>
+                                <textarea class="form-control" id="chiefComplaint" rows="2" placeholder="患者主要症狀或需求"></textarea>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">療程部位</label>
+                                <input type="text" class="form-control" id="treatmentArea" placeholder="例如：額頭、眼周、法令紋">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">使用產品/劑量</label>
+                                <textarea class="form-control" id="productsUsed" rows="2" placeholder="產品名稱、劑量、批號等"></textarea>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">療程過程</label>
+                                <textarea class="form-control" id="treatmentProcess" rows="3" placeholder="詳細記錄療程執行過程"></textarea>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">術後注意事項</label>
+                                <textarea class="form-control" id="postTreatmentCare" rows="2" placeholder="術後護理指導"></textarea>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">下次回診</label>
+                                <input type="date" class="form-control" id="nextAppointment">
+                            </div>
+                            
+                            <!-- 照片上傳 -->
+                            <div class="mb-3">
+                                <label class="form-label">療程照片</label>
+                                <div class="photo-upload" onclick="document.getElementById('photoInput').click()">
+                                    <i class="fas fa-camera fa-2x text-muted mb-2"></i>
+                                    <p class="text-muted">點擊上傳療程前後對比照片</p>
+                                    <input type="file" id="photoInput" multiple accept="image/*" style="display: none;" onchange="handlePhotoUpload(event)">
+                                </div>
+                                <div id="photoPreview" class="mt-2"></div>
+                            </div>
+                            
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <button type="button" class="btn btn-outline-secondary" onclick="saveDraft()">
+                                    <i class="fas fa-save"></i> 儲存草稿
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-check"></i> 完成記錄
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- 療程歷史 -->
+                    <div class="card medical-card mt-4" id="treatmentHistory" style="display: none;">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="fas fa-history"></i>
+                                療程歷史
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="treatment-history" id="treatmentHistoryList">
+                                <!-- 療程歷史將由JavaScript動態生成 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 返回首頁按鈕 -->
+            <div class="text-center mt-4">
+                <a href="index.html" class="nav-btn">
+                    <i class="fas fa-home"></i> 返回首頁
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <!-- 新增患者模態框 -->
+    <div class="modal fade" id="newPatientModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">新增患者</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="newPatientForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">姓名 *</label>
+                                    <input type="text" class="form-control" id="newPatientName" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">性別 *</label>
+                                    <select class="form-select" id="newPatientGender" required>
+                                        <option value="">請選擇</option>
+                                        <option value="male">男</option>
+                                        <option value="female">女</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">出生日期 *</label>
+                                    <input type="date" class="form-control" id="newPatientBirthdate" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">聯絡電話 *</label>
+                                    <input type="tel" class="form-control" id="newPatientPhone" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">身分證字號</label>
+                                    <input type="text" class="form-control" id="newPatientIdCard">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">緊急聯絡人</label>
+                                    <input type="text" class="form-control" id="newPatientEmergencyContact">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">地址</label>
+                            <input type="text" class="form-control" id="newPatientAddress">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">過敏史</label>
+                            <textarea class="form-control" id="newPatientAllergies" rows="2" placeholder="請詳細記錄已知過敏物質"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">病史</label>
+                            <textarea class="form-control" id="newPatientMedicalHistory" rows="2" placeholder="重要病史或正在服用的藥物"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" onclick="saveNewPatient()">儲存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- 自定義 JavaScript -->
+    <script src="js/main.js"></script>
+    <script src="js/social-integration.js"></script>
+    
+    <script>
+        let currentPatient = null;
+        let patients = [];
+
+        // 頁面載入完成後初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeMedicalRecords();
+            loadPatients();
+            setupEventListeners();
+        });
+
+        // 初始化病歷系統
+        function initializeMedicalRecords() {
+            // 檢查用戶權限
+            const currentUser = MedicalPlatform.getCurrentUser();
+            if (!currentUser) {
+                MedicalPlatform.showAlert('請先登入系統', 'warning');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 2000);
+                return;
+            }
+
+            // 檢查是否有病歷系統權限
+            const allowedRoles = ['admin', 'doctor', 'staff'];
+            if (!allowedRoles.includes(currentUser.role.id)) {
+                MedicalPlatform.showAlert('您沒有權限存取病歷系統', 'danger');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 2000);
+                return;
+            }
+
+            // 設定今日日期
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('treatmentDate').value = today;
+        }
+
+        // 載入患者列表
+        function loadPatients() {
+            // 模擬患者數據
+            patients = [
+                {
+                    id: 'P001',
+                    name: '王小明',
+                    gender: '男',
+                    age: 35,
+                    phone: '0912-345-678',
+                    recordId: 'MR001',
+                    firstVisit: '2024-01-15',
+                    lastVisit: '2024-09-20',
+                    totalTreatments: 5,
+                    allergies: ['青黴素', '海鮮'],
+                    treatments: [
+                        {
+                            date: '2024-09-20',
+                            type: '肉毒桿菌注射',
+                            doctor: '劉醫師',
+                            area: '額頭',
+                            cost: 15000,
+                            notes: '效果良好，患者滿意'
+                        },
+                        {
+                            date: '2024-08-15',
+                            type: '玻尿酸填充',
+                            doctor: '陳醫師',
+                            area: '法令紋',
+                            cost: 25000,
+                            notes: '術後恢復良好'
+                        }
+                    ]
+                },
+                {
+                    id: 'P002',
+                    name: '李美麗',
+                    gender: '女',
+                    age: 28,
+                    phone: '0987-654-321',
+                    recordId: 'MR002',
+                    firstVisit: '2024-02-10',
+                    lastVisit: '2024-09-18',
+                    totalTreatments: 3,
+                    allergies: ['花粉'],
+                    treatments: [
+                        {
+                            date: '2024-09-18',
+                            type: '雷射治療',
+                            doctor: '王醫師',
+                            area: '全臉',
+                            cost: 8000,
+                            notes: '皮膚狀況改善明顯'
+                        }
+                    ]
+                },
+                {
+                    id: 'P003',
+                    name: '張先生',
+                    gender: '男',
+                    age: 42,
+                    phone: '0955-123-456',
+                    recordId: 'MR003',
+                    firstVisit: '2024-03-05',
+                    lastVisit: '2024-09-22',
+                    totalTreatments: 7,
+                    allergies: [],
+                    treatments: [
+                        {
+                            date: '2024-09-22',
+                            type: '點滴治療',
+                            doctor: '劉醫師',
+                            area: '全身',
+                            cost: 3000,
+                            notes: '美白點滴，效果佳'
+                        }
+                    ]
+                }
+            ];
+
+            displayPatients(patients);
+        }
+
+        // 顯示患者列表
+        function displayPatients(patientList) {
+            const patientsListElement = document.getElementById('patientsList');
+            let html = '';
+
+            patientList.forEach(patient => {
+                html += `
+                    <div class="patient-card" onclick="selectPatient('${patient.id}')">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="mb-1">${patient.name}</h6>
+                                <small class="text-muted">${patient.gender} • ${patient.age}歲</small><br>
+                                <small class="text-muted">${patient.phone}</small>
+                            </div>
+                            <div class="text-end">
+                                <small class="text-primary">${patient.recordId}</small><br>
+                                <small class="text-muted">共${patient.totalTreatments}次</small>
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <small class="text-muted">最後就診: ${patient.lastVisit}</small>
+                        </div>
+                    </div>
+                `;
+            });
+
+            patientsListElement.innerHTML = html;
+        }
+
+        // 選擇患者
+        function selectPatient(patientId) {
+            // 移除之前的選中狀態
+            document.querySelectorAll('.patient-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+
+            // 添加選中狀態
+            event.currentTarget.classList.add('selected');
+
+            // 找到患者資料
+            currentPatient = patients.find(p => p.id === patientId);
+            if (currentPatient) {
+                displayPatientRecord(currentPatient);
+            }
+        }
+
+        // 顯示患者病歷
+        function displayPatientRecord(patient) {
+            // 顯示病歷表單
+            document.getElementById('medicalRecordForm').style.display = 'block';
+            document.getElementById('treatmentHistory').style.display = 'block';
+
+            // 填入患者基本資訊
+            document.getElementById('patientName').textContent = patient.name;
+            document.getElementById('patientGender').textContent = patient.gender;
+            document.getElementById('patientAge').textContent = patient.age + '歲';
+            document.getElementById('patientPhone').textContent = patient.phone;
+            document.getElementById('patientRecordId').textContent = patient.recordId;
+            document.getElementById('firstVisitDate').textContent = patient.firstVisit;
+            document.getElementById('totalTreatments').textContent = patient.totalTreatments + '次';
+            document.getElementById('lastVisitDate').textContent = patient.lastVisit;
+
+            // 顯示過敏史
+            const allergyList = document.getElementById('allergyList');
+            allergyList.innerHTML = '';
+            if (patient.allergies.length > 0) {
+                patient.allergies.forEach(allergy => {
+                    allergyList.innerHTML += `<span class="allergy-tag">${allergy}</span>`;
+                });
+            } else {
+                allergyList.innerHTML = '<span class="text-muted">無已知過敏史</span>';
+            }
+
+            // 顯示療程歷史
+            displayTreatmentHistory(patient.treatments);
+        }
+
+        // 顯示療程歷史
+        function displayTreatmentHistory(treatments) {
+            const historyList = document.getElementById('treatmentHistoryList');
+            let html = '';
+
+            treatments.forEach(treatment => {
+                html += `
+                    <div class="treatment-item">
+                        <div class="treatment-date">${treatment.date}</div>
+                        <div class="treatment-type">${treatment.type}</div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <strong>執行醫師：</strong>${treatment.doctor}<br>
+                                <strong>療程部位：</strong>${treatment.area}<br>
+                                <strong>費用：</strong>$${treatment.cost.toLocaleString()}
+                            </div>
+                            <div class="col-md-6">
+                                <strong>備註：</strong>${treatment.notes}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            historyList.innerHTML = html;
+        }
+
+        // 設置事件監聽器
+        function setupEventListeners() {
+            // 療程記錄表單提交
+            document.getElementById('treatmentRecordForm').addEventListener('submit', handleTreatmentSubmit);
+
+            // 搜尋功能
+            ['searchName', 'searchPhone', 'searchId'].forEach(id => {
+                document.getElementById(id).addEventListener('input', debounce(searchPatients, 300));
+            });
+        }
+
+        // 防抖函數
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        // 搜尋患者
+        function searchPatients() {
+            const searchName = document.getElementById('searchName').value.toLowerCase();
+            const searchPhone = document.getElementById('searchPhone').value;
+            const searchId = document.getElementById('searchId').value.toLowerCase();
+
+            const filteredPatients = patients.filter(patient => {
+                const nameMatch = !searchName || patient.name.toLowerCase().includes(searchName);
+                const phoneMatch = !searchPhone || patient.phone.includes(searchPhone);
+                const idMatch = !searchId || patient.recordId.toLowerCase().includes(searchId);
+                
+                return nameMatch && phoneMatch && idMatch;
+            });
+
+            displayPatients(filteredPatients);
+        }
+
+        // 處理療程記錄提交
+        function handleTreatmentSubmit(e) {
+            e.preventDefault();
+
+            if (!currentPatient) {
+                MedicalPlatform.showAlert('請先選擇患者', 'warning');
+                return;
+            }
+
+            const formData = {
+                patientId: currentPatient.id,
+                date: document.getElementById('treatmentDate').value,
+                type: document.getElementById('treatmentType').value,
+                doctor: document.getElementById('attendingDoctor').value,
+                cost: document.getElementById('treatmentCost').value,
+                chiefComplaint: document.getElementById('chiefComplaint').value,
+                area: document.getElementById('treatmentArea').value,
+                products: document.getElementById('productsUsed').value,
+                process: document.getElementById('treatmentProcess').value,
+                postCare: document.getElementById('postTreatmentCare').value,
+                nextAppointment: document.getElementById('nextAppointment').value
+            };
+
+            // 驗證必填欄位
+            if (!formData.type || !formData.doctor) {
+                MedicalPlatform.showAlert('請填寫必要資訊', 'warning');
+                return;
+            }
+
+            // 提交記錄
+            submitTreatmentRecord(formData);
+        }
+
+        // 提交療程記錄
+        function submitTreatmentRecord(formData) {
+            MedicalPlatform.showAlert('正在儲存療程記錄...', 'info');
+
+            // 模擬API調用
+            setTimeout(() => {
+                // 更新患者療程歷史
+                const treatmentTypeNames = {
+                    'consultation': '諮詢',
+                    'botox': '肉毒桿菌注射',
+                    'filler': '玻尿酸填充',
+                    'laser': '雷射治療',
+                    'facial': '臉部護理',
+                    'iv_drip': '點滴治療',
+                    'shockwave': '震波治療'
+                };
+
+                const doctorNames = {
+                    'dr_liu': '劉醫師',
+                    'dr_chen': '陳醫師',
+                    'dr_wang': '王醫師'
+                };
+
+                const newTreatment = {
+                    date: formData.date,
+                    type: treatmentTypeNames[formData.type],
+                    doctor: doctorNames[formData.doctor],
+                    area: formData.area,
+                    cost: parseInt(formData.cost) || 0,
+                    notes: formData.process || '無特殊備註'
+                };
+
+                currentPatient.treatments.unshift(newTreatment);
+                currentPatient.totalTreatments++;
+                currentPatient.lastVisit = formData.date;
+
+                // 更新顯示
+                displayPatientRecord(currentPatient);
+
+                // 清空表單
+                document.getElementById('treatmentRecordForm').reset();
+                document.getElementById('treatmentDate').value = new Date().toISOString().split('T')[0];
+
+                // 更新狀態
+                document.getElementById('recordStatus').textContent = '已完成';
+                document.getElementById('recordStatus').className = 'record-status status-completed';
+
+                MedicalPlatform.showAlert('療程記錄已成功儲存', 'success');
+            }, 2000);
+        }
+
+        // 儲存草稿
+        function saveDraft() {
+            MedicalPlatform.showAlert('草稿已儲存', 'info');
+            document.getElementById('recordStatus').textContent = '草稿';
+            document.getElementById('recordStatus').className = 'record-status status-draft';
+        }
+
+        // 處理照片上傳
+        function handlePhotoUpload(event) {
+            const files = event.target.files;
+            const previewContainer = document.getElementById('photoPreview');
+            
+            previewContainer.innerHTML = '';
+            
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.className = 'photo-preview';
+                    previewContainer.appendChild(img);
+                };
+                
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // 新增患者
+        function addNewPatient() {
+            const modal = new bootstrap.Modal(document.getElementById('newPatientModal'));
+            modal.show();
+        }
+
+        // 儲存新患者
+        function saveNewPatient() {
+            const formData = {
+                name: document.getElementById('newPatientName').value,
+                gender: document.getElementById('newPatientGender').value,
+                birthdate: document.getElementById('newPatientBirthdate').value,
+                phone: document.getElementById('newPatientPhone').value,
+                idCard: document.getElementById('newPatientIdCard').value,
+                emergencyContact: document.getElementById('newPatientEmergencyContact').value,
+                address: document.getElementById('newPatientAddress').value,
+                allergies: document.getElementById('newPatientAllergies').value,
+                medicalHistory: document.getElementById('newPatientMedicalHistory').value
+            };
+
+            // 驗證必填欄位
+            if (!formData.name || !formData.gender || !formData.birthdate || !formData.phone) {
+                MedicalPlatform.showAlert('請填寫必要資訊', 'warning');
+                return;
+            }
+
+            // 計算年齡
+            const birthDate = new Date(formData.birthdate);
+            const today = new Date();
+            const age = today.getFullYear() - birthDate.getFullYear();
+
+            // 創建新患者
+            const newPatient = {
+                id: 'P' + String(patients.length + 1).padStart(3, '0'),
+                name: formData.name,
+                gender: formData.gender === 'male' ? '男' : '女',
+                age: age,
+                phone: formData.phone,
+                recordId: 'MR' + String(patients.length + 1).padStart(3, '0'),
+                firstVisit: new Date().toISOString().split('T')[0],
+                lastVisit: new Date().toISOString().split('T')[0],
+                totalTreatments: 0,
+                allergies: formData.allergies ? formData.allergies.split(',').map(a => a.trim()) : [],
+                treatments: []
+            };
+
+            patients.unshift(newPatient);
+            displayPatients(patients);
+
+            // 關閉模態框
+            const modal = bootstrap.Modal.getInstance(document.getElementById('newPatientModal'));
+            modal.hide();
+
+            // 清空表單
+            document.getElementById('newPatientForm').reset();
+
+            MedicalPlatform.showAlert('新患者已成功新增', 'success');
+        }
+
+        // 其他功能函數
+        function editAllergies() {
+            MedicalPlatform.showAlert('編輯過敏史功能開發中', 'info');
+        }
+
+        function printRecord() {
+            MedicalPlatform.showAlert('列印病歷功能開發中', 'info');
+        }
+
+        function logout() {
+            MedicalPlatform.logout();
+        }
+    </script>
+</body>
+</html>

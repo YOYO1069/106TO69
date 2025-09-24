@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>劉道玄醫美管理平台 - 專業醫美管理系統</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- 自定義樣式 -->
+    <link rel="stylesheet" href="css/main.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏥</text></svg>">
+</head>
+<body>
+    <!-- 導航列 -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-user-md"></i>
+                劉道玄醫師預約系統
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="index.html">
+                            <i class="fas fa-home"></i> 首頁
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="liu-daoxuan-calendar.html">
+                            <i class="fas fa-calendar-alt"></i> 劉道玄行事曆
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="advanced-calendar-system.html">
+                            <i class="fas fa-brain"></i> AI 智能行事曆
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="appointment-form-management.html">
+                            <i class="fas fa-clipboard-list"></i> 預約表單
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="appointment_scheduling_system.html">
+                            <i class="fas fa-cog"></i> 預約設定
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="logout()">
+                            <i class="fas fa-sign-out-alt"></i> 登出
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要內容 -->
+    <main class="main-content">
+        <div class="container">
+            <!-- 頁面標題 -->
+            <div class="page-title fade-in-up">
+                <h1><i class="fas fa-user-md"></i> 劉道玄醫師預約管理系統</h1>
+                <p>劉道玄醫師專業醫美預約 • 多社群整合 • LINE/IG/FB 一站式服務</p>
+                
+                <!-- 社群引導區 -->
+                <div class="social-guide mt-4">
+                    <div class="row justify-content-center">
+                        <div class="col-md-8">
+                            <div class="alert alert-info">
+                                <h6><i class="fas fa-users"></i> 多社群預約通道</h6>
+                                <p class="mb-2">劉道玄醫師客戶可透過以下管道預約：</p>
+                                <div class="row text-center">
+                                    <div class="col-4">
+                                        <a href="#" class="btn btn-success btn-sm w-100" onclick="redirectToLine()">
+                                            <i class="fab fa-line"></i> LINE預約
+                                        </a>
+                                        <small class="text-muted d-block mt-1">主要預約管道</small>
+                                    </div>
+                                    <div class="col-4">
+                                        <a href="#" class="btn btn-danger btn-sm w-100" onclick="redirectToIG()">
+                                            <i class="fab fa-instagram"></i> IG預約
+                                        </a>
+                                        <small class="text-muted d-block mt-1">視覺諮詢</small>
+                                    </div>
+                                    <div class="col-4">
+                                        <a href="#" class="btn btn-primary btn-sm w-100" onclick="redirectToFB()">
+                                            <i class="fab fa-facebook"></i> FB預約
+                                        </a>
+                                        <small class="text-muted d-block mt-1">社群互動</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 快速統計 -->
+            <div class="row mb-5">
+                <div class="col-md-3 col-sm-6 mb-3">
+                    <div class="card stats-card appointment fade-in-up">
+                        <div class="card-body">
+                            <div class="stats-number text-danger">
+                                <i class="fas fa-calendar-check"></i>
+                                <span id="todayAppointments">0</span>
+                            </div>
+                            <div class="stats-label">今日預約</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-3">
+                    <div class="card stats-card medical-records fade-in-up">
+                        <div class="card-body">
+                            <div class="stats-number text-primary">
+                                <i class="fas fa-file-medical"></i>
+                                <span id="totalRecords">0</span>
+                            </div>
+                            <div class="stats-label">總病歷數</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-3">
+                    <div class="card stats-card consent-forms fade-in-up">
+                        <div class="card-body">
+                            <div class="stats-number text-success">
+                                <i class="fas fa-file-signature"></i>
+                                <span id="pendingConsents">0</span>
+                            </div>
+                            <div class="stats-label">待簽同意書</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-3">
+                    <div class="card stats-card performance fade-in-up">
+                        <div class="card-body">
+                            <div class="stats-number text-warning">
+                                <i class="fas fa-dollar-sign"></i>
+                                <span id="monthlyRevenue">0</span>
+                            </div>
+                            <div class="stats-label">本月營收</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 劉道玄醫師預約核心功能 -->
+            <div class="grid-container">
+                <!-- 劉道玄行事曆 - 核心功能 -->
+                <div class="card home-card module-card appointment fade-in-up magic-glow" onclick="navigateToModule('liu-daoxuan-calendar.html')" style="border: 3px solid #dc143c;">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div class="card-title magic-text">
+                                <i class="fas fa-calendar-alt" style="color: #dc143c; text-shadow: 0 0 15px #dc143c;"></i>
+                                劉道玄醫師行事曆
+                            </div>
+                            <span class="badge-custom badge-hot" style="background: #dc143c;">核心</span>
+                        </div>
+                        <p class="card-text">
+                            <strong>專屬預約行事曆</strong><br>
+                            FullCalendar整合・即時同步・多社群來源標示
+                        </p>
+                        <div class="row text-center">
+                            <div class="col-4">
+                                <div class="stats-number h4" style="color: #dc143c;">18</div>
+                                <small style="color: #d4af37;">今日預約</small>
+                            </div>
+                            <div class="col-4">
+                                <div class="stats-number h4" style="color: #4682b4;">45</div>
+                                <small style="color: #d4af37;">本週預約</small>
+                            </div>
+                            <div class="col-4">
+                                <div class="stats-number h4" style="color: #228b22;">85%</div>
+                                <small style="color: #d4af37;">滿載率</small>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <div class="progress-custom">
+                                <div class="progress-bar-custom" style="width: 85%"></div>
+                            </div>
+                            <small style="color: #d4af37;">劉道玄醫師檔期滿載率: 85%</small>
+                        </div>
+                        <div class="mt-2">
+                            <div class="row text-center">
+                                <div class="col-4">
+                                    <small style="color: #32cd32;"><i class="fab fa-line"></i> LINE: 60%</small>
+                                </div>
+                                <div class="col-4">
+                                    <small style="color: #e4405f;"><i class="fab fa-instagram"></i> IG: 25%</small>
+                                </div>
+                                <div class="col-4">
+                                    <small style="color: #1877f2;"><i class="fab fa-facebook"></i> FB: 15%</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 預約表單管理 -->
+                <div class="card home-card module-card forms fade-in-up magic-glow" onclick="navigateToModule('appointment-form-management.html')" style="border: 2px solid #4682b4;">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div class="card-title magic-text">
+                                <i class="fas fa-clipboard-list" style="color: #4682b4; text-shadow: 0 0 15px #4682b4;"></i>
+                                預約表單管理
+                            </div>
+                            <span class="badge-custom badge-new" style="background: #4682b4;">管理</span>
+                        </div>
+                        <p class="card-text">
+                            <strong>劉道玄醫師客戶資料</strong><br>
+                            表單狀態追蹤・多社群來源整合・智能篩選分類
+                        </p>
+                        <div class="row text-center">
+                            <div class="col-4">
+                                <div class="stats-number h4" style="color: #4682b4;">156</div>
+                                <small style="color: #d4af37;">總表單</small>
+                            </div>
+                            <div class="col-4">
+                                <div class="stats-number h4" style="color: #ffa500;">23</div>
+                                <small style="color: #d4af37;">待處理</small>
+                            </div>
+                            <div class="col-4">
+                                <div class="stats-number h4" style="color: #32cd32;">89</div>
+                                <small style="color: #d4af37;">已確認</small>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <div class="progress-custom">
+                                <div class="progress-bar-custom" style="width: 85%"></div>
+                            </div>
+                            <small style="color: #d4af37;">表單處理效率: 85%</small>
+                        </div>
+                        <div class="mt-2">
+                            <div class="row text-center">
+                                <div class="col-4">
+                                    <small style="color: #32cd32;"><i class="fas fa-check"></i> 已完成: 44</small>
+                                </div>
+                                <div class="col-4">
+                                    <small style="color: #ffa500;"><i class="fas fa-clock"></i> 處理中: 23</small>
+                                </div>
+                                <div class="col-4">
+                                    <small style="color: #dc143c;"><i class="fas fa-times"></i> 已取消: 0</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 預約設定 -->
+                <div class="card home-card module-card settings fade-in-up magic-glow" onclick="navigateToModule('appointment_scheduling_system.html')">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div class="card-title magic-text">
+                                <i class="fas fa-cog" style="color: #8b4513; text-shadow: 0 0 15px #8b4513;"></i>
+                                預約系統設定
+                            </div>
+                            <span class="badge-custom badge-config">設定</span>
+                        </div>
+                        <p class="card-text">
+                            <strong>劉道玄醫師預約規則</strong><br>
+                            時段設定・醫師在場檢查・預約限制管理
+                        </p>
+                        <div class="row text-center">
+                            <div class="col-6">
+                                <div class="stats-number h4" style="color: #8b4513;">15分</div>
+                                <small style="color: #d4af37;">時段間隔</small>
+                            </div>
+                            <div class="col-6">
+                                <div class="stats-number h4" style="color: #228b22;">2位</div>
+                                <small style="color: #d4af37;">每時段上限</small>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <div class="progress-custom">
+                                <div class="progress-bar-custom" style="width: 100%"></div>
+                            </div>
+                            <small style="color: #d4af37;">系統設定完整度: 100%</small>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- 快速操作區 -->
+            <div class="row mt-5">
+                <div class="col-12">
+                    <div class="card fade-in-up">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="fas fa-bolt"></i>
+                                快速操作
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-3 col-sm-6 mb-3">
+                                    <button class="btn btn-primary w-100" onclick="quickAction('new-appointment')">
+                                        <i class="fas fa-plus"></i>
+                                        新增預約
+                                    </button>
+                                </div>
+                                <div class="col-md-3 col-sm-6 mb-3">
+                                    <button class="btn btn-success w-100" onclick="quickAction('new-record')">
+                                        <i class="fas fa-file-plus"></i>
+                                        新增病歷
+                                    </button>
+                                </div>
+                                <div class="col-md-3 col-sm-6 mb-3">
+                                    <button class="btn btn-warning w-100" onclick="quickAction('daily-report')">
+                                        <i class="fas fa-chart-bar"></i>
+                                        日報表
+                                    </button>
+                                </div>
+                                <div class="col-md-3 col-sm-6 mb-3">
+                                    <button class="btn btn-danger w-100" onclick="quickAction('emergency')">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        緊急處理
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 頁腳 -->
+    <footer class="bg-dark text-light py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h6>劉道玄醫美管理平台</h6>
+                    <p class="mb-0">專業醫美服務・智能化管理・安全可靠</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="mb-0">
+                        <i class="fas fa-phone"></i> 預約專線: 02-XXXX-XXXX<br>
+                        <i class="fas fa-map-marker-alt"></i> 台北市信義區
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- 自定義 JavaScript -->
+    <script src="js/main.js"></script>
+    <script src="js/social-integration.js"></script>
+    <script src="js/ai-assistant.js"></script>
+    <script src="js/integration-manager.js"></script>
+    <script src="js/quad-integration-manager.js"></script>
+    
+    <script>
+        // 頁面載入完成後初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeDashboard();
+            loadStatistics();
+        });
+
+        // 快速操作函數
+        function quickAction(action) {
+            MedicalPlatform.showAlert(`執行快速操作: ${action}`, 'info');
+        }
+
+        // 模組導航函數
+        function navigateToModule(url) {
+            window.location.href = url;
+        }
+
+        // 登出函數
+        function logout() {
+            MedicalPlatform.logout();
+        }
+
+        // 社群重定向函數 - 使用整合模組
+        function redirectToLine() {
+            MedicalPlatform.showAlert('正在導向 LINE 預約系統...', 'info');
+            setTimeout(() => {
+                window.redirectToSocial.line();
+            }, 500);
+        }
+
+        function redirectToIG() {
+            MedicalPlatform.showAlert('正在導向 Instagram 預約...', 'info');
+            setTimeout(() => {
+                window.redirectToSocial.instagram();
+            }, 500);
+        }
+
+        function redirectToFB() {
+            MedicalPlatform.showAlert('正在導向 Facebook 預約...', 'info');
+            setTimeout(() => {
+                window.redirectToSocial.facebook();
+            }, 500);
+        }
+    </script>
+</body>
+</html>

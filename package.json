@@ -1,0 +1,40 @@
+{
+  "name": "liu-daoxuan-appointment-system",
+  "version": "1.0.0",
+  "description": "劉道玄醫師預約管理系統 - 整合 OpenAI AI 助理",
+  "main": "index.html",
+  "scripts": {
+    "dev": "netlify dev",
+    "build": "echo 'No build step required'",
+    "deploy": "netlify deploy --prod"
+  },
+  "keywords": [
+    "medical",
+    "appointment",
+    "ai-assistant",
+    "netlify",
+    "openai"
+  ],
+  "author": "劉道玄醫師預約系統",
+  "license": "MIT",
+  "dependencies": {
+    "node-fetch": "^2.6.7",
+    "crypto": "^1.0.1",
+    "airtable": "^0.12.2"
+  },
+  "devDependencies": {
+    "netlify-cli": "^17.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/liu-daoxuan-appointment-system.git"
+  },
+  "netlify": {
+    "functions": {
+      "directory": "netlify/functions"
+    }
+  }
+}

@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>業績管理 - 劉道玄醫美管理平台</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- 自定義樣式 -->
+    <link rel="stylesheet" href="css/main.css">
+    
+    <style>
+        .performance-header {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+        
+        .performance-card {
+            border-left: 4px solid #f39c12;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: var(--gradient-card);
+            border-radius: var(--radius-large);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-medium);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            /* 添加浮動效果 */
+            transition: all 0.3s ease;
+            transform: translateY(0);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-large);
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--gradient-primary);
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-change {
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .stat-change.positive {
+            color: #27ae60;
+        }
+        
+        .stat-change.negative {
+            color: #e74c3c;
+        }
+        
+        .performance-table {
+            background: var(--gradient-card);
+            border-radius: var(--radius-large);
+            padding: 2rem;
+            box-shadow: var(--shadow-medium);
+            margin-bottom: 2rem;
+        }
+        
+        .settlement-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .settlement-cell {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: var(--radius-small);
+            padding: 1rem;
+            text-align: center;
+            /* 添加浮動效果 */
+            transition: all 0.3s ease;
+            transform: translateY(0);
+            cursor: pointer;
+        }
+        
+        .settlement-cell:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-color: var(--primary-color);
+        }
+        
+        .settlement-cell.editable {
+            background: #f8f9fa;
+            border-color: #f39c12;
+        }
+        
+        .settlement-cell input {
+            border: none;
+            background: transparent;
+            text-align: center;
+            width: 100%;
+            font-weight: bold;
+        }
+        
+        .settlement-cell input:focus {
+            outline: none;
+            background: white;
+            border-radius: 4px;
+        }
+        
+        .chart-container {
+            background: var(--gradient-card);
+            border-radius: var(--radius-large);
+            padding: 2rem;
+            box-shadow: var(--shadow-medium);
+            margin-bottom: 2rem;
+        }
+        
+        .employee-performance {
+            background: var(--gradient-card);
+            border-radius: var(--radius-large);
+            padding: 2rem;
+            box-shadow: var(--shadow-medium);
+        }
+        
+        .employee-card {
+            border: 1px solid #e9ecef;
+            border-radius: var(--radius-medium);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            /* 添加浮動效果 */
+            transition: all 0.3s ease;
+            transform: translateY(0);
+        }
+        
+        .employee-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-light);
+            border-color: var(--primary-color);
+        }
+        
+        .employee-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-right: 1rem;
+        }
+        
+        .performance-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .badge-excellent {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .badge-good {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .badge-average {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .badge-poor {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .filter-section {
+            background: #f8f9fa;
+            border-radius: var(--radius-medium);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .commission-calculator {
+            background: linear-gradient(135deg, #8e44ad 0%, #9b59b6 100%);
+            color: white;
+            border-radius: var(--radius-large);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .liu-daoxuan-performance {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            border-radius: var(--radius-large);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .nav-btn {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 0.75rem 2rem;
+            border-radius: var(--radius-button);
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            /* 添加浮動效果 */
+            transition: all 0.3s ease;
+            transform: translateY(0);
+            box-shadow: var(--shadow-light);
+        }
+        
+        .nav-btn:hover {
+            color: white;
+            text-decoration: none;
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-medium);
+        }
+    </style>
+</head>
+<body>
+    <!-- 導航列 -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-user-md"></i>
+                劉道玄醫師預約系統
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">
+                            <i class="fas fa-home"></i> 首頁
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="appointment_scheduling_system.html">
+                            <i class="fas fa-calendar-alt"></i> 預約管理
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="medical_records.html">
+                    <li class="nav-item">
+                        <a class="nav-link" href="treatment_management.html">
+                            <i class="fas fa-spa"></i> 療程管理
+                        </a>
+                    </li>
+                            <i class="fas fa-file-medical"></i> 病歷系統
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="consent_forms.html">
+                    <li class="nav-item">
+                        <a class="nav-link" href="data_statistics.html">
+                            <i class="fas fa-chart-bar"></i> 數據統計
+                        </a>
+                    </li>
+                            <i class="fas fa-file-signature"></i> 同意書
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="performance_management.html">
+                    <li class="nav-item">
+                        <a class="nav-link" href="price_management.html">
+                    <li class="nav-item">
+                        <a class="nav-link" href="smart_scheduling.html">
+                    <li class="nav-item">
+                        <a class="nav-link" href="employee_benefits.html">
+                            <i class="fas fa-gift"></i> 員工福利
+                        </a>
+                    </li>
+                            <i class="fas fa-brain"></i> 智能排程
+                        </a>
+                    </li>
+                            <i class="fas fa-tags"></i> 價格管理
+                        </a>
+                    </li>
+                            <i class="fas fa-chart-line"></i> 業績管理
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="logout()">
+                            <i class="fas fa-sign-out-alt"></i> 登出
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 業績管理標題區 -->
+    <div class="performance-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1><i class="fas fa-chart-line"></i> 業績管理系統</h1>
+                    <p class="mb-0">營收統計・人員績效・佣金計算・數據分析</p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <div class="d-flex align-items-center justify-content-end gap-3">
+                        <div>
+                            <i class="fas fa-calculator"></i>
+                            <span>自動結算</span>
+                        </div>
+                        <div>
+                            <i class="fas fa-chart-bar"></i>
+                            <span>即時統計</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主要內容 -->
+    <main class="main-content">
+        <div class="container">
+            <!-- 篩選區域 -->
+            <div class="filter-section">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label class="form-label">統計期間</label>
+                                <select class="form-select" id="periodFilter" onchange="updatePerformanceData()">
+                                    <option value="today">今日</option>
+                                    <option value="week">本週</option>
+                                    <option value="month" selected>本月</option>
+                                    <option value="quarter">本季</option>
+                                    <option value="year">本年</option>
+                                    <option value="custom">自訂期間</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">開始日期</label>
+                                <input type="date" class="form-control" id="startDate">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">結束日期</label>
+                                <input type="date" class="form-control" id="endDate">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">人員篩選</label>
+                                <select class="form-select" id="staffFilter" onchange="updatePerformanceData()">
+                                    <option value="all">全部人員</option>
+                                    <option value="doctors">醫師</option>
+                                    <option value="staff">員工</option>
+                                    <option value="partners">合作夥伴</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        <button class="btn btn-primary" onclick="updatePerformanceData()">
+                            <i class="fas fa-sync"></i> 更新數據
+                        </button>
+                        <button class="btn btn-success" onclick="exportPerformanceReport()">
+                            <i class="fas fa-download"></i> 匯出報表
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 劉道玄業績統計 -->
+            <div class="liu-daoxuan-performance">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h4><i class="fas fa-crown"></i> 劉道玄推薦業績</h4>
+                        <p class="mb-0">專屬推薦客戶業績統計與佣金計算</p>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        <div class="text-center">
+                            <div class="h3 mb-0">$<span id="liuDaoxuanRevenue">125,000</span></div>
+                            <small>本月推薦業績</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 統計卡片 -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalRevenue">$485,600</div>
+                    <div class="stat-label">總營收</div>
+                    <div class="stat-change positive">
+                        <i class="fas fa-arrow-up"></i> +12.5%
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-value" id="totalCustomers">156</div>
+                    <div class="stat-label">服務客戶數</div>
+                    <div class="stat-change positive">
+                        <i class="fas fa-arrow-up"></i> +8.3%
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-value" id="averageSpending">$3,115</div>
+                    <div class="stat-label">平均消費</div>
+                    <div class="stat-change positive">
+                        <i class="fas fa-arrow-up"></i> +3.7%
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-value" id="totalTreatments">234</div>
+                    <div class="stat-label">療程次數</div>
+                    <div class="stat-change positive">
+                        <i class="fas fa-arrow-up"></i> +15.2%
+                    </div>
+                </div>
+            </div>
+
+            <!-- 佣金計算器 -->
+            <div class="commission-calculator">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h4><i class="fas fa-calculator"></i> 佣金計算器</h4>
+                        <p class="mb-0">自動計算各人員佣金與獎金</p>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        <button class="btn btn-light" onclick="calculateCommissions()">
+                            <i class="fas fa-play"></i> 執行計算
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- 營收圖表 -->
+                <div class="col-lg-8 mb-4">
+                    <div class="chart-container">
+                        <h5 class="mb-3">
+                            <i class="fas fa-chart-area"></i>
+                            營收趨勢圖
+                        </h5>
+                        <canvas id="revenueChart" height="300"></canvas>
+                    </div>
+                    
+                    <!-- 療程分析圖表 -->
+                    <div class="chart-container">
+                        <h5 class="mb-3">
+                            <i class="fas fa-chart-pie"></i>
+                            療程項目分析
+                        </h5>
+                        <canvas id="treatmentChart" height="300"></canvas>
+                    </div>
+                </div>
+
+                <!-- 人員績效 -->
+                <div class="col-lg-4 mb-4">
+                    <div class="employee-performance">
+                        <h5 class="mb-3">
+                            <i class="fas fa-users"></i>
+                            人員績效排行
+                        </h5>
+                        
+                        <div id="employeePerformanceList">
+                            <!-- 人員績效列表將由JavaScript動態生成 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 業績結算表格 -->
+            <div class="performance-table">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5>
+                        <i class="fas fa-table"></i>
+                        業績結算表格
+                    </h5>
+                    <div>
+                        <button class="btn btn-outline-primary btn-sm" onclick="editSettlementMode()">
+                            <i class="fas fa-edit"></i> 編輯模式
+                        </button>
+                        <button class="btn btn-outline-success btn-sm" onclick="saveSettlement()">
+                            <i class="fas fa-save"></i> 儲存結算
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 結算格子 -->
+                <div class="settlement-grid" id="settlementGrid">
+                    <!-- 結算格子將由JavaScript動態生成 -->
+                </div>
+            </div>
+
+            <!-- 詳細業績表 -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card performance-card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">
+                                <i class="fas fa-list-alt"></i>
+                                詳細業績記錄
+                            </h5>
+                            <div>
+                                <button class="btn btn-outline-primary btn-sm" onclick="refreshPerformanceList()">
+                                    <i class="fas fa-sync"></i> 刷新
+                                </button>
+                                <button class="btn btn-outline-success btn-sm" onclick="addPerformanceRecord()">
+                                    <i class="fas fa-plus"></i> 新增記錄
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>日期</th>
+                                            <th>客戶</th>
+                                            <th>療程項目</th>
+                                            <th>執行人員</th>
+                                            <th>金額</th>
+                                            <th>佣金</th>
+                                            <th>來源</th>
+                                            <th>操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="performanceTableBody">
+                                        <!-- 業績記錄將由JavaScript動態生成 -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 返回首頁按鈕 -->
+            <div class="text-center mt-4">
+                <a href="index.html" class="nav-btn">
+                    <i class="fas fa-home"></i> 返回首頁
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- 自定義 JavaScript -->
+    <script src="js/main.js"></script>
+    <script src="js/social-integration.js"></script>
+    
+    <script>
+        let performanceData = [];
+        let settlementData = {};
+        let isEditMode = false;
+
+        // 頁面載入完成後初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initializePerformanceManagement();
+            loadPerformanceData();
+            setupCharts();
+            generateSettlementGrid();
+            setDefaultDates();
+        });
+
+        // 初始化業績管理系統
+        function initializePerformanceManagement() {
+            // 檢查用戶權限
+            const currentUser = MedicalPlatform.getCurrentUser();
+            if (!currentUser) {
+                MedicalPlatform.showAlert('請先登入系統', 'warning');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 2000);
+                return;
+            }
+
+            // 檢查是否有業績管理權限
+            const allowedRoles = ['admin', 'manager'];
+            if (!allowedRoles.includes(currentUser.role.id)) {
+                MedicalPlatform.showAlert('您沒有權限存取業績管理系統', 'danger');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 2000);
+                return;
+            }
+        }
+
+        // 設置預設日期
+        function setDefaultDates() {
+            const today = new Date();
+            const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+            
+            document.getElementById('startDate').value = firstDay.toISOString().split('T')[0];
+            document.getElementById('endDate').value = today.toISOString().split('T')[0];
+        }
+
+        // 載入業績數據
+        function loadPerformanceData() {
+            // 模擬業績數據
+            performanceData = [
+                {
+                    id: 'P001',
+                    date: '2024-09-24',
+                    customer: '王小明',
+                    treatment: '肉毒桿菌注射',
+                    staff: '劉醫師',
+                    amount: 15000,
+                    commission: 1500,
+                    source: '直接來訪',
+                    referral: null
+                },
+                {
+                    id: 'P002',
+                    date: '2024-09-23',
+                    customer: '李美麗',
+                    treatment: '玻尿酸填充',
+                    staff: '陳醫師',
+                    amount: 25000,
+                    commission: 2500,
+                    source: '劉道玄推薦',
+                    referral: 'liu_daoxuan'
+                },
+                {
+                    id: 'P003',
+                    date: '2024-09-22',
+                    customer: '張先生',
+                    treatment: '雷射治療',
+                    staff: '王醫師',
+                    amount: 8000,
+                    commission: 800,
+                    source: 'LINE官方帳號',
+                    referral: null
+                },
+                {
+                    id: 'P004',
+                    date: '2024-09-21',
+                    customer: '陳小姐',
+                    treatment: '美白點滴',
+                    staff: '護理師A',
+                    amount: 3000,
+                    commission: 300,
+                    source: '劉道玄推薦',
+                    referral: 'liu_daoxuan'
+                },
+                {
+                    id: 'P005',
+                    date: '2024-09-20',
+                    customer: '林先生',
+                    treatment: '臉部護理',
+                    staff: '美容師B',
+                    amount: 5000,
+                    commission: 500,
+                    source: '網站預約',
+                    referral: null
+                }
+            ];
+
+            displayPerformanceTable();
+            displayEmployeePerformance();
+            updateStatistics();
+        }
+
+        // 顯示業績表格
+        function displayPerformanceTable() {
+            const tableBody = document.getElementById('performanceTableBody');
+            let html = '';
+
+            performanceData.forEach(record => {
+                const isLiuDaoxuan = record.referral === 'liu_daoxuan';
+                html += `
+                    <tr ${isLiuDaoxuan ? 'class="table-warning"' : ''}>
+                        <td>${record.date}</td>
+                        <td>${record.customer}</td>
+                        <td>${record.treatment}</td>
+                        <td>${record.staff}</td>
+                        <td>$${record.amount.toLocaleString()}</td>
+                        <td>$${record.commission.toLocaleString()}</td>
+                        <td>
+                            ${record.source}
+                            ${isLiuDaoxuan ? '<span class="badge bg-warning ms-1">劉道玄</span>' : ''}
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary" onclick="editPerformanceRecord('${record.id}')">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="deletePerformanceRecord('${record.id}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tableBody.innerHTML = html;
+        }
+
+        // 顯示人員績效
+        function displayEmployeePerformance() {
+            const performanceList = document.getElementById('employeePerformanceList');
+            
+            // 計算各人員績效
+            const staffPerformance = {};
+            performanceData.forEach(record => {
+                if (!staffPerformance[record.staff]) {
+                    staffPerformance[record.staff] = {
+                        name: record.staff,
+                        totalAmount: 0,
+                        totalCommission: 0,
+                        customerCount: 0,
+                        treatments: []
+                    };
+                }
+                
+                staffPerformance[record.staff].totalAmount += record.amount;
+                staffPerformance[record.staff].totalCommission += record.commission;
+                staffPerformance[record.staff].customerCount++;
+                staffPerformance[record.staff].treatments.push(record.treatment);
+            });
+
+            // 排序並顯示
+            const sortedStaff = Object.values(staffPerformance)
+                .sort((a, b) => b.totalAmount - a.totalAmount);
+
+            let html = '';
+            sortedStaff.forEach((staff, index) => {
+                const performanceLevel = getPerformanceLevel(staff.totalAmount);
+                const avatar = staff.name.charAt(0);
+                
+                html += `
+                    <div class="employee-card">
+                        <div class="d-flex align-items-center">
+                            <div class="employee-avatar">${avatar}</div>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">${staff.name}</h6>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <small class="text-muted">營收: $${staff.totalAmount.toLocaleString()}</small><br>
+                                        <small class="text-muted">客戶: ${staff.customerCount}人</small>
+                                    </div>
+                                    <div class="text-end">
+                                        <div class="performance-badge ${performanceLevel.class}">
+                                            ${performanceLevel.label}
+                                        </div>
+                                        <small class="text-muted">佣金: $${staff.totalCommission.toLocaleString()}</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            performanceList.innerHTML = html;
+        }
+
+        // 獲取績效等級
+        function getPerformanceLevel(amount) {
+            if (amount >= 50000) {
+                return { label: '優秀', class: 'badge-excellent' };
+            } else if (amount >= 30000) {
+                return { label: '良好', class: 'badge-good' };
+            } else if (amount >= 15000) {
+                return { label: '普通', class: 'badge-average' };
+            } else {
+                return { label: '待改善', class: 'badge-poor' };
+            }
+        }
+
+        // 更新統計數據
+        function updateStatistics() {
+            const totalRevenue = performanceData.reduce((sum, record) => sum + record.amount, 0);
+            const totalCustomers = new Set(performanceData.map(record => record.customer)).size;
+            const totalTreatments = performanceData.length;
+            const averageSpending = totalRevenue / totalCustomers;
+            
+            // 劉道玄推薦業績
+            const liuDaoxuanRevenue = performanceData
+                .filter(record => record.referral === 'liu_daoxuan')
+                .reduce((sum, record) => sum + record.amount, 0);
+
+            document.getElementById('totalRevenue').textContent = `$${totalRevenue.toLocaleString()}`;
+            document.getElementById('totalCustomers').textContent = totalCustomers;
+            document.getElementById('totalTreatments').textContent = totalTreatments;
+            document.getElementById('averageSpending').textContent = `$${Math.round(averageSpending).toLocaleString()}`;
+            document.getElementById('liuDaoxuanRevenue').textContent = liuDaoxuanRevenue.toLocaleString();
+        }
+
+        // 設置圖表
+        function setupCharts() {
+            setupRevenueChart();
+            setupTreatmentChart();
+        }
+
+        // 設置營收圖表
+        function setupRevenueChart() {
+            const ctx = document.getElementById('revenueChart').getContext('2d');
+            
+            // 模擬每日營收數據
+            const dailyRevenue = [
+                { date: '09-18', amount: 45000 },
+                { date: '09-19', amount: 52000 },
+                { date: '09-20', amount: 38000 },
+                { date: '09-21', amount: 61000 },
+                { date: '09-22', amount: 48000 },
+                { date: '09-23', amount: 55000 },
+                { date: '09-24', amount: 42000 }
+            ];
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dailyRevenue.map(d => d.date),
+                    datasets: [{
+                        label: '每日營收',
+                        data: dailyRevenue.map(d => d.amount),
+                        borderColor: '#f39c12',
+                        backgroundColor: 'rgba(243, 156, 18, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 設置療程圖表
+        function setupTreatmentChart() {
+            const ctx = document.getElementById('treatmentChart').getContext('2d');
+            
+            // 統計療程項目
+            const treatmentStats = {};
+            performanceData.forEach(record => {
+                treatmentStats[record.treatment] = (treatmentStats[record.treatment] || 0) + record.amount;
+            });
+
+            const labels = Object.keys(treatmentStats);
+            const data = Object.values(treatmentStats);
+            const colors = ['#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#9b59b6'];
+
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: colors.slice(0, labels.length),
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        // 生成結算格子
+        function generateSettlementGrid() {
+            const grid = document.getElementById('settlementGrid');
+            
+            const settlementItems = [
+                { label: '總營收', value: 485600, editable: false },
+                { label: '醫師佣金', value: 48560, editable: true },
+                { label: '員工佣金', value: 24280, editable: true },
+                { label: '劉道玄佣金', value: 12500, editable: true },
+                { label: '營運成本', value: 145680, editable: true },
+                { label: '淨利潤', value: 254580, editable: false },
+                { label: '稅務預留', value: 48560, editable: true },
+                { label: '實際收益', value: 206020, editable: false }
+            ];
+
+            let html = '';
+            settlementItems.forEach((item, index) => {
+                html += `
+                    <div class="settlement-cell ${item.editable ? 'editable' : ''}" onclick="editCell(${index})">
+                        <div class="fw-bold mb-2">${item.label}</div>
+                        <div class="h5 mb-0">
+                            ${item.editable ? 
+                                `<input type="number" value="${item.value}" id="cell_${index}" onchange="updateCalculation()">` :
+                                `$${item.value.toLocaleString()}`
+                            }
+                        </div>
+                    </div>
+                `;
+            });
+
+            grid.innerHTML = html;
+            settlementData = settlementItems;
+        }
+
+        // 編輯結算模式
+        function editSettlementMode() {
+            isEditMode = !isEditMode;
+            MedicalPlatform.showAlert(isEditMode ? '已進入編輯模式' : '已退出編輯模式', 'info');
+        }
+
+        // 編輯格子
+        function editCell(index) {
+            if (!isEditMode || !settlementData[index].editable) return;
+            
+            const input = document.getElementById(`cell_${index}`);
+            if (input) {
+                input.focus();
+                input.select();
+            }
+        }
+
+        // 更新計算
+        function updateCalculation() {
+            // 重新計算相關數值
+            const totalRevenue = parseInt(document.getElementById('cell_0')?.value || settlementData[0].value);
+            const doctorCommission = parseInt(document.getElementById('cell_1')?.value || 0);
+            const staffCommission = parseInt(document.getElementById('cell_2')?.value || 0);
+            const liuCommission = parseInt(document.getElementById('cell_3')?.value || 0);
+            const operatingCost = parseInt(document.getElementById('cell_4')?.value || 0);
+            const taxReserve = parseInt(document.getElementById('cell_6')?.value || 0);
+            
+            const netProfit = totalRevenue - doctorCommission - staffCommission - liuCommission - operatingCost;
+            const actualIncome = netProfit - taxReserve;
+            
+            // 更新顯示（如果是非編輯欄位）
+            settlementData[5].value = netProfit;
+            settlementData[7].value = actualIncome;
+            
+            MedicalPlatform.showAlert('計算已更新', 'success');
+        }
+
+        // 儲存結算
+        function saveSettlement() {
+            MedicalPlatform.showAlert('結算數據已儲存', 'success');
+        }
+
+        // 計算佣金
+        function calculateCommissions() {
+            MedicalPlatform.showAlert('正在計算佣金...', 'info');
+            
+            setTimeout(() => {
+                // 模擬佣金計算
+                const commissionRates = {
+                    '劉醫師': 0.10,
+                    '陳醫師': 0.10,
+                    '王醫師': 0.10,
+                    '護理師A': 0.08,
+                    '美容師B': 0.08,
+                    'liu_daoxuan': 0.05 // 劉道玄推薦佣金
+                };
+
+                let totalCommissions = 0;
+                performanceData.forEach(record => {
+                    const rate = commissionRates[record.staff] || 0.05;
+                    record.commission = Math.round(record.amount * rate);
+                    totalCommissions += record.commission;
+                    
+                    // 劉道玄推薦額外佣金
+                    if (record.referral === 'liu_daoxuan') {
+                        const referralCommission = Math.round(record.amount * commissionRates.liu_daoxuan);
+                        totalCommissions += referralCommission;
+                    }
+                });
+
+                displayPerformanceTable();
+                displayEmployeePerformance();
+                updateStatistics();
+                
+                MedicalPlatform.showAlert(`佣金計算完成！總佣金：$${totalCommissions.toLocaleString()}`, 'success');
+            }, 2000);
+        }
+
+        // 更新業績數據
+        function updatePerformanceData() {
+            const period = document.getElementById('periodFilter').value;
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const staffFilter = document.getElementById('staffFilter').value;
+
+            MedicalPlatform.showAlert('正在更新數據...', 'info');
+            
+            // 模擬數據篩選
+            setTimeout(() => {
+                // 這裡應該根據篩選條件重新載入數據
+                loadPerformanceData();
+                setupCharts();
+                MedicalPlatform.showAlert('數據已更新', 'success');
+            }, 1000);
+        }
+
+        // 其他功能函數
+        function exportPerformanceReport() {
+            MedicalPlatform.showAlert('正在匯出業績報表...', 'info');
+            
+            setTimeout(() => {
+                MedicalPlatform.showAlert('業績報表已匯出', 'success');
+            }, 2000);
+        }
+
+        function refreshPerformanceList() {
+            loadPerformanceData();
+            MedicalPlatform.showAlert('業績列表已刷新', 'success');
+        }
+
+        function addPerformanceRecord() {
+            MedicalPlatform.showAlert('新增業績記錄功能開發中', 'info');
+        }
+
+        function editPerformanceRecord(recordId) {
+            MedicalPlatform.showAlert(`編輯業績記錄 ${recordId} 功能開發中`, 'info');
+        }
+
+        function deletePerformanceRecord(recordId) {
+            if (confirm('確定要刪除這筆業績記錄嗎？')) {
+                performanceData = performanceData.filter(record => record.id !== recordId);
+                displayPerformanceTable();
+                displayEmployeePerformance();
+                updateStatistics();
+                MedicalPlatform.showAlert('業績記錄已刪除', 'success');
+            }
+        }
+
+        function logout() {
+            MedicalPlatform.logout();
+        }
+    </script>
+</body>
+</html>
