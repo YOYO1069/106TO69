@@ -1,5 +1,5 @@
 /**
- * 劉道玄醫師 AI 預約助理前端模組
+ * 劉道玄諮詢師 AI 預約助理前端模組
  * 提供智能對話和預約引導功能
  */
 
@@ -30,7 +30,7 @@ class AIAssistant {
             <div class="ai-chat-header">
                 <div class="ai-chat-title">
                     <i class="fas fa-robot"></i>
-                    <span>劉道玄醫師 AI 助理</span>
+                    <span>劉道玄諮詢師 AI 助理</span>
                 </div>
                 <button class="ai-chat-close" onclick="window.aiAssistant.toggleChat()">
                     <i class="fas fa-times"></i>
@@ -342,7 +342,7 @@ class AIAssistant {
      * 顯示歡迎訊息
      */
     showWelcomeMessage() {
-        const welcomeMessage = `您好！我是劉道玄醫師的AI預約助理 🤖
+        const welcomeMessage = `您好！我是劉道玄諮詢師的AI預約助理 🤖
 
 我可以協助您：
 • 了解醫美療程資訊

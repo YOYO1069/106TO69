@@ -1,11 +1,11 @@
-# 劉道玄醫師預約系統 - 三方整合部署指南
+# 劉道玄諮詢師預約系統 - 三方整合部署指南
 
 ## 🎯 **整合架構概覽**
 
 本系統整合了三大平台，提供完整的醫美預約管理解決方案：
 
 ```
-劉道玄醫師預約系統
+劉道玄諮詢師預約系統
 ├── Netlify (網站託管 + Functions)
 ├── Manus (數據管理 + 分析)
 └── OpenAI (AI 助理 + 智能分析)
@@ -50,7 +50,7 @@ GOOGLE_CALENDAR_CLIENT_ID=xxxxxxxxxx-xxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercon
 1. 登入 [Netlify Dashboard](https://app.netlify.com/)
 2. **User Settings** → **Applications** → **Personal access tokens**
 3. 點擊 **New access token**
-4. 輸入描述：`劉道玄醫師預約系統整合`
+4. 輸入描述：`劉道玄諮詢師預約系統整合`
 5. 複製 Token 並設定為 `NETLIFY_ACCESS_TOKEN`
 
 ### 3. Netlify Site ID
@@ -200,4 +200,4 @@ GOOGLE_CALENDAR_CLIENT_ID=xxxxxxxxxx-xxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercon
 
 ---
 
-**劉道玄醫師預約系統現已完成三方整合，提供完整的智能醫美管理解決方案！**
+**劉道玄諮詢師預約系統現已完成三方整合，提供完整的智能醫美管理解決方案！**

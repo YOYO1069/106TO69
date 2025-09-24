@@ -194,7 +194,7 @@ class GoogleIntegrationManager {
             const model = this.geminiAPI.getGenerativeModel({ model: this.config.gemini.model });
             
             const prompt = `
-作為劉道玄醫師的 AI 助理，請分析以下預約數據並提供專業建議：
+作為劉道玄諮詢師的 AI 助理，請分析以下預約數據並提供專業建議：
 
 預約數據：
 ${JSON.stringify(appointmentData, null, 2)}
@@ -230,7 +230,7 @@ ${JSON.stringify(appointmentData, null, 2)}
             const model = this.geminiAPI.getGenerativeModel({ model: this.config.gemini.model });
             
             const prompt = `
-作為劉道玄醫師的預約助理，請根據客戶資料推薦最適合的預約時段：
+作為劉道玄諮詢師的預約助理，請根據客戶資料推薦最適合的預約時段：
 
 客戶資料：
 ${JSON.stringify(customerProfile, null, 2)}
@@ -273,7 +273,7 @@ ${JSON.stringify(availableSlots, null, 2)}
 療程：${appointment.treatment}
 備註：${appointment.notes || '無'}
 
-劉道玄醫師預約系統
+劉道玄諮詢師預約系統
                 `,
                 start: {
                     dateTime: appointment.startTime,

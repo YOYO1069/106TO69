@@ -1,6 +1,6 @@
 /**
  * Manus 平台整合配置
- * 劉道玄醫師預約系統與 Manus 平台串接
+ * 劉道玄諮詢師預約系統與 Manus 平台串接
  */
 
 class ManusIntegration {
@@ -13,7 +13,7 @@ class ManusIntegration {
     }
 
     init() {
-        console.log('Manus Integration initialized for 劉道玄醫師預約系統');
+        console.log('Manus Integration initialized for 劉道玄諮詢師預約系統');
         this.setupEventListeners();
     }
 
@@ -45,7 +45,7 @@ class ManusIntegration {
             const payload = {
                 type: 'appointment',
                 data: {
-                    doctor: '劉道玄醫師',
+                    doctor: '劉道玄諮詢師',
                     client: appointmentData.clientName,
                     phone: appointmentData.clientPhone,
                     service: appointmentData.service,
@@ -99,7 +99,7 @@ class ManusIntegration {
                     submittedAt: formData.createdTime
                 },
                 metadata: {
-                    doctor: '劉道玄醫師',
+                    doctor: '劉道玄諮詢師',
                     system: 'liu-daoxuan-forms'
                 }
             };
@@ -132,7 +132,7 @@ class ManusIntegration {
                 },
                 metadata: {
                     aiModel: 'gpt-3.5-turbo',
-                    doctor: '劉道玄醫師',
+                    doctor: '劉道玄諮詢師',
                     system: 'liu-daoxuan-ai-assistant'
                 }
             };
@@ -193,7 +193,7 @@ class ManusIntegration {
     async getManusAnalytics() {
         try {
             const analytics = await this.getFromManus('/analytics', {
-                doctor: '劉道玄醫師',
+                doctor: '劉道玄諮詢師',
                 timeRange: '30d'
             });
 
@@ -239,11 +239,11 @@ class ManusIntegration {
                         communicationMethod: clientData.communicationMethod,
                         reminderSettings: clientData.reminderSettings
                     },
-                    tags: ['劉道玄醫師', '醫美客戶'],
+                    tags: ['劉道玄諮詢師', '醫美客戶'],
                     lastUpdated: new Date().toISOString()
                 },
                 metadata: {
-                    doctor: '劉道玄醫師',
+                    doctor: '劉道玄諮詢師',
                     source: 'appointment-system'
                 }
             };

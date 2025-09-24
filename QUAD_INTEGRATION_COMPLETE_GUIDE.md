@@ -1,11 +1,11 @@
-# 劉道玄醫師預約系統 - 四方整合完整部署指南
+# 劉道玄諮詢師預約系統 - 四方整合完整部署指南
 
 ## 🎯 **四方整合架構概覽**
 
 本系統整合了四大平台，提供完整的 AI 驅動醫美預約管理解決方案：
 
 ```
-劉道玄醫師智能預約系統
+劉道玄諮詢師智能預約系統
 ├── 🌐 Netlify (網站託管 + Serverless Functions)
 ├── 🔧 Manus (數據管理 + 分析平台)
 ├── 🤖 OpenAI (AI 助理 + 智能分析)
@@ -73,14 +73,14 @@ GOOGLE_CALENDAR_CLIENT_ID=xxxxxxxxxx-xxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercon
 1. 登入 [OpenAI Platform](https://platform.openai.com/)
 2. 前往 **API Keys** 頁面
 3. 點擊 **Create new secret key**
-4. 命名：`劉道玄醫師預約系統 AI 分析`
+4. 命名：`劉道玄諮詢師預約系統 AI 分析`
 5. 複製金鑰並設定為 `OPENAI_API_KEY`
 
 ### 2. Netlify Access Token
 1. 登入 [Netlify Dashboard](https://app.netlify.com/)
 2. **User Settings** → **Applications** → **Personal access tokens**
 3. 點擊 **New access token**
-4. 描述：`劉道玄醫師預約系統四方整合`
+4. 描述：`劉道玄諮詢師預約系統四方整合`
 5. 複製 Token 並設定為 `NETLIFY_ACCESS_TOKEN`
 
 ### 3. Netlify Site ID
@@ -100,11 +100,11 @@ GOOGLE_CALENDAR_CLIENT_ID=xxxxxxxxxx-xxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercon
 2. 前往 [Personal Access Tokens](https://airtable.com/create/tokens)
 3. 點擊 **Create new token**
 4. 設定權限：
-   - **Name**: `劉道玄醫師預約系統 MCP 整合`
+   - **Name**: `劉道玄諮詢師預約系統 MCP 整合`
    - **Scopes**: `schema.bases:read`, `data.records:read`, `data.records:write`, `schema.bases:write`
    - **Access**: 選擇要存取的 Base（或選擇 'Add all resources'）
 5. 複製 Token（格式：`pat123.abc123...`）並設定為 `AIRTABLE_API_KEY`
-6. 在 Airtable 中創建新的 Base，命名為「劉道玄醫師預約系統」
+6. 在 Airtable 中創建新的 Base，命名為「劉道玄諮詢師預約系統」
 7. 複製 Base ID（在 URL 中，格式：`appxxxxxxxxxxxxxxx`）並設定為 `AIRTABLE_BASE_ID`
 
 ## 🗂️ **Airtable 表格結構設定**
@@ -383,6 +383,6 @@ GOOGLE_CALENDAR_CLIENT_ID=xxxxxxxxxx-xxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercon
 
 ---
 
-**劉道玄醫師現在擁有完整的四方整合 AI 智能預約管理系統！**
+**劉道玄諮詢師現在擁有完整的四方整合 AI 智能預約管理系統！**
 
 這個系統結合了 Netlify 的可靠託管、Manus 的數據管理、OpenAI 的智能分析和 Airtable 的靈活數據庫，為醫美診所提供了前所未有的智能化管理體驗。

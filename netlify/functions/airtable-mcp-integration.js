@@ -1,6 +1,6 @@
 /**
  * Airtable MCP Server 整合函數
- * 劉道玄醫師預約系統 - Airtable 數據管理整合
+ * 劉道玄諮詢師預約系統 - Airtable 數據管理整合
  */
 
 exports.handler = async (event, context) => {
@@ -95,7 +95,7 @@ async function syncAppointmentToAirtable(appointmentData, headers) {
                 '預約來源': appointmentData.source,
                 '預約狀態': appointmentData.status || '待確認',
                 '備註': appointmentData.notes || '',
-                '醫師': '劉道玄醫師',
+                '醫師': '劉道玄諮詢師',
                 '建立時間': new Date().toISOString(),
                 '年齡': appointmentData.age || null,
                 '性別': appointmentData.gender || '',
@@ -240,7 +240,7 @@ async function syncClientToAirtable(clientData) {
                     '客戶狀態': '新客戶',
                     '建立時間': new Date().toISOString(),
                     '最後更新時間': new Date().toISOString(),
-                    '客戶標籤': ['劉道玄醫師', '醫美客戶'],
+                    '客戶標籤': ['劉道玄諮詢師', '醫美客戶'],
                     '生命週期價值': 0,
                     '滿意度評分': null
                 }

@@ -7,7 +7,7 @@
 1. 登入 [Netlify Dashboard](https://app.netlify.com/)
 2. 前往 **User Settings** → **Applications** → **Personal access tokens**
 3. 點擊 **New access token**
-4. 輸入描述性名稱（例如：劉道玄醫師預約系統）
+4. 輸入描述性名稱（例如：劉道玄諮詢師預約系統）
 5. 選擇過期日期
 6. 點擊 **Generate token**
 7. **複製並安全保存 Token**（離開頁面後無法再次查看）
@@ -82,7 +82,7 @@ exports.handler = async (event, context) => {
       messages: [
         {
           role: 'system',
-          content: '你是劉道玄醫師的AI助理，專門協助處理醫美預約相關問題。請用專業且親切的語氣回答。'
+          content: '你是劉道玄諮詢師的AI助理，專門協助處理醫美預約相關問題。請用專業且親切的語氣回答。'
         },
         {
           role: 'user',
@@ -149,10 +149,10 @@ exports.handler = async (event, context) => {
     const { userMessage, appointmentData } = JSON.parse(event.body);
 
     const systemPrompt = `
-你是劉道玄醫師的專業預約助理AI。請根據以下資訊協助客戶：
+你是劉道玄諮詢師的專業預約助理AI。請根據以下資訊協助客戶：
 
-劉道玄醫師資訊：
-- 專業醫美醫師
+劉道玄諮詢師資訊：
+- 專業美容諮詢師
 - 營業時間：週二-五 12:00-20:00，週六 11:00-20:00
 - 每時段最多2位客戶
 - 時段間隔：15分鐘
@@ -278,14 +278,14 @@ window.aiAssistant = new AIAssistant();
 <div class="ai-chat-container" id="aiChatContainer">
   <div class="ai-chat-header">
     <i class="fas fa-robot"></i>
-    劉道玄醫師 AI 預約助理
+    劉道玄諮詢師 AI 預約助理
     <button class="ai-chat-toggle" onclick="toggleAIChat()">
       <i class="fas fa-times"></i>
     </button>
   </div>
   <div class="ai-chat-messages" id="aiChatMessages">
     <div class="ai-message">
-      您好！我是劉道玄醫師的AI預約助理，有什麼可以為您服務的嗎？
+      您好！我是劉道玄諮詢師的AI預約助理，有什麼可以為您服務的嗎？
     </div>
   </div>
   <div class="ai-chat-input">
@@ -365,4 +365,4 @@ const logAIUsage = async (interaction) => {
 3. **預約確認**：AI 協助確認預約詳情
 4. **後續追蹤**：術後關懷和回訪提醒
 
-這個整合方案讓劉道玄醫師的預約系統具備智能對話能力，提升客戶體驗和預約效率。
+這個整合方案讓劉道玄諮詢師的預約系統具備智能對話能力，提升客戶體驗和預約效率。

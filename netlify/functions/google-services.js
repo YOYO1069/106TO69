@@ -132,7 +132,7 @@ async function geminiAnalyzeAppointments(data) {
     const model = geminiAPI.getGenerativeModel({ model: 'gemini-1.5-flash' });
     
     const prompt = `
-作為劉道玄醫師的專業 AI 分析助理，請深度分析以下預約數據：
+作為劉道玄諮詢師的專業 AI 分析助理，請深度分析以下預約數據：
 
 時間範圍：${timeRange}
 預約數據：
@@ -204,7 +204,7 @@ async function geminiSmartSuggestions(data) {
     const model = geminiAPI.getGenerativeModel({ model: 'gemini-1.5-flash' });
     
     const prompt = `
-作為劉道玄醫師的智能預約助理，請為客戶推薦最適合的預約時段：
+作為劉道玄諮詢師的智能預約助理，請為客戶推薦最適合的預約時段：
 
 客戶資料：
 ${JSON.stringify(customerProfile, null, 2)}
@@ -282,7 +282,7 @@ async function geminiCustomerInsights(data) {
     const model = geminiAPI.getGenerativeModel({ model: 'gemini-1.5-flash' });
     
     const prompt = `
-作為劉道玄醫師的客戶關係管理 AI，請分析客戶資料並提供深度洞察：
+作為劉道玄諮詢師的客戶關係管理 AI，請分析客戶資料並提供深度洞察：
 
 客戶資料：
 ${JSON.stringify(customerData, null, 2)}

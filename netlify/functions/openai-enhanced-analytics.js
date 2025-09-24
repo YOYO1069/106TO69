@@ -1,6 +1,6 @@
 /**
  * OpenAI 增強版智能分析函數
- * 劉道玄醫師預約系統 - AI 驅動的深度分析和洞察
+ * 劉道玄諮詢師預約系統 - AI 驅動的深度分析和洞察
  */
 
 exports.handler = async (event, context) => {
@@ -93,7 +93,7 @@ async function analyzeCustomerIntent(data, headers) {
         const { customerMessage, customerHistory, appointmentData } = data;
 
         const prompt = `
-作為劉道玄醫師的專業AI分析師，請分析以下客戶資訊：
+作為劉道玄諮詢師的專業AI分析師，請分析以下客戶資訊：
 
 客戶訊息：${customerMessage}
 客戶歷史：${JSON.stringify(customerHistory, null, 2)}
@@ -155,7 +155,7 @@ async function generateAppointmentInsights(data, headers) {
         const { appointments, timeRange, filters } = data;
 
         const prompt = `
-作為劉道玄醫師診所的數據分析專家，請分析以下預約數據：
+作為劉道玄諮詢師診所的數據分析專家，請分析以下預約數據：
 
 預約資料：${JSON.stringify(appointments, null, 2)}
 時間範圍：${timeRange}
@@ -226,7 +226,7 @@ async function optimizeScheduling(data, headers) {
         const { currentSchedule, appointmentRequests, constraints } = data;
 
         const prompt = `
-作為劉道玄醫師的智能排程優化專家，請分析並優化以下排程：
+作為劉道玄諮詢師的智能排程優化專家，請分析並優化以下排程：
 
 當前排程：${JSON.stringify(currentSchedule, null, 2)}
 預約請求：${JSON.stringify(appointmentRequests, null, 2)}
@@ -293,7 +293,7 @@ async function analyzeCustomerSentiment(data, headers) {
         const { customerFeedback, chatHistory, reviewData } = data;
 
         const prompt = `
-作為劉道玄醫師診所的客戶體驗分析專家，請分析以下客戶情感數據：
+作為劉道玄諮詢師診所的客戶體驗分析專家，請分析以下客戶情感數據：
 
 客戶回饋：${JSON.stringify(customerFeedback, null, 2)}
 對話記錄：${JSON.stringify(chatHistory, null, 2)}
@@ -358,7 +358,7 @@ async function generateMarketingInsights(data, headers) {
         const { campaignData, customerSegments, marketTrends } = data;
 
         const prompt = `
-作為劉道玄醫師診所的行銷策略專家，請分析以下行銷數據：
+作為劉道玄諮詢師診所的行銷策略專家，請分析以下行銷數據：
 
 行銷活動數據：${JSON.stringify(campaignData, null, 2)}
 客戶分群：${JSON.stringify(customerSegments, null, 2)}
@@ -429,7 +429,7 @@ async function predictCustomerBehavior(data, headers) {
         const { customerData, historicalPatterns, externalFactors } = data;
 
         const prompt = `
-作為劉道玄醫師診所的客戶行為預測專家，請分析以下數據：
+作為劉道玄諮詢師診所的客戶行為預測專家，請分析以下數據：
 
 客戶資料：${JSON.stringify(customerData, null, 2)}
 歷史模式：${JSON.stringify(historicalPatterns, null, 2)}
@@ -495,7 +495,7 @@ async function generatePersonalizedRecommendations(data, headers) {
         const { customerProfile, treatmentHistory, preferences } = data;
 
         const prompt = `
-作為劉道玄醫師的個人化療程顧問，請為以下客戶生成推薦：
+作為劉道玄諮詢師的個人化療程顧問，請為以下客戶生成推薦：
 
 客戶檔案：${JSON.stringify(customerProfile, null, 2)}
 療程歷史：${JSON.stringify(treatmentHistory, null, 2)}
@@ -569,7 +569,7 @@ async function analyzeBusinessPerformance(data, headers) {
         const { financialData, operationalMetrics, competitorData } = data;
 
         const prompt = `
-作為劉道玄醫師診所的業務分析專家，請分析以下績效數據：
+作為劉道玄諮詢師診所的業務分析專家，請分析以下績效數據：
 
 財務數據：${JSON.stringify(financialData, null, 2)}
 營運指標：${JSON.stringify(operationalMetrics, null, 2)}
@@ -642,7 +642,7 @@ async function generateFollowUpMessages(data, headers) {
         const { customerData, appointmentHistory, communicationStyle } = data;
 
         const prompt = `
-作為劉道玄醫師的專業客戶關係專員，請為以下客戶生成追蹤訊息：
+作為劉道玄諮詢師的專業客戶關係專員，請為以下客戶生成追蹤訊息：
 
 客戶資料：${JSON.stringify(customerData, null, 2)}
 預約歷史：${JSON.stringify(appointmentHistory, null, 2)}
@@ -712,7 +712,7 @@ async function extractDataInsights(data, headers) {
         const { rawData, analysisType, focusAreas } = data;
 
         const prompt = `
-作為劉道玄醫師診所的數據科學專家，請從以下原始數據中提取洞察：
+作為劉道玄諮詢師診所的數據科學專家，請從以下原始數據中提取洞察：
 
 原始數據：${JSON.stringify(rawData, null, 2)}
 分析類型：${analysisType}
@@ -787,7 +787,7 @@ async function callOpenAI(prompt, model = 'gpt-3.5-turbo', maxTokens = 1500) {
             messages: [
                 {
                     role: 'system',
-                    content: '你是劉道玄醫師診所的專業AI分析師，請提供準確、實用的分析和建議。'
+                    content: '你是劉道玄諮詢師診所的專業AI分析師，請提供準確、實用的分析和建議。'
                 },
                 {
                     role: 'user',

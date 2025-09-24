@@ -1,6 +1,6 @@
 /**
  * Netlify + Manus 整合 Webhook 函數
- * 劉道玄醫師預約系統三方串接
+ * 劉道玄諮詢師預約系統三方串接
  */
 
 exports.handler = async (event, context) => {
@@ -86,7 +86,7 @@ async function handleAppointmentSync(appointmentData, headers) {
         const manusResponse = await syncToManus('/appointments', {
             type: 'appointment',
             data: {
-                doctor: '劉道玄醫師',
+                doctor: '劉道玄諮詢師',
                 client: appointmentData.clientName,
                 phone: appointmentData.clientPhone,
                 service: appointmentData.service,
@@ -166,7 +166,7 @@ async function handleFormSync(formData, headers) {
                 submittedAt: formData.createdTime
             },
             metadata: {
-                doctor: '劉道玄醫師',
+                doctor: '劉道玄諮詢師',
                 system: 'liu-daoxuan-forms',
                 netlify_function: 'form-sync'
             }
@@ -224,7 +224,7 @@ async function handleAIChatSync(chatData, headers) {
             },
             metadata: {
                 aiModel: 'gpt-3.5-turbo',
-                doctor: '劉道玄醫師',
+                doctor: '劉道玄諮詢師',
                 system: 'liu-daoxuan-ai-assistant',
                 netlify_function: 'openai-chat'
             }
@@ -276,7 +276,7 @@ async function handleDeployUpdate(deployData, headers) {
         // 1. 觸發 Netlify 重新部署
         const netlifyDeploy = await triggerNetlifyDeploy({
             branch: deployData.branch || 'main',
-            message: deployData.message || '劉道玄醫師系統更新',
+            message: deployData.message || '劉道玄諮詢師系統更新',
             clear_cache: true
         });
 
@@ -292,7 +292,7 @@ async function handleDeployUpdate(deployData, headers) {
                 timestamp: new Date().toISOString()
             },
             metadata: {
-                doctor: '劉道玄醫師',
+                doctor: '劉道玄諮詢師',
                 system: 'liu-daoxuan-deployment'
             }
         });
@@ -331,7 +331,7 @@ async function handleGetAnalytics(headers) {
     try {
         // 1. 從 Manus 獲取分析數據
         const manusAnalytics = await getFromManus('/analytics', {
-            doctor: '劉道玄醫師',
+            doctor: '劉道玄諮詢師',
             timeRange: '30d'
         });
 
@@ -571,7 +571,7 @@ async function analyzeAppointmentWithAI(appointmentData) {
                 messages: [
                     {
                         role: 'system',
-                        content: '你是劉道玄醫師的數據分析助理，請分析預約資料並提供洞察。'
+                        content: '你是劉道玄諮詢師的數據分析助理，請分析預約資料並提供洞察。'
                     },
                     {
                         role: 'user',

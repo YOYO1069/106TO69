@@ -289,7 +289,7 @@ async function analyzeChatContent(data) {
     const model = geminiAPI.getGenerativeModel({ model: 'gemini-1.5-flash' });
     
     const prompt = `
-作為劉道玄醫師的專業 AI 助理，請分析以下聊天內容並提供結構化的分析結果：
+作為劉道玄諮詢師的專業 AI 助理，請分析以下聊天內容並提供結構化的分析結果：
 
 聊天內容：
 "${messageContent}"
@@ -453,7 +453,7 @@ async function generateChatInsights(data) {
     const model = geminiAPI.getGenerativeModel({ model: 'gemini-1.5-flash' });
     
     const prompt = `
-作為劉道玄醫師的業務分析專家，請分析以下聊天資料並生成深度洞察報告：
+作為劉道玄諮詢師的業務分析專家，請分析以下聊天資料並生成深度洞察報告：
 
 時間範圍：${timeRange}
 分析類型：${analysisType}

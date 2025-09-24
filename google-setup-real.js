@@ -117,7 +117,7 @@ GOOGLE_AI_API_KEY=${config.GOOGLE_AI_API_KEY}
 
 // 主要執行函數
 function main() {
-    console.log('🎯 劉道玄醫師 Google 服務設定工具');
+    console.log('🎯 劉道玄諮詢師 Google 服務設定工具');
     console.log('=' .repeat(50));
     
     const config = generateGoogleConfig();
