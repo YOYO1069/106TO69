@@ -167,566 +167,63 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
+                <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
                         <a class="nav-link" href="index.html">
                             <i class="fas fa-home"></i> 首頁
                         </a>
                     </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="appointmentDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-calendar-alt"></i> 預約管理
+                        </a>
+                        <ul class="dropdown-menu bg-dark">
+                            <li><a class="dropdown-item text-light" href="liu-daoxuan-calendar.html"><i class="fas fa-calendar"></i> 劉道玄行事曆</a></li>
+                            <li><a class="dropdown-item text-light" href="advanced-calendar-system.html"><i class="fas fa-brain"></i> AI 智能行事曆</a></li>
+                            <li><a class="dropdown-item text-light" href="appointment_scheduling_system.html"><i class="fas fa-clock"></i> 預約排程系統</a></li>
+                            <li><a class="dropdown-item text-light" href="appointment-form-management.html"><i class="fas fa-clipboard-list"></i> 預約表單管理</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="medicalDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-md"></i> 醫療系統
+                        </a>
+                        <ul class="dropdown-menu bg-dark">
+                            <li><a class="dropdown-item text-light" href="medical_records.html"><i class="fas fa-file-medical"></i> 病歷系統</a></li>
+                            <li><a class="dropdown-item text-light" href="treatment_management.html"><i class="fas fa-procedures"></i> 療程管理</a></li>
+                            <li><a class="dropdown-item text-light" href="consent_forms.html"><i class="fas fa-file-signature"></i> 同意書管理</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="analyticsDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-chart-bar"></i> 數據分析
+                        </a>
+                        <ul class="dropdown-menu bg-dark">
+                            <li><a class="dropdown-item text-light" href="data_statistics.html"><i class="fas fa-chart-pie"></i> 數據統計</a></li>
+                            <li><a class="dropdown-item text-light" href="smart-crm-system.html"><i class="fas fa-users-cog"></i> 智能CRM</a></li>
+                            <li><a class="dropdown-item text-light" href="conversion-optimization.html"><i class="fas fa-chart-line"></i> 轉換優化</a></li>
+                            <li><a class="dropdown-item text-light" href="revenue-analytics.html"><i class="fas fa-dollar-sign"></i> 營收分析</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="managementDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-cogs"></i> 營運管理
+                        </a>
+                        <ul class="dropdown-menu bg-dark">
+                            <li><a class="dropdown-item text-light" href="performance_management.html"><i class="fas fa-trophy"></i> 業績管理</a></li>
+                            <li><a class="dropdown-item text-light" href="price_management.html"><i class="fas fa-tags"></i> 價格管理</a></li>
+                            <li><a class="dropdown-item text-light" href="smart_scheduling.html"><i class="fas fa-calendar-check"></i> 智能排程</a></li>
+                            <li><a class="dropdown-item text-light" href="employee_benefits.html"><i class="fas fa-gift"></i> 員工福利</a></li>
+                        </ul>
+                    </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="advanced-calendar-system.html">
-                            <i class="fas fa-brain"></i> AI 智能行事曆
+                        <a class="nav-link" href="chat-data-management.html">
+                            <i class="fas fa-comments"></i> 聊天資料
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="appointment-form-management.html">
-                            <i class="fas fa-clipboard-list"></i> 預約表單
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="chat-data-management.html">
-                            <i class="fas fa-comments"></i> 聊天資料管理
+                        <a class="nav-link" href="#" onclick="logout()">
+                            <i class="fas fa-sign-out-alt"></i> 登出
                         </a>
                     </li>
                 </ul>
-                <div class="navbar-nav">
-                    <div id="googleUserInfo" class="nav-item"></div>
-                    <button id="googleSignInBtn" class="btn btn-outline-light btn-sm me-2" style="display: none;">
-                        <i class="fab fa-google"></i> Google 登入
-                    </button>
-                    <button id="googleSignOutBtn" class="btn btn-outline-light btn-sm" style="display: none;">
-                        <i class="fas fa-sign-out-alt"></i> 登出
-                    </button>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <div class="container mt-4">
-        <!-- 頁面標題 -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <h1 class="text-center mb-3">
-                    <i class="fas fa-comments text-warning"></i>
-                    聊天資料管理系統
-                </h1>
-                <p class="text-center text-muted">
-                    整合 Google Sheets API，統一管理和分析聊天資料
-                </p>
-            </div>
-        </div>
-
-        <!-- Google 認證面板 -->
-        <div class="google-auth-panel">
-            <div class="row align-items-center">
-                <div class="col-md-8">
-                    <h5><i class="fab fa-google"></i> Google 服務狀態</h5>
-                    <div class="mt-2">
-                        <span>Google Auth: </span><span id="googleAuthStatus" class="status-indicator status-disconnected">未連接</span>
-                        <span>Google Sheets: </span><span id="googleSheetsStatus" class="status-indicator status-disconnected">未連接</span>
-                        <span>Google AI: </span><span id="googleAIStatus" class="status-indicator status-disconnected">未連接</span>
-                    </div>
-                </div>
-                <div class="col-md-4 text-end">
-                    <button id="connectGoogleBtn" class="action-btn">
-                        <i class="fab fa-google"></i> 連接 Google 服務
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- 處理控制面板 -->
-        <div class="processing-panel">
-            <h3><i class="fas fa-cogs"></i> 資料處理控制台</h3>
-            
-            <div class="row mt-4">
-                <div class="col-md-6">
-                    <h5>批量處理操作</h5>
-                    <button id="batchProcessBtn" class="action-btn">
-                        <i class="fas fa-magic"></i> 批量處理和統一格式
-                    </button>
-                    <button id="analyzeDataBtn" class="action-btn">
-                        <i class="fas fa-brain"></i> AI 智能分析
-                    </button>
-                    <button id="exportDataBtn" class="action-btn">
-                        <i class="fas fa-download"></i> 匯出資料
-                    </button>
-                </div>
-                <div class="col-md-6">
-                    <h5>單筆操作</h5>
-                    <button id="addDataBtn" class="action-btn" data-bs-toggle="modal" data-bs-target="#addDataModal">
-                        <i class="fas fa-plus"></i> 新增聊天資料
-                    </button>
-                    <button id="refreshDataBtn" class="action-btn">
-                        <i class="fas fa-sync"></i> 重新載入資料
-                    </button>
-                    <button id="validateDataBtn" class="action-btn">
-                        <i class="fas fa-check-circle"></i> 驗證資料完整性
-                    </button>
-                </div>
-            </div>
-
-            <!-- 處理進度 -->
-            <div class="progress-container" id="progressContainer" style="display: none;">
-                <h6>處理進度</h6>
-                <div class="progress">
-                    <div id="processingProgress" class="progress-bar" role="progressbar" style="width: 0%">0%</div>
-                </div>
-                <div id="progressText" class="mt-2 text-center">準備開始...</div>
-            </div>
-        </div>
-
-        <!-- 統計資訊 -->
-        <div id="processingStats" class="mb-4">
-            <!-- 統計資料將動態載入 -->
-        </div>
-
-        <!-- 資料表格 -->
-        <div class="data-table-container">
-            <h3><i class="fas fa-table"></i> 聊天資料總覽</h3>
-            
-            <div class="table-responsive mt-3">
-                <table id="chatDataTable" class="table table-dark table-striped">
-                    <thead>
-                        <tr>
-                            <th>時間</th>
-                            <th>平台</th>
-                            <th>客戶姓名</th>
-                            <th>電話</th>
-                            <th>詢問類型</th>
-                            <th>療程</th>
-                            <th>客戶意圖</th>
-                            <th>回應狀態</th>
-                            <th>潛客評分</th>
-                            <th>轉換狀態</th>
-                            <th>操作</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- 資料將動態載入 -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- 處理日誌 -->
-        <div class="log-container" id="logContainer">
-            <h6><i class="fas fa-terminal"></i> 處理日誌</h6>
-            <div id="logContent">
-                <div class="log-entry log-info">系統初始化完成，等待 Google 服務連接...</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 新增資料模態框 -->
-    <div class="modal fade" id="addDataModal" tabindex="-1">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content bg-dark">
-                <div class="modal-header">
-                    <h5 class="modal-title"><i class="fas fa-plus"></i> 新增聊天資料</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="addDataForm">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label">平台</label>
-                                    <select class="form-select" name="platform" required>
-                                        <option value="">請選擇平台</option>
-                                        <option value="LINE">LINE</option>
-                                        <option value="Instagram">Instagram</option>
-                                        <option value="Facebook">Facebook</option>
-                                        <option value="電話">電話</option>
-                                        <option value="現場">現場</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label">客戶姓名</label>
-                                    <input type="text" class="form-control" name="customerName" required>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label">客戶電話</label>
-                                    <input type="tel" class="form-control" name="customerPhone">
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label">客戶信箱</label>
-                                    <input type="email" class="form-control" name="customerEmail">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label">詢問類型</label>
-                                    <select class="form-select" name="inquiryType">
-                                        <option value="">請選擇類型</option>
-                                        <option value="預約">預約</option>
-                                        <option value="諮詢">諮詢</option>
-                                        <option value="價格">價格</option>
-                                        <option value="其他">其他</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label">療程項目</label>
-                                    <input type="text" class="form-control" name="treatment" placeholder="例：肉毒桿菌、玻尿酸">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">對話內容</label>
-                            <textarea class="form-control" name="messageContent" rows="4" required placeholder="請輸入完整的對話內容..."></textarea>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label">回應狀態</label>
-                                    <select class="form-select" name="responseStatus">
-                                        <option value="待回應">待回應</option>
-                                        <option value="已回應">已回應</option>
-                                        <option value="已預約">已預約</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label">需要追蹤</label>
-                                    <select class="form-select" name="followUpRequired">
-                                        <option value="是">是</option>
-                                        <option value="否">否</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">備註</label>
-                            <textarea class="form-control" name="notes" rows="2" placeholder="其他備註資訊..."></textarea>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                    <button type="button" class="btn btn-warning" id="saveDataBtn">
-                        <i class="fas fa-save"></i> 儲存並分析
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- JavaScript 庫 -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-    
-    <!-- Google API -->
-    <script src="https://apis.google.com/js/api.js"></script>
-    
-    <!-- 自定義 JavaScript -->
-    <script src="js/google-integration.js"></script>
-    <script src="js/chat-data-manager.js"></script>
-    
-    <script>
-        // 頁面初始化
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeChatDataManagement();
-        });
-        
-        async function initializeChatDataManagement() {
-            try {
-                // 等待 Google 服務初始化
-                await waitForGoogleServices();
-                
-                // 初始化 DataTable
-                initializeDataTable();
-                
-                // 綁定事件處理器
-                bindEventHandlers();
-                
-                // 載入初始資料
-                await loadInitialData();
-                
-                addLog('系統初始化完成', 'success');
-            } catch (error) {
-                console.error('初始化失敗:', error);
-                addLog(`初始化失敗: ${error.message}`, 'error');
-            }
-        }
-        
-        function waitForGoogleServices() {
-            return new Promise((resolve) => {
-                const checkServices = () => {
-                    if (window.googleManager && window.chatDataManager) {
-                        resolve();
-                    } else {
-                        setTimeout(checkServices, 100);
-                    }
-                };
-                checkServices();
-            });
-        }
-        
-        function initializeDataTable() {
-            $('#chatDataTable').DataTable({
-                language: {
-                    url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/zh-HANT.json'
-                },
-                pageLength: 25,
-                order: [[0, 'desc']], // 按時間降序排列
-                columnDefs: [
-                    { targets: [10], orderable: false } // 操作欄不可排序
-                ]
-            });
-        }
-        
-        function bindEventHandlers() {
-            // Google 連接按鈕
-            document.getElementById('connectGoogleBtn').addEventListener('click', connectGoogleServices);
-            
-            // Google 登入/登出按鈕
-            document.getElementById('googleSignInBtn').addEventListener('click', () => {
-                window.googleManager.signIn();
-            });
-            
-            document.getElementById('googleSignOutBtn').addEventListener('click', () => {
-                window.googleManager.signOut();
-            });
-            
-            // 處理按鈕
-            document.getElementById('batchProcessBtn').addEventListener('click', batchProcessData);
-            document.getElementById('analyzeDataBtn').addEventListener('click', analyzeData);
-            document.getElementById('exportDataBtn').addEventListener('click', exportData);
-            document.getElementById('refreshDataBtn').addEventListener('click', refreshData);
-            document.getElementById('validateDataBtn').addEventListener('click', validateData);
-            
-            // 儲存按鈕
-            document.getElementById('saveDataBtn').addEventListener('click', saveNewData);
-        }
-        
-        async function connectGoogleServices() {
-            try {
-                addLog('正在連接 Google 服務...', 'info');
-                
-                if (!window.googleManager.isSignedIn) {
-                    await window.googleManager.signIn();
-                }
-                
-                updateServiceStatus();
-                addLog('Google 服務連接成功', 'success');
-            } catch (error) {
-                console.error('Google 服務連接失敗:', error);
-                addLog(`Google 服務連接失敗: ${error.message}`, 'error');
-            }
-        }
-        
-        function updateServiceStatus() {
-            const status = window.googleManager.getStatus();
-            
-            // 更新狀態指示器
-            updateStatusIndicator('googleAuthStatus', status.isSignedIn);
-            updateStatusIndicator('googleSheetsStatus', status.isSignedIn);
-            updateStatusIndicator('googleAIStatus', status.hasGoogleAI);
-        }
-        
-        function updateStatusIndicator(elementId, isConnected) {
-            const element = document.getElementById(elementId);
-            if (element) {
-                element.className = isConnected ? 
-                    'status-indicator status-connected' : 'status-indicator status-disconnected';
-                element.textContent = isConnected ? '已連接' : '未連接';
-            }
-        }
-        
-        async function batchProcessData() {
-            try {
-                showProgress(true);
-                addLog('開始批量處理資料...', 'info');
-                
-                await window.chatDataManager.batchProcessData();
-                
-                addLog('批量處理完成', 'success');
-                await refreshData();
-            } catch (error) {
-                console.error('批量處理失敗:', error);
-                addLog(`批量處理失敗: ${error.message}`, 'error');
-            } finally {
-                showProgress(false);
-            }
-        }
-        
-        async function analyzeData() {
-            try {
-                addLog('開始 AI 智能分析...', 'info');
-                
-                // 這裡可以添加更多分析功能
-                addLog('AI 分析功能開發中...', 'info');
-            } catch (error) {
-                console.error('分析失敗:', error);
-                addLog(`分析失敗: ${error.message}`, 'error');
-            }
-        }
-        
-        async function exportData() {
-            try {
-                addLog('開始匯出資料...', 'info');
-                
-                await window.chatDataManager.exportProcessedData('json');
-                
-                addLog('資料匯出完成', 'success');
-            } catch (error) {
-                console.error('匯出失敗:', error);
-                addLog(`匯出失敗: ${error.message}`, 'error');
-            }
-        }
-        
-        async function refreshData() {
-            try {
-                addLog('重新載入資料...', 'info');
-                
-                await loadInitialData();
-                
-                addLog('資料載入完成', 'success');
-            } catch (error) {
-                console.error('載入失敗:', error);
-                addLog(`載入失敗: ${error.message}`, 'error');
-            }
-        }
-        
-        async function validateData() {
-            try {
-                addLog('開始驗證資料完整性...', 'info');
-                
-                // 這裡可以添加資料驗證邏輯
-                addLog('資料驗證功能開發中...', 'info');
-            } catch (error) {
-                console.error('驗證失敗:', error);
-                addLog(`驗證失敗: ${error.message}`, 'error');
-            }
-        }
-        
-        async function saveNewData() {
-            try {
-                const form = document.getElementById('addDataForm');
-                const formData = new FormData(form);
-                const chatData = {};
-                
-                for (let [key, value] of formData.entries()) {
-                    chatData[key] = value;
-                }
-                
-                addLog('正在儲存新資料...', 'info');
-                
-                await window.chatDataManager.addChatData(chatData);
-                
-                // 關閉模態框
-                const modal = bootstrap.Modal.getInstance(document.getElementById('addDataModal'));
-                modal.hide();
-                
-                // 清空表單
-                form.reset();
-                
-                // 重新載入資料
-                await refreshData();
-                
-                addLog('新資料儲存成功', 'success');
-            } catch (error) {
-                console.error('儲存失敗:', error);
-                addLog(`儲存失敗: ${error.message}`, 'error');
-            }
-        }
-        
-        async function loadInitialData() {
-            try {
-                if (!window.chatDataManager.isInitialized) {
-                    addLog('等待聊天資料管理器初始化...', 'info');
-                    return;
-                }
-                
-                const data = await window.chatDataManager.readSheetData();
-                
-                // 更新 DataTable
-                const table = $('#chatDataTable').DataTable();
-                table.clear();
-                
-                if (data.length > 1) { // 跳過標題行
-                    const rows = data.slice(1).map(row => {
-                        const [
-                            timestamp, platform, customerName, customerPhone, customerEmail,
-                            inquiryType, treatment, messageContent, customerIntent, responseStatus,
-                            appointmentDate, followUpRequired, notes, leadScore, conversionStatus
-                        ] = row;
-                        
-                        return [
-                            timestamp ? new Date(timestamp).toLocaleDateString('zh-TW') : '',
-                            platform || '',
-                            customerName || '',
-                            customerPhone || '',
-                            inquiryType || '',
-                            treatment || '',
-                            customerIntent || '',
-                            responseStatus || '',
-                            leadScore || '0',
-                            conversionStatus || '',
-                            `<button class="btn btn-sm btn-outline-warning" onclick="editData('${customerName}')">
-                                <i class="fas fa-edit"></i>
-                            </button>`
-                        ];
-                    });
-                    
-                    table.rows.add(rows);
-                }
-                
-                table.draw();
-                
-                addLog(`載入 ${data.length - 1} 筆資料`, 'success');
-            } catch (error) {
-                console.error('載入資料失敗:', error);
-                addLog(`載入資料失敗: ${error.message}`, 'error');
-            }
-        }
-        
-        function showProgress(show) {
-            const container = document.getElementById('progressContainer');
-            container.style.display = show ? 'block' : 'none';
-            
-            if (!show) {
-                document.getElementById('processingProgress').style.width = '0%';
-                document.getElementById('processingProgress').textContent = '0%';
-            }
-        }
-        
-        function addLog(message, type = 'info') {
-            const logContent = document.getElementById('logContent');
-            const timestamp = new Date().toLocaleTimeString('zh-TW');
-            const logEntry = document.createElement('div');
-            logEntry.className = `log-entry log-${type}`;
-            logEntry.textContent = `[${timestamp}] ${message}`;
-            
-            logContent.appendChild(logEntry);
-            logContent.scrollTop = logContent.scrollHeight;
-        }
-        
-        function editData(customerName) {
-            addLog(`編輯功能開發中: ${customerName}`, 'info');
-        }
-        
-        // 監聽 Google 服務狀態變化
-        setInterval(() => {
-            if (window.googleManager) {
-                updateServiceStatus();
-            }
-        }, 5000);
-    </script>
-</body>
-</html>

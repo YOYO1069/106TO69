@@ -183,52 +183,29 @@
                             <i class="fas fa-home"></i> 首頁
                         </a>
                     </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="appointmentDropdown" role="button" data-bs-toggle="dropdown">
+                    <li class="nav-item">
+                        <a class="nav-link" href="appointment_scheduling_system.html">
                             <i class="fas fa-calendar-alt"></i> 預約管理
                         </a>
-                        <ul class="dropdown-menu bg-dark">
-                            <li><a class="dropdown-item text-light" href="liu-daoxuan-calendar.html"><i class="fas fa-calendar"></i> 劉道玄行事曆</a></li>
-                            <li><a class="dropdown-item text-light" href="advanced-calendar-system.html"><i class="fas fa-brain"></i> AI 智能行事曆</a></li>
-                            <li><a class="dropdown-item text-light" href="appointment_scheduling_system.html"><i class="fas fa-clock"></i> 預約排程系統</a></li>
-                            <li><a class="dropdown-item text-light" href="appointment-form-management.html"><i class="fas fa-clipboard-list"></i> 預約表單管理</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="medicalDropdown" role="button" data-bs-toggle="dropdown">
-                            <i class="fas fa-user-md"></i> 醫療系統
-                        </a>
-                        <ul class="dropdown-menu bg-dark">
-                            <li><a class="dropdown-item text-light" href="medical_records.html"><i class="fas fa-file-medical"></i> 病歷系統</a></li>
-                            <li><a class="dropdown-item text-light" href="treatment_management.html"><i class="fas fa-procedures"></i> 療程管理</a></li>
-                            <li><a class="dropdown-item text-light" href="consent_forms.html"><i class="fas fa-file-signature"></i> 同意書管理</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="analyticsDropdown" role="button" data-bs-toggle="dropdown">
-                            <i class="fas fa-chart-bar"></i> 數據分析
-                        </a>
-                        <ul class="dropdown-menu bg-dark">
-                            <li><a class="dropdown-item text-light" href="data_statistics.html"><i class="fas fa-chart-pie"></i> 數據統計</a></li>
-                            <li><a class="dropdown-item text-light" href="smart-crm-system.html"><i class="fas fa-users-cog"></i> 智能CRM</a></li>
-                            <li><a class="dropdown-item text-light" href="conversion-optimization.html"><i class="fas fa-chart-line"></i> 轉換優化</a></li>
-                            <li><a class="dropdown-item text-light" href="revenue-analytics.html"><i class="fas fa-dollar-sign"></i> 營收分析</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="managementDropdown" role="button" data-bs-toggle="dropdown">
-                            <i class="fas fa-cogs"></i> 營運管理
-                        </a>
-                        <ul class="dropdown-menu bg-dark">
-                            <li><a class="dropdown-item text-light" href="performance_management.html"><i class="fas fa-trophy"></i> 業績管理</a></li>
-                            <li><a class="dropdown-item text-light" href="price_management.html"><i class="fas fa-tags"></i> 價格管理</a></li>
-                            <li><a class="dropdown-item text-light" href="smart_scheduling.html"><i class="fas fa-calendar-check"></i> 智能排程</a></li>
-                            <li><a class="dropdown-item text-light" href="employee_benefits.html"><i class="fas fa-gift"></i> 員工福利</a></li>
-                        </ul>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="chat-data-management.html">
-                            <i class="fas fa-comments"></i> 聊天資料
+                        <a class="nav-link active" href="medical_records.html">
+                    <li class="nav-item">
+                        <a class="nav-link" href="treatment_management.html">
+                            <i class="fas fa-spa"></i> 療程管理
+                        </a>
+                    </li>
+                            <i class="fas fa-file-medical"></i> 病歷系統
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="consent_forms.html">
+                    <li class="nav-item">
+                        <a class="nav-link" href="data_statistics.html">
+                            <i class="fas fa-chart-bar"></i> 數據統計
+                        </a>
+                    </li>
+                            <i class="fas fa-file-signature"></i> 同意書
                         </a>
                     </li>
                     <li class="nav-item">

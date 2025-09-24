@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能客戶關係管理 - 劉道玄醫師預約系統</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- 自定義樣式 -->
+    <link rel="stylesheet" href="css/main.css">
+    
+    <style>
+        .crm-panel {
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 2px solid rgba(212, 175, 55, 0.3);
+        }
+        
+        .customer-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #d4af37;
+            transition: all 0.3s;
+        }
+        
+        .customer-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.2);
+        }
+        
+        .customer-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #d4af37 0%, #f1c40f 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #1a1a2e;
+            font-weight: bold;
+        }
+        
+        .lifecycle-stage {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .stage-lead { background: #17a2b8; color: white; }
+        .stage-prospect { background: #ffc107; color: #1a1a2e; }
+        .stage-customer { background: #28a745; color: white; }
+        .stage-vip { background: #6f42c1; color: white; }
+        .stage-inactive { background: #6c757d; color: white; }
+        
+        .action-btn {
+            background: linear-gradient(135deg, #d4af37 0%, #f1c40f 100%);
+            border: none;
+            border-radius: 25px;
+            padding: 8px 20px;
+            color: #1a1a2e;
+            font-weight: bold;
+            transition: all 0.3s;
+            margin: 2px;
+            font-size: 0.9rem;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+            color: #1a1a2e;
+        }
+        
+        .metric-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            margin-bottom: 20px;
+        }
+        
+        .metric-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #d4af37;
+            margin-bottom: 10px;
+        }
+        
+        .metric-label {
+            color: #ccc;
+            font-size: 0.9rem;
+        }
+        
+        .chart-container {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .timeline-item {
+            border-left: 2px solid #d4af37;
+            padding-left: 20px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -6px;
+            top: 0;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #d4af37;
+        }
+        
+        .ai-insight {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(102, 126, 234, 0.3);
+        }
+        
+        .filter-panel {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 導航列 -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-user-md"></i> 劉道玄醫師預約系統
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">
+                            <i class="fas fa-home"></i> 首頁
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="appointmentDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-calendar-alt"></i> 預約管理
+                        </a>
+                        <ul class="dropdown-menu bg-dark">
+                            <li><a class="dropdown-item text-light" href="liu-daoxuan-calendar.html"><i class="fas fa-calendar"></i> 劉道玄行事曆</a></li>
+                            <li><a class="dropdown-item text-light" href="advanced-calendar-system.html"><i class="fas fa-brain"></i> AI 智能行事曆</a></li>
+                            <li><a class="dropdown-item text-light" href="appointment_scheduling_system.html"><i class="fas fa-clock"></i> 預約排程系統</a></li>
+                            <li><a class="dropdown-item text-light" href="appointment-form-management.html"><i class="fas fa-clipboard-list"></i> 預約表單管理</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="medicalDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-md"></i> 醫療系統
+                        </a>
+                        <ul class="dropdown-menu bg-dark">
+                            <li><a class="dropdown-item text-light" href="medical_records.html"><i class="fas fa-file-medical"></i> 病歷系統</a></li>
+                            <li><a class="dropdown-item text-light" href="treatment_management.html"><i class="fas fa-procedures"></i> 療程管理</a></li>
+                            <li><a class="dropdown-item text-light" href="consent_forms.html"><i class="fas fa-file-signature"></i> 同意書管理</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="analyticsDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-chart-bar"></i> 數據分析
+                        </a>
+                        <ul class="dropdown-menu bg-dark">
+                            <li><a class="dropdown-item text-light" href="data_statistics.html"><i class="fas fa-chart-pie"></i> 數據統計</a></li>
+                            <li><a class="dropdown-item text-light" href="smart-crm-system.html"><i class="fas fa-users-cog"></i> 智能CRM</a></li>
+                            <li><a class="dropdown-item text-light" href="conversion-optimization.html"><i class="fas fa-chart-line"></i> 轉換優化</a></li>
+                            <li><a class="dropdown-item text-light" href="revenue-analytics.html"><i class="fas fa-dollar-sign"></i> 營收分析</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="managementDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-cogs"></i> 營運管理
+                        </a>
+                        <ul class="dropdown-menu bg-dark">
+                            <li><a class="dropdown-item text-light" href="performance_management.html"><i class="fas fa-trophy"></i> 業績管理</a></li>
+                            <li><a class="dropdown-item text-light" href="price_management.html"><i class="fas fa-tags"></i> 價格管理</a></li>
+                            <li><a class="dropdown-item text-light" href="smart_scheduling.html"><i class="fas fa-calendar-check"></i> 智能排程</a></li>
+                            <li><a class="dropdown-item text-light" href="employee_benefits.html"><i class="fas fa-gift"></i> 員工福利</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="chat-data-management.html">
+                            <i class="fas fa-comments"></i> 聊天資料
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="logout()">
+                            <i class="fas fa-sign-out-alt"></i> 登出
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-4">
+        <!-- 頁面標題 -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h1 class="text-center mb-3">
+                    <i class="fas fa-users text-warning"></i>
+                    智能客戶關係管理系統
+                </h1>
+                <p class="text-center text-muted">
+                    AI 驅動的客戶生命週期管理和個人化服務
+                </p>
+            </div>
+        </div>
+
+        <!-- 關鍵指標 -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="metric-card">
+                    <div class="metric-number" id="totalCustomers">0</div>
+                    <div class="metric-label">總客戶數</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="metric-card">
+                    <div class="metric-number" id="activeCustomers">0</div>
+                    <div class="metric-label">活躍客戶</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="metric-card">
+                    <div class="metric-number" id="avgLifetimeValue">$0</div>
+                    <div class="metric-label">平均客戶價值</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="metric-card">
+                    <div class="metric-number" id="retentionRate">0%</div>
+                    <div class="metric-label">客戶留存率</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- 左側：客戶列表和篩選 -->
+            <div class="col-lg-8">
+                <!-- 篩選面板 -->
+                <div class="filter-panel">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <select class="form-select" id="stageFilter">
+                                <option value="">所有階段</option>
+                                <option value="lead">潛在客戶</option>
+                                <option value="prospect">意向客戶</option>
+                                <option value="customer">現有客戶</option>
+                                <option value="vip">VIP客戶</option>
+                                <option value="inactive">非活躍</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="sourceFilter">
+                                <option value="">所有來源</option>
+                                <option value="LINE">LINE</option>
+                                <option value="Instagram">Instagram</option>
+                                <option value="Facebook">Facebook</option>
+                                <option value="電話">電話</option>
+                                <option value="現場">現場</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="text" class="form-control" id="searchCustomer" placeholder="搜尋客戶...">
+                        </div>
+                        <div class="col-md-3">
+                            <button class="action-btn" id="addCustomerBtn">
+                                <i class="fas fa-plus"></i> 新增客戶
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 客戶列表 -->
+                <div class="crm-panel">
+                    <h3><i class="fas fa-list"></i> 客戶列表</h3>
+                    <div id="customerList">
+                        <!-- 客戶卡片將動態載入 -->
+                    </div>
+                    
+                    <!-- 分頁 -->
+                    <nav>
+                        <ul class="pagination justify-content-center" id="customerPagination">
+                            <!-- 分頁將動態生成 -->
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- 右側：分析和洞察 -->
+            <div class="col-lg-4">
+                <!-- AI 洞察 -->
+                <div class="ai-insight">
+                    <h5><i class="fas fa-brain"></i> AI 智能洞察</h5>
+                    <div id="aiInsights">
+                        <div class="text-center">
+                            <i class="fas fa-spinner fa-spin"></i> 分析中...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 客戶生命週期分布 -->
+                <div class="chart-container">
+                    <h5><i class="fas fa-chart-pie"></i> 客戶生命週期分布</h5>
+                    <canvas id="lifecycleChart" width="400" height="300"></canvas>
+                </div>
+
+                <!-- 客戶來源分析 -->
+                <div class="chart-container">
+                    <h5><i class="fas fa-chart-bar"></i> 客戶來源分析</h5>
+                    <canvas id="sourceChart" width="400" height="300"></canvas>
+                </div>
+
+                <!-- 近期活動 -->
+                <div class="crm-panel">
+                    <h5><i class="fas fa-clock"></i> 近期活動</h5>
+                    <div id="recentActivities">
+                        <!-- 活動時間軸將動態載入 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 客戶詳情模態框 -->
+    <div class="modal fade" id="customerModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content bg-dark">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-user"></i> 客戶詳情
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <!-- 客戶基本資訊 -->
+                        <div class="col-md-4">
+                            <div class="text-center mb-4">
+                                <div class="customer-avatar mx-auto mb-3" id="modalAvatar">A</div>
+                                <h4 id="modalCustomerName">客戶姓名</h4>
+                                <span class="lifecycle-stage" id="modalLifecycleStage">潛在客戶</span>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <strong>聯絡資訊</strong>
+                                <div id="modalContactInfo">
+                                    <!-- 聯絡資訊 -->
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <strong>客戶標籤</strong>
+                                <div id="modalCustomerTags">
+                                    <!-- 客戶標籤 -->
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 互動歷史 -->
+                        <div class="col-md-4">
+                            <h5>互動歷史</h5>
+                            <div id="modalInteractionHistory" style="max-height: 400px; overflow-y: auto;">
+                                <!-- 互動歷史時間軸 -->
+                            </div>
+                        </div>
+                        
+                        <!-- 預約記錄和分析 -->
+                        <div class="col-md-4">
+                            <h5>預約記錄</h5>
+                            <div id="modalAppointmentHistory" style="max-height: 200px; overflow-y: auto;">
+                                <!-- 預約記錄 -->
+                            </div>
+                            
+                            <h5 class="mt-4">AI 分析</h5>
+                            <div id="modalAIAnalysis">
+                                <!-- AI 客戶分析 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="action-btn" id="scheduleFollowUpBtn">
+                        <i class="fas fa-calendar-plus"></i> 安排追蹤
+                    </button>
+                    <button type="button" class="action-btn" id="sendMessageBtn">
+                        <i class="fas fa-envelope"></i> 發送訊息
+                    </button>
+                    <button type="button" class="action-btn" id="updateStageBtn">
+                        <i class="fas fa-arrow-up"></i> 更新階段
+                    </button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript 庫 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    
+    <!-- 自定義 JavaScript -->
+    <script src="js/smart-crm-manager.js"></script>
+    
+    <script>
+        // 頁面初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof SmartCRMManager !== 'undefined') {
+                window.crmManager = new SmartCRMManager();
+            } else {
+                console.error('SmartCRMManager not loaded');
+            }
+        });
+    </script>
+</body>
+</html>

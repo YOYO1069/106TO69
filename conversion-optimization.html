@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>預約轉換優化 - 劉道玄醫師預約系統</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- 自定義樣式 -->
+    <link rel="stylesheet" href="css/main.css">
+    
+    <style>
+        .optimization-panel {
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 2px solid rgba(212, 175, 55, 0.3);
+        }
+        
+        .funnel-stage {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #d4af37;
+            position: relative;
+            transition: all 0.3s;
+        }
+        
+        .funnel-stage:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.2);
+        }
+        
+        .funnel-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #d4af37;
+        }
+        
+        .conversion-rate {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            position: absolute;
+            top: 15px;
+            right: 15px;
+        }
+        
+        .conversion-rate.low {
+            background: linear-gradient(135deg, #dc3545 0%, #e74c3c 100%);
+        }
+        
+        .conversion-rate.medium {
+            background: linear-gradient(135deg, #ffc107 0%, #f39c12 100%);
+            color: #1a1a2e;
+        }
+        
+        .optimization-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+        
+        .metric-trend {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .trend-up {
+            color: #28a745;
+        }
+        
+        .trend-down {
+            color: #dc3545;
+        }
+        
+        .trend-stable {
+            color: #ffc107;
+        }
+        
+        .action-item {
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid #d4af37;
+        }
+        
+        .priority-high {
+            border-left-color: #dc3545;
+        }
+        
+        .priority-medium {
+            border-left-color: #ffc107;
+        }
+        
+        .priority-low {
+            border-left-color: #28a745;
+        }
+        
+        .optimization-btn {
+            background: linear-gradient(135deg, #d4af37 0%, #f1c40f 100%);
+            border: none;
+            border-radius: 25px;
+            padding: 12px 25px;
+            color: #1a1a2e;
+            font-weight: bold;
+            transition: all 0.3s;
+            margin: 5px;
+        }
+        
+        .optimization-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3);
+            color: #1a1a2e;
+        }
+        
+        .chart-container {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            height: 400px;
+        }
+        
+        .ab-test-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(102, 126, 234, 0.3);
+        }
+        
+        .test-variant {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+        
+        .winner-badge {
+            background: #28a745;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <!-- 導航列 -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-user-md"></i> 劉道玄醫師預約系統
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">
+                            <i class="fas fa-home"></i> 首頁
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="appointmentDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-calendar-alt"></i> 預約管理
+                        </a>
+                        <ul class="dropdown-menu bg-dark">
+                            <li><a class="dropdown-item text-light" href="liu-daoxuan-calendar.html"><i class="fas fa-calendar"></i> 劉道玄行事曆</a></li>
+                            <li><a class="dropdown-item text-light" href="advanced-calendar-system.html"><i class="fas fa-brain"></i> AI 智能行事曆</a></li>
+                            <li><a class="dropdown-item text-light" href="appointment_scheduling_system.html"><i class="fas fa-clock"></i> 預約排程系統</a></li>
+                            <li><a class="dropdown-item text-light" href="appointment-form-management.html"><i class="fas fa-clipboard-list"></i> 預約表單管理</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="medicalDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-md"></i> 醫療系統
+                        </a>
+                        <ul class="dropdown-menu bg-dark">
+                            <li><a class="dropdown-item text-light" href="medical_records.html"><i class="fas fa-file-medical"></i> 病歷系統</a></li>
+                            <li><a class="dropdown-item text-light" href="treatment_management.html"><i class="fas fa-procedures"></i> 療程管理</a></li>
+                            <li><a class="dropdown-item text-light" href="consent_forms.html"><i class="fas fa-file-signature"></i> 同意書管理</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="analyticsDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-chart-bar"></i> 數據分析
+                        </a>
+                        <ul class="dropdown-menu bg-dark">
+                            <li><a class="dropdown-item text-light" href="data_statistics.html"><i class="fas fa-chart-pie"></i> 數據統計</a></li>
+                            <li><a class="dropdown-item text-light" href="smart-crm-system.html"><i class="fas fa-users-cog"></i> 智能CRM</a></li>
+                            <li><a class="dropdown-item text-light" href="conversion-optimization.html"><i class="fas fa-chart-line"></i> 轉換優化</a></li>
+                            <li><a class="dropdown-item text-light" href="revenue-analytics.html"><i class="fas fa-dollar-sign"></i> 營收分析</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="managementDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-cogs"></i> 營運管理
+                        </a>
+                        <ul class="dropdown-menu bg-dark">
+                            <li><a class="dropdown-item text-light" href="performance_management.html"><i class="fas fa-trophy"></i> 業績管理</a></li>
+                            <li><a class="dropdown-item text-light" href="price_management.html"><i class="fas fa-tags"></i> 價格管理</a></li>
+                            <li><a class="dropdown-item text-light" href="smart_scheduling.html"><i class="fas fa-calendar-check"></i> 智能排程</a></li>
+                            <li><a class="dropdown-item text-light" href="employee_benefits.html"><i class="fas fa-gift"></i> 員工福利</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="chat-data-management.html">
+                            <i class="fas fa-comments"></i> 聊天資料
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="logout()">
+                            <i class="fas fa-sign-out-alt"></i> 登出
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-4">
+        <!-- 頁面標題 -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h1 class="text-center mb-3">
+                    <i class="fas fa-chart-line text-warning"></i>
+                    預約轉換優化系統
+                </h1>
+                <p class="text-center text-muted">
+                    AI 驅動的轉換漏斗分析和優化建議
+                </p>
+            </div>
+        </div>
+
+        <!-- 轉換漏斗總覽 -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="optimization-panel">
+                    <h3><i class="fas fa-filter"></i> 轉換漏斗分析</h3>
+                    <div class="row mt-4">
+                        <div class="col-md-2">
+                            <div class="funnel-stage">
+                                <div class="conversion-rate medium">100%</div>
+                                <div class="funnel-number" id="visitorsCount">1,250</div>
+                                <h6>網站訪客</h6>
+                                <small class="text-muted">本月總訪客數</small>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="funnel-stage">
+                                <div class="conversion-rate medium" id="inquiryRate">24%</div>
+                                <div class="funnel-number" id="inquiriesCount">300</div>
+                                <h6>諮詢詢問</h6>
+                                <small class="text-muted">主動詢問客戶</small>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="funnel-stage">
+                                <div class="conversion-rate" id="leadRate">67%</div>
+                                <div class="funnel-number" id="leadsCount">200</div>
+                                <h6>潛在客戶</h6>
+                                <small class="text-muted">留下聯絡資訊</small>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="funnel-stage">
+                                <div class="conversion-rate" id="consultationRate">45%</div>
+                                <div class="funnel-number" id="consultationsCount">90</div>
+                                <h6>諮詢預約</h6>
+                                <small class="text-muted">預約諮詢時間</small>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="funnel-stage">
+                                <div class="conversion-rate" id="appointmentRate">78%</div>
+                                <div class="funnel-number" id="appointmentsCount">70</div>
+                                <h6>療程預約</h6>
+                                <small class="text-muted">確認療程預約</small>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="funnel-stage">
+                                <div class="conversion-rate" id="completionRate">86%</div>
+                                <div class="funnel-number" id="completionsCount">60</div>
+                                <h6>完成療程</h6>
+                                <small class="text-muted">實際完成療程</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- 左側：優化建議和行動項目 -->
+            <div class="col-lg-8">
+                <!-- AI 優化建議 -->
+                <div class="optimization-panel">
+                    <h3><i class="fas fa-brain"></i> AI 優化建議</h3>
+                    <div id="optimizationSuggestions">
+                        <!-- 優化建議將動態載入 -->
+                    </div>
+                </div>
+
+                <!-- 行動項目 -->
+                <div class="optimization-panel">
+                    <h3><i class="fas fa-tasks"></i> 優化行動項目</h3>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h5 class="text-danger">高優先級</h5>
+                            <div id="highPriorityActions">
+                                <!-- 高優先級行動項目 -->
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <h5 class="text-warning">中優先級</h5>
+                            <div id="mediumPriorityActions">
+                                <!-- 中優先級行動項目 -->
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <h5 class="text-success">低優先級</h5>
+                            <div id="lowPriorityActions">
+                                <!-- 低優先級行動項目 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- A/B 測試結果 -->
+                <div class="optimization-panel">
+                    <h3><i class="fas fa-flask"></i> A/B 測試結果</h3>
+                    <div id="abTestResults">
+                        <!-- A/B 測試結果將動態載入 -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右側：圖表和趨勢分析 -->
+            <div class="col-lg-4">
+                <!-- 轉換趨勢圖 -->
+                <div class="chart-container">
+                    <h5><i class="fas fa-chart-line"></i> 轉換趨勢分析</h5>
+                    <canvas id="conversionTrendChart"></canvas>
+                </div>
+
+                <!-- 來源轉換率 -->
+                <div class="chart-container">
+                    <h5><i class="fas fa-chart-bar"></i> 來源轉換率</h5>
+                    <canvas id="sourceConversionChart"></canvas>
+                </div>
+
+                <!-- 關鍵指標 -->
+                <div class="optimization-panel">
+                    <h5><i class="fas fa-tachometer-alt"></i> 關鍵指標</h5>
+                    <div class="optimization-card">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6>整體轉換率</h6>
+                                <div class="metric-trend">
+                                    <span class="h4" id="overallConversionRate">4.8%</span>
+                                    <span class="trend-up">
+                                        <i class="fas fa-arrow-up"></i> +0.3%
+                                    </span>
+                                </div>
+                            </div>
+                            <i class="fas fa-percentage fa-2x text-warning"></i>
+                        </div>
+                    </div>
+
+                    <div class="optimization-card">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6>平均轉換時間</h6>
+                                <div class="metric-trend">
+                                    <span class="h4" id="avgConversionTime">7.2天</span>
+                                    <span class="trend-down">
+                                        <i class="fas fa-arrow-down"></i> -1.1天
+                                    </span>
+                                </div>
+                            </div>
+                            <i class="fas fa-clock fa-2x text-warning"></i>
+                        </div>
+                    </div>
+
+                    <div class="optimization-card">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6>客戶獲取成本</h6>
+                                <div class="metric-trend">
+                                    <span class="h4" id="customerAcquisitionCost">$850</span>
+                                    <span class="trend-stable">
+                                        <i class="fas fa-minus"></i> 持平
+                                    </span>
+                                </div>
+                            </div>
+                            <i class="fas fa-dollar-sign fa-2x text-warning"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 快速操作 -->
+                <div class="optimization-panel">
+                    <h5><i class="fas fa-bolt"></i> 快速操作</h5>
+                    <button class="optimization-btn w-100 mb-2" onclick="window.conversionOptimizer.runOptimizationAnalysis()">
+                        <i class="fas fa-magic"></i> 執行優化分析
+                    </button>
+                    <button class="optimization-btn w-100 mb-2" onclick="window.conversionOptimizer.generateReport()">
+                        <i class="fas fa-file-alt"></i> 生成優化報告
+                    </button>
+                    <button class="optimization-btn w-100 mb-2" onclick="window.conversionOptimizer.startABTest()">
+                        <i class="fas fa-flask"></i> 啟動 A/B 測試
+                    </button>
+                    <button class="optimization-btn w-100" onclick="window.conversionOptimizer.exportData()">
+                        <i class="fas fa-download"></i> 匯出數據
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 優化詳情模態框 -->
+    <div class="modal fade" id="optimizationModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content bg-dark">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-chart-line"></i> 優化詳情
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="optimizationDetails">
+                        <!-- 優化詳情內容 -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="optimization-btn" id="implementOptimizationBtn">
+                        <i class="fas fa-play"></i> 實施優化
+                    </button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript 庫 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    
+    <!-- 自定義 JavaScript -->
+    <script src="js/conversion-optimizer.js"></script>
+    
+    <script>
+        // 頁面初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof ConversionOptimizer !== 'undefined') {
+                window.conversionOptimizer = new ConversionOptimizer();
+            } else {
+                console.error('ConversionOptimizer not loaded');
+            }
+        });
+    </script>
+</body>
+</html>

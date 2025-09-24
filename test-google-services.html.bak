@@ -105,66 +105,181 @@
             <a class="navbar-brand" href="index.html">
                 <i class="fas fa-user-md"></i> 劉道玄醫師預約系統
             </a>
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="index.html">
-                            <i class="fas fa-home"></i> 首頁
-                        </a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="appointmentDropdown" role="button" data-bs-toggle="dropdown">
-                            <i class="fas fa-calendar-alt"></i> 預約管理
-                        </a>
-                        <ul class="dropdown-menu bg-dark">
-                            <li><a class="dropdown-item text-light" href="liu-daoxuan-calendar.html"><i class="fas fa-calendar"></i> 劉道玄行事曆</a></li>
-                            <li><a class="dropdown-item text-light" href="advanced-calendar-system.html"><i class="fas fa-brain"></i> AI 智能行事曆</a></li>
-                            <li><a class="dropdown-item text-light" href="appointment_scheduling_system.html"><i class="fas fa-clock"></i> 預約排程系統</a></li>
-                            <li><a class="dropdown-item text-light" href="appointment-form-management.html"><i class="fas fa-clipboard-list"></i> 預約表單管理</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="medicalDropdown" role="button" data-bs-toggle="dropdown">
-                            <i class="fas fa-user-md"></i> 醫療系統
-                        </a>
-                        <ul class="dropdown-menu bg-dark">
-                            <li><a class="dropdown-item text-light" href="medical_records.html"><i class="fas fa-file-medical"></i> 病歷系統</a></li>
-                            <li><a class="dropdown-item text-light" href="treatment_management.html"><i class="fas fa-procedures"></i> 療程管理</a></li>
-                            <li><a class="dropdown-item text-light" href="consent_forms.html"><i class="fas fa-file-signature"></i> 同意書管理</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="analyticsDropdown" role="button" data-bs-toggle="dropdown">
-                            <i class="fas fa-chart-bar"></i> 數據分析
-                        </a>
-                        <ul class="dropdown-menu bg-dark">
-                            <li><a class="dropdown-item text-light" href="data_statistics.html"><i class="fas fa-chart-pie"></i> 數據統計</a></li>
-                            <li><a class="dropdown-item text-light" href="smart-crm-system.html"><i class="fas fa-users-cog"></i> 智能CRM</a></li>
-                            <li><a class="dropdown-item text-light" href="conversion-optimization.html"><i class="fas fa-chart-line"></i> 轉換優化</a></li>
-                            <li><a class="dropdown-item text-light" href="revenue-analytics.html"><i class="fas fa-dollar-sign"></i> 營收分析</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="managementDropdown" role="button" data-bs-toggle="dropdown">
-                            <i class="fas fa-cogs"></i> 營運管理
-                        </a>
-                        <ul class="dropdown-menu bg-dark">
-                            <li><a class="dropdown-item text-light" href="performance_management.html"><i class="fas fa-trophy"></i> 業績管理</a></li>
-                            <li><a class="dropdown-item text-light" href="price_management.html"><i class="fas fa-tags"></i> 價格管理</a></li>
-                            <li><a class="dropdown-item text-light" href="smart_scheduling.html"><i class="fas fa-calendar-check"></i> 智能排程</a></li>
-                            <li><a class="dropdown-item text-light" href="employee_benefits.html"><i class="fas fa-gift"></i> 員工福利</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="chat-data-management.html">
-                            <i class="fas fa-comments"></i> 聊天資料
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" onclick="logout()">
-                            <i class="fas fa-sign-out-alt"></i> 登出
-                        </a>
-                    </li>
-                </ul>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="index.html">
+                    <i class="fas fa-home"></i> 返回首頁
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <!-- 頁面標題 -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h1 class="text-center mb-3">
+                    <i class="fas fa-vial text-warning"></i>
+                    Google 服務連接測試
+                </h1>
+                <p class="text-center text-muted">
+                    測試所有 Google 服務的連接狀態和功能
+                </p>
+            </div>
+        </div>
+
+        <!-- 服務狀態總覽 -->
+        <div class="test-panel">
+            <h3><i class="fas fa-tachometer-alt"></i> 服務狀態總覽</h3>
+            
+            <div class="row mt-4">
+                <div class="col-md-3">
+                    <div class="text-center">
+                        <h5>Google Sheets API</h5>
+                        <span id="sheetsStatus" class="status-indicator status-error">未測試</span>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="text-center">
+                        <h5>Google AI (Gemini)</h5>
+                        <span id="geminiStatus" class="status-indicator status-error">未測試</span>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="text-center">
+                        <h5>服務帳戶認證</h5>
+                        <span id="authStatus" class="status-indicator status-error">未測試</span>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="text-center">
+                        <h5>整體系統</h5>
+                        <span id="systemStatus" class="status-indicator status-error">未測試</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 測試控制面板 -->
+        <div class="test-panel">
+            <h3><i class="fas fa-play-circle"></i> 測試控制面板</h3>
+            
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <h5>基礎連接測試</h5>
+                    <button id="testAuthBtn" class="test-btn">
+                        <i class="fas fa-key"></i> 測試服務帳戶認證
+                    </button>
+                    <button id="testSheetsBtn" class="test-btn">
+                        <i class="fas fa-table"></i> 測試 Google Sheets
+                    </button>
+                    <button id="testGeminiBtn" class="test-btn">
+                        <i class="fas fa-brain"></i> 測試 Google AI
+                    </button>
+                </div>
+                <div class="col-md-6">
+                    <h5>功能測試</h5>
+                    <button id="testReadDataBtn" class="test-btn">
+                        <i class="fas fa-download"></i> 測試讀取資料
+                    </button>
+                    <button id="testWriteDataBtn" class="test-btn">
+                        <i class="fas fa-upload"></i> 測試寫入資料
+                    </button>
+                    <button id="testAIAnalysisBtn" class="test-btn">
+                        <i class="fas fa-magic"></i> 測試 AI 分析
+                    </button>
+                </div>
+            </div>
+            
+            <div class="row mt-3">
+                <div class="col-12">
+                    <button id="runAllTestsBtn" class="test-btn btn-lg">
+                        <i class="fas fa-rocket"></i> 執行完整測試
+                    </button>
+                    <button id="clearLogsBtn" class="test-btn btn-lg">
+                        <i class="fas fa-trash"></i> 清除日誌
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 測試結果 -->
+        <div class="test-panel">
+            <h3><i class="fas fa-clipboard-check"></i> 測試結果</h3>
+            <div id="testResults">
+                <div class="test-result">
+                    <i class="fas fa-info-circle"></i> 點擊上方按鈕開始測試...
+                </div>
+            </div>
+        </div>
+
+        <!-- 測試日誌 -->
+        <div class="test-panel">
+            <h3><i class="fas fa-terminal"></i> 測試日誌</h3>
+            <div class="log-container" id="testLogs">
+                <div class="text-muted">等待測試開始...</div>
+            </div>
+        </div>
+
+        <!-- 環境變數檢查 -->
+        <div class="test-panel">
+            <h3><i class="fas fa-cog"></i> 環境變數檢查</h3>
+            <div id="envCheck">
+                <div class="test-result">
+                    <i class="fas fa-spinner fa-spin"></i> 檢查環境變數配置...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript 庫 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // 測試管理器
+        class GoogleServicesTestManager {
+            constructor() {
+                this.testResults = [];
+                this.init();
+            }
+            
+            init() {
+                this.bindEventHandlers();
+                this.checkEnvironmentVariables();
+            }
+            
+            bindEventHandlers() {
+                document.getElementById('testAuthBtn').addEventListener('click', () => this.testAuthentication());
+                document.getElementById('testSheetsBtn').addEventListener('click', () => this.testGoogleSheets());
+                document.getElementById('testGeminiBtn').addEventListener('click', () => this.testGoogleAI());
+                document.getElementById('testReadDataBtn').addEventListener('click', () => this.testReadData());
+                document.getElementById('testWriteDataBtn').addEventListener('click', () => this.testWriteData());
+                document.getElementById('testAIAnalysisBtn').addEventListener('click', () => this.testAIAnalysis());
+                document.getElementById('runAllTestsBtn').addEventListener('click', () => this.runAllTests());
+                document.getElementById('clearLogsBtn').addEventListener('click', () => this.clearLogs());
+            }
+            
+            async checkEnvironmentVariables() {
+                this.log('檢查環境變數配置...', 'info');
+                
+                try {
+                    const response = await fetch('/.netlify/functions/google-sheets-api', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: 'check_env' })
+                    });
+                    
+                    const result = await response.json();
+                    
+                    const envCheck = document.getElementById('envCheck');
+                    if (result.success) {
+                        envCheck.innerHTML = `
+                            <div class="test-result test-success">
+                                <i class="fas fa-check-circle"></i> 環境變數配置正確
+                                <ul class="mt-2 mb-0">
+                                    <li>Google 服務帳戶: ✓</li>
+                                    <li>Google Sheets ID: ✓</li>
+                                    <li>Google AI API: ✓</li>
+                                </ul>
                             </div>
                         `;
                     } else {
