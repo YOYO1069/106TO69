@@ -1,0 +1,14 @@
+# LINE Bot 環境變數設定
+# 請將以下內容複製到 Netlify 控制台的環境變數設定中
+
+LINE_CHANNEL_SECRET=8462dca808786d5b624f8c2042dedd06
+LINE_CHANNEL_ACCESS_TOKEN=Jj8s+B0kNFfpjcbDBDCDjKjJDNlmK8ykGYKWKzmaDT/rEjXoyZi7Y22feHOSXTlKTdZFs3kd1Hxw59MgilIVJzFKg0tKJOKK1xv/ZTZ+oaUuNmUdui/QIbHwNorVo6BW0yHo7eG7vdJJvY9/wxtsfQdB04t89/1O/w1cDnyilFU=
+
+# 其他已設定的環境變數
+OPENAI_API_KEY=sk-YaMbCxSCROsT5dgXWhaPPq35AW79eun8mSCAy14FFI21PY-4JKqUXJ8jO-c3v2_oYOIw4YrNkEb2S6ns-sfe0pRJqedq
+GOOGLE_SPREADSHEET_ID=1nmFj0647LO44Gl54DvZEXdNYuZlFLGvueEM1XEqEa8g
+
+# LINE Bot 配置資訊
+LINE_CHANNEL_ID=2008063743
+LINE_WEBHOOK_URL=https://sage-marigold-0f346a.netlify.app/.netlify/functions/line-webhook
+LINE_OFFICIAL_URL=https://lin.ee/vb6ULgR
