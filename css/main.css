@@ -74,17 +74,44 @@
 body {
     font-family: 'Inter', 'Segoe UI', 'Microsoft JhengHei', sans-serif;
     background: 
-        /* 多方向光線照射效果 */
-        /* 左上角主光源 */
-        radial-gradient(ellipse 800px 600px at 15% 10%, rgba(255, 255, 255, 0.12) 0%, rgba(212, 175, 55, 0.08) 30%, transparent 70%),
-        /* 右下角輔助光源 */
-        radial-gradient(ellipse 600px 800px at 85% 90%, rgba(212, 175, 55, 0.10) 0%, rgba(255, 255, 255, 0.06) 25%, transparent 60%),
-        /* 右上角環境光 */
-        radial-gradient(ellipse 400px 300px at 90% 5%, rgba(255, 255, 255, 0.08) 0%, transparent 50%),
-        /* 左下角反射光 */
-        radial-gradient(ellipse 500px 400px at 5% 95%, rgba(212, 175, 55, 0.06) 0%, transparent 45%),
-        /* 中央散射光 */
-        radial-gradient(ellipse 300px 300px at 50% 50%, rgba(255, 255, 255, 0.04) 0%, transparent 40%),
+        /* 大範圍多方向光線照射效果 - 覆蓋整個底圖 */
+        /* 主光源 - 左上角強烈照射 */
+        radial-gradient(ellipse 1200px 900px at 12% 8%, 
+            rgba(255, 255, 255, 0.18) 0%, 
+            rgba(212, 175, 55, 0.12) 25%, 
+            rgba(255, 255, 255, 0.08) 50%, 
+            transparent 75%),
+        /* 輔助光源 - 右下角大範圍反射 */
+        radial-gradient(ellipse 1000px 1200px at 88% 92%, 
+            rgba(212, 175, 55, 0.15) 0%, 
+            rgba(255, 255, 255, 0.10) 20%, 
+            rgba(212, 175, 55, 0.06) 45%, 
+            transparent 70%),
+        /* 右上角環境光 - 擴大範圍 */
+        radial-gradient(ellipse 600px 450px at 92% 3%, 
+            rgba(255, 255, 255, 0.12) 0%, 
+            rgba(212, 175, 55, 0.04) 35%, 
+            transparent 60%),
+        /* 左下角散射光 - 增強範圍 */
+        radial-gradient(ellipse 700px 550px at 3% 97%, 
+            rgba(212, 175, 55, 0.10) 0%, 
+            rgba(255, 255, 255, 0.05) 30%, 
+            transparent 55%),
+        /* 中央大範圍柔光 */
+        radial-gradient(ellipse 800px 600px at 50% 50%, 
+            rgba(255, 255, 255, 0.06) 0%, 
+            rgba(212, 175, 55, 0.03) 40%, 
+            transparent 50%),
+        /* 頂部水平光帶 */
+        linear-gradient(180deg, 
+            rgba(255, 255, 255, 0.08) 0%, 
+            rgba(212, 175, 55, 0.04) 15%, 
+            transparent 30%),
+        /* 底部反射光帶 */
+        linear-gradient(0deg, 
+            rgba(212, 175, 55, 0.06) 0%, 
+            rgba(255, 255, 255, 0.03) 12%, 
+            transparent 25%),
         /* 主要漸層背景 */
         linear-gradient(135deg, var(--flos-bg-primary) 0%, var(--flos-bg-secondary) 50%, var(--flos-bg-tertiary) 100%);
     color: var(--flos-text-primary);
@@ -101,32 +128,54 @@ body::before {
     width: 100%;
     height: 100%;
     background: 
-        /* 光線方向性紋理 - 模擬光線照射角度 */
-        /* 左上到右下的光線條紋 */
+        /* 大範圍光線方向性紋理 - 覆蓋整個底圖 */
+        /* 主光線方向 - 左上到右下強烈條紋 */
         repeating-linear-gradient(
             135deg,
             transparent 0px,
-            rgba(255, 255, 255, 0.015) 1px,
-            rgba(255, 255, 255, 0.015) 2px,
-            transparent 3px,
-            transparent 8px
+            rgba(255, 255, 255, 0.025) 1px,
+            rgba(255, 255, 255, 0.025) 3px,
+            transparent 4px,
+            transparent 12px
         ),
-        /* 右上到左下的交叉光線 */
+        /* 交叉光線 - 右上到左下金色條紋 */
         repeating-linear-gradient(
             45deg,
             transparent 0px,
-            rgba(212, 175, 55, 0.008) 1px,
-            rgba(212, 175, 55, 0.008) 2px,
+            rgba(212, 175, 55, 0.015) 1px,
+            rgba(212, 175, 55, 0.015) 2px,
             transparent 3px,
-            transparent 12px
+            transparent 16px
         ),
-        /* 垂直光線反射 */
+        /* 垂直反射光線 - 模擬表面反射 */
         repeating-linear-gradient(
             90deg,
             transparent 0px,
-            rgba(255, 255, 255, 0.005) 1px,
+            rgba(255, 255, 255, 0.012) 1px,
+            rgba(255, 255, 255, 0.012) 2px,
+            transparent 3px,
+            transparent 20px
+        ),
+        /* 水平光線帶 - 模擬環境光 */
+        repeating-linear-gradient(
+            0deg,
+            transparent 0px,
+            rgba(212, 175, 55, 0.008) 1px,
             transparent 2px,
-            transparent 15px
+            transparent 25px
+        ),
+        /* 磨砂質感紋理 */
+        repeating-conic-gradient(
+            from 0deg at 50% 50%,
+            transparent 0deg,
+            rgba(255, 255, 255, 0.003) 45deg,
+            rgba(212, 175, 55, 0.002) 90deg,
+            rgba(255, 255, 255, 0.003) 135deg,
+            transparent 180deg,
+            rgba(212, 175, 55, 0.002) 225deg,
+            rgba(255, 255, 255, 0.003) 270deg,
+            rgba(212, 175, 55, 0.002) 315deg,
+            transparent 360deg
         );
     pointer-events: none;
     z-index: -1;
@@ -141,44 +190,88 @@ body::after {
     width: 100%;
     height: 100%;
     background: 
-        /* 動態光線掃射效果 */
-        conic-gradient(from 45deg at 20% 20%, 
+        /* 大範圍動態光線掃射效果 - 覆蓋整個底圖 */
+        /* 主要光線掃射 - 從左上角光源 */
+        conic-gradient(from 135deg at 15% 15%, 
             transparent 0deg,
-            rgba(255, 255, 255, 0.008) 30deg,
-            rgba(212, 175, 55, 0.012) 60deg,
-            rgba(255, 255, 255, 0.008) 90deg,
-            transparent 120deg,
-            transparent 240deg,
-            rgba(212, 175, 55, 0.006) 270deg,
+            rgba(255, 255, 255, 0.015) 20deg,
+            rgba(212, 175, 55, 0.020) 45deg,
+            rgba(255, 255, 255, 0.012) 70deg,
+            transparent 90deg,
+            transparent 270deg,
+            rgba(212, 175, 55, 0.008) 290deg,
+            rgba(255, 255, 255, 0.010) 320deg,
             transparent 360deg
+        ),
+        /* 輔助光線掃射 - 從右下角光源 */
+        conic-gradient(from 315deg at 85% 85%, 
+            transparent 0deg,
+            rgba(212, 175, 55, 0.012) 25deg,
+            rgba(255, 255, 255, 0.008) 50deg,
+            rgba(212, 175, 55, 0.015) 75deg,
+            transparent 100deg,
+            transparent 260deg,
+            rgba(255, 255, 255, 0.006) 285deg,
+            rgba(212, 175, 55, 0.010) 315deg,
+            transparent 360deg
+        ),
+        /* 環境光掃射 - 中央擴散 */
+        radial-gradient(ellipse 1500px 1000px at 50% 50%, 
+            transparent 0%, 
+            rgba(255, 255, 255, 0.004) 30%, 
+            rgba(212, 175, 55, 0.006) 50%, 
+            rgba(255, 255, 255, 0.003) 70%, 
+            transparent 100%
         );
     pointer-events: none;
     z-index: -2;
-    animation: lightSweep 30s linear infinite;
+    animation: lightSweep 35s linear infinite;
 }
 
 @keyframes lightMovement {
     0%, 100% { 
-        opacity: 0.7;
-        transform: translateX(0) translateY(0);
-    }
-    25% { 
-        opacity: 0.9;
-        transform: translateX(2px) translateY(-1px);
-    }
-    50% { 
-        opacity: 1;
-        transform: translateX(1px) translateY(1px);
-    }
-    75% { 
         opacity: 0.8;
-        transform: translateX(-1px) translateY(-2px);
+        transform: translateX(0) translateY(0) scale(1);
+    }
+    20% { 
+        opacity: 0.95;
+        transform: translateX(3px) translateY(-2px) scale(1.01);
+    }
+    40% { 
+        opacity: 1;
+        transform: translateX(2px) translateY(2px) scale(1.02);
+    }
+    60% { 
+        opacity: 0.9;
+        transform: translateX(-1px) translateY(1px) scale(1.01);
+    }
+    80% { 
+        opacity: 0.85;
+        transform: translateX(-2px) translateY(-3px) scale(1);
     }
 }
 
 @keyframes lightSweep {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% { 
+        transform: rotate(0deg) scale(1);
+        opacity: 0.6;
+    }
+    25% { 
+        transform: rotate(90deg) scale(1.05);
+        opacity: 0.8;
+    }
+    50% { 
+        transform: rotate(180deg) scale(1.1);
+        opacity: 1;
+    }
+    75% { 
+        transform: rotate(270deg) scale(1.05);
+        opacity: 0.8;
+    }
+    100% { 
+        transform: rotate(360deg) scale(1);
+        opacity: 0.6;
+    }
 }
 
 /* 導航列樣式 */
