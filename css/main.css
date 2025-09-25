@@ -1,4 +1,4 @@
-/* 劉道玄醫美管理平台 - 神秘魔法風格主要樣式 */
+/* FLOS 深色時尚風格 - 劉道玄醫師醫療管理平台 */
 
 /* 全域設定 */
 * {
@@ -8,59 +8,58 @@
 }
 
 :root {
-    /* FLOS 時尚醫美風格配色 */
-    --primary-color: #1a1f2e; /* 深藍灰主色 */
-    --secondary-color: #2a3441; /* 次要深灰藍 */
-    --accent-color: #d4af37; /* 金色強調 */
-    --success-color: #4a9eff; /* 現代藍色 */
-    --warning-color: #c9a96e; /* 溫暖金色 */
-    --info-color: #6c7b8a; /* 中性灰藍 */
-    --light-color: #f8f9fa; /* 純淨白 */
-    --dark-color: #0f1419; /* 極深色 */
-    
-    /* FLOS 專業配色 */
-    --flos-primary: #1a1f2e;
-    --flos-secondary: #2a3441;
+    /* FLOS 深色時尚風格配色 */
+    --flos-bg-primary: #0f1419;
+    --flos-bg-secondary: #1a1f2e;
+    --flos-bg-tertiary: #2a3441;
+    --flos-bg-surface: #1e2329;
     --flos-gold: #d4af37;
-    --flos-light-gold: #c9a96e;
-    --flos-border: #3a4553;
-    --flos-text: #e8e9ea;
-    --flos-text-muted: #9ca3af;
-    --flos-accent: #4a9eff;
+    --flos-gold-light: #e6c866;
+    --flos-gold-dark: #b8941f;
+    --flos-text-primary: #f8fafc;
+    --flos-text-secondary: #cbd5e1;
+    --flos-text-muted: #94a3b8;
+    --flos-border: #334155;
+    --flos-border-light: #475569;
+    --flos-accent-blue: #4a9eff;
+    --flos-accent-green: #22c55e;
+    --flos-accent-red: #ef4444;
     
-    /* 文字顏色 */
-    --text-primary: #e8e9ea;
-    --text-secondary: #9ca3af;
-    --text-light: #d4af37;
-    --text-gold: #c9a96e;
+    /* 主要配色變數 */
+    --primary-color: var(--flos-bg-primary);
+    --secondary-color: var(--flos-bg-secondary);
+    --accent-color: var(--flos-gold);
+    --text-primary: var(--flos-text-primary);
+    --text-secondary: var(--flos-text-secondary);
+    --bg-primary: var(--flos-bg-primary);
+    --bg-secondary: var(--flos-bg-secondary);
+    --bg-tertiary: var(--flos-bg-tertiary);
+    --border-color: var(--flos-border);
+    
+    /* 狀態顏色 */
+    --success-color: var(--flos-accent-green);
+    --warning-color: #f59e0b;
+    --error-color: var(--flos-accent-red);
+    --info-color: var(--flos-accent-blue);
     --text-white: #ffffff;
+    --text-light: #e2e8f0;
+    --dark-color: #020617;
     
-    /* 背景顏色 - FLOS 時尚風格 */
-    --bg-primary: linear-gradient(135deg, #0f1419 0%, #1a1f2e 50%, #2a3441 100%);
-    --bg-secondary: linear-gradient(135deg, #1a1f2e 0%, #2a3441 50%, #1a1f2e 100%);
-    --bg-dark: linear-gradient(135deg, #0f1419 0%, #1a1f2e 100%);
-    --bg-card: linear-gradient(135deg, #1a1f2e 0%, #2a3441 100%);
+    /* 陰影和光暈效果 */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6);
+    --shadow-gold: 0 0 20px rgba(212, 175, 55, 0.3);
+    --glow-gold: 0 0 30px rgba(212, 175, 55, 0.2);
     
-    /* 現代漸層效果 */
-    --gradient-primary: linear-gradient(135deg, #1a1f2e 0%, #2a3441 25%, #d4af37 50%, #2a3441 75%, #1a1f2e 100%);
-    --gradient-secondary: linear-gradient(135deg, #2a3441 0%, #4a9eff 25%, #d4af37 50%, #4a9eff 75%, #2a3441 100%);
-    --gradient-card: linear-gradient(135deg, rgba(26, 31, 46, 0.95) 0%, rgba(42, 52, 65, 0.8) 50%, rgba(26, 31, 46, 0.95) 100%);
-    --gradient-gold: linear-gradient(135deg, #d4af37 0%, #c9a96e 50%, #d4af37 100%);
-    --gradient-nav: linear-gradient(135deg, #1a1f2e 0%, #2a3441 50%, #1a1f2e 100%);
-    
-    /* 現代陰影效果 */
-    --shadow-light: 0 2px 8px rgba(212, 175, 55, 0.15);
-    --shadow-medium: 0 4px 16px rgba(212, 175, 55, 0.2);
-    --shadow-large: 0 8px 32px rgba(212, 175, 55, 0.25);
-    --shadow-gold: 0 0 20px rgba(212, 175, 55, 0.3), 0 0 40px rgba(212, 175, 55, 0.2);
-    --shadow-modern: 0 4px 20px rgba(15, 20, 25, 0.4);
-    
-    /* 圓角 - FLOS 現代風格 */
-    --radius-small: 8px;
-    --radius-medium: 12px;
-    --radius-large: 16px;
-    --radius-button: 8px;
-    --radius-card: 12px;
+    /* 圓角 */
+    --radius-sm: 0.25rem;
+    --radius-md: 0.375rem;
+    --radius-lg: 0.5rem;
+    --radius-xl: 0.75rem;
+    --radius-card: 1rem;
+    --radius-rounded: 2rem;
     
     /* 間距 */
     --spacing-xs: 0.25rem;
@@ -71,16 +70,20 @@
     --spacing-xxl: 3rem;
 }
 
-/* 基礎樣式 - FLOS 時尚風格 */
+/* 基礎樣式 */
 body {
-    font-family: 'Inter', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-    line-height: 1.6;
-    color: var(--text-primary);
-    background: var(--flos-primary);
+    font-family: 'Inter', 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+    background: 
+        /* 磨砂紋理層 */
+        radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.02) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 40% 80%, rgba(212, 175, 55, 0.01) 0%, transparent 50%),
+        /* 主要漸層背景 */
+        linear-gradient(135deg, var(--flos-bg-primary) 0%, var(--flos-bg-secondary) 50%, var(--flos-bg-tertiary) 100%);
+    color: var(--flos-text-primary);
     min-height: 100vh;
     position: relative;
-    font-weight: 400;
-    letter-spacing: 0.01em;
+    line-height: 1.6;
 }
 
 body::before {
@@ -90,125 +93,95 @@ body::before {
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, var(--flos-primary) 0%, var(--flos-secondary) 50%, var(--dark-color) 100%);
+    background: 
+        /* 磨砂質感紋理 */
+        repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 2px,
+            rgba(255, 255, 255, 0.005) 2px,
+            rgba(255, 255, 255, 0.005) 4px
+        ),
+        repeating-linear-gradient(
+            -45deg,
+            transparent,
+            transparent 2px,
+            rgba(0, 0, 0, 0.01) 2px,
+            rgba(0, 0, 0, 0.01) 4px
+        );
+    pointer-events: none;
     z-index: -1;
 }
 
-/* 確保所有主要容器都有深色背景 */
-.container, .main-content, .page-content {
-    background: transparent;
-}
-
-/* 頁面主要區域背景 */
-.hero-section, .stats-section, .modules-section {
-    background: rgba(26, 31, 46, 0.8);
-    backdrop-filter: blur(10px);
-    border-radius: var(--radius-card);
-    margin: var(--spacing-md) 0;
-    padding: var(--spacing-xl);
-}
-
-/* 容器 */
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-}
-
-/* 導航列 - FLOS 時尚風格 */
+/* 導航列樣式 */
 .navbar {
-    background: var(--gradient-nav);
+    background: 
+        linear-gradient(135deg, 
+            rgba(26, 31, 46, 0.7) 0%, 
+            rgba(42, 52, 65, 0.5) 50%, 
+            rgba(26, 31, 46, 0.7) 100%
+        );
+    backdrop-filter: blur(15px) saturate(1.4);
+    -webkit-backdrop-filter: blur(15px) saturate(1.4);
+    border-bottom: 2px solid var(--flos-border);
     padding: 1rem 0;
-    box-shadow: var(--shadow-modern);
     position: sticky;
     top: 0;
     z-index: 1000;
-    border-bottom: 1px solid var(--flos-border);
-    backdrop-filter: blur(10px);
+    box-shadow: 
+        0 4px 8px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(212, 175, 55, 0.1);
 }
 
 .navbar-brand {
-    color: var(--flos-text) !important;
-    font-size: 1.4rem;
-    font-weight: 600;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    letter-spacing: 0.02em;
-}
-
-.navbar-brand:hover {
     color: var(--flos-gold) !important;
-    transform: translateY(-1px);
-    transition: all 0.3s ease;
+    font-weight: 700;
+    font-size: 1.5rem;
+    text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
 }
 
 .navbar-nav .nav-link {
-    color: var(--flos-text) !important;
-    margin: 0 8px;
-    padding: 8px 16px !important;
-    border-radius: var(--radius-button);
-    transition: all 0.3s ease;
-    position: relative;
+    color: var(--flos-text-secondary) !important;
     font-weight: 500;
-    border: 1px solid transparent;
-}
-
-.navbar-nav .nav-link:hover {
-    background: rgba(212, 175, 55, 0.1);
-    border: 1px solid var(--flos-border);
-    color: var(--flos-gold) !important;
-}
-
-.navbar-nav .nav-link.active {
-    background: var(--flos-gold);
-    color: var(--flos-primary) !important;
-    border: 1px solid var(--flos-gold);
-    box-shadow: var(--shadow-light);
-}
-
-/* 主要內容區域 */
-.main-content {
-    padding: 2rem 0;
-    min-height: calc(100vh - 80px);
-}
-
-/* 頁面標題 - FLOS 風格 */
-.page-title {
-    text-align: center;
-    margin-bottom: 3rem;
-    color: var(--flos-text);
-    background: rgba(26, 31, 46, 0.6);
-    padding: var(--spacing-xl);
-    border-radius: var(--radius-card);
-    backdrop-filter: blur(10px);
-}
-
-.page-title h1 {
-    font-size: 2.5rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
-    color: var(--flos-gold);
-    letter-spacing: 0.02em;
-}
-
-.page-title p {
-    font-size: 1.1rem;
-    opacity: 0.9;
-    color: var(--flos-text-muted);
-}
-
-/* 卡片設計 - FLOS 時尚風格 */
-.card {
-    background: var(--bg-card);
-    border: 1px solid var(--flos-border);
-    border-radius: var(--radius-card);
-    box-shadow: var(--shadow-modern);
+    padding: 0.5rem 1rem !important;
+    border-radius: var(--radius-md);
     transition: all 0.3s ease;
-    overflow: hidden;
     position: relative;
-    backdrop-filter: blur(10px);
+}
+
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-link.active {
+    color: var(--flos-gold) !important;
+    background: rgba(212, 175, 55, 0.1);
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+}
+
+/* 容器樣式 */
+.container, .container-fluid {
+    padding: 2rem;
+}
+
+/* 卡片樣式 - FLOS 磨砂風格 */
+.card {
+    background: 
+        linear-gradient(135deg, 
+            rgba(26, 31, 46, 0.8) 0%, 
+            rgba(42, 52, 65, 0.6) 50%, 
+            rgba(26, 31, 46, 0.8) 100%
+        );
+    backdrop-filter: blur(12px) saturate(1.3);
+    -webkit-backdrop-filter: blur(12px) saturate(1.3);
+    border: 2px solid var(--flos-border);
+    border-radius: var(--radius-card);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s ease;
+    box-shadow: 
+        0 6px 12px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(212, 175, 55, 0.1),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.2);
 }
 
 .card::before {
@@ -217,338 +190,355 @@ body::before {
     top: 0;
     left: 0;
     right: 0;
-    bottom: 0;
-    background: var(--gradient-mystical);
-    opacity: 0.1;
-    z-index: -1;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--flos-gold), transparent);
+    opacity: 0.4;
+}
+
+.card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.1), transparent);
+    transition: left 0.6s ease;
 }
 
 .card:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-magic);
-    border-color: var(--text-light);
+    transform: translateY(-5px) scale(1.01);
+    border-color: var(--flos-gold);
+    box-shadow: 
+        0 15px 30px rgba(0, 0, 0, 0.4),
+        0 0 20px rgba(212, 175, 55, 0.2),
+        inset 0 1px 0 rgba(212, 175, 55, 0.3),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.3);
 }
 
-.card-header {
-    background: var(--gradient-secondary);
-    border-bottom: 2px solid var(--warning-color);
-    padding: 1.5rem;
-    color: var(--text-white);
+.card:hover::after {
+    left: 100%;
 }
 
-.card-body {
-    padding: 2rem;
-    color: var(--text-primary);
-}
-
-.card-title {
-    font-size: 1.5rem;
-    font-weight: bold;
+/* 標題樣式 */
+h1, h2, h3, h4, h5, h6 {
+    color: var(--flos-gold);
+    font-weight: 600;
     margin-bottom: 1rem;
-    color: var(--primary-color);
+    text-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
 }
 
-.card-text {
-    color: var(--text-secondary);
-    margin-bottom: 1.5rem;
-}
+h1 { font-size: 2.5rem; }
+h2 { font-size: 2rem; }
+h3 { font-size: 1.5rem; }
+h4 { font-size: 1.25rem; }
 
-/* 功能模組卡片 */
-.module-card {
-    height: 100%;
-    cursor: pointer;
-    border-left: 5px solid transparent;
-    transition: all 0.3s ease;
-    /* 添加浮動效果 */
-    transform: translateY(0);
-}
-
-.module-card.appointment {
-    border-left-color: var(--gryffindor-red);
-}
-
-.module-card.medical-records {
-    border-left-color: var(--ravenclaw-blue);
-}
-
-.module-card.consent-forms {
-    border-left-color: var(--slytherin-green);
-}
-
-.module-card.performance {
-    border-left-color: var(--hufflepuff-yellow);
-}
-
-.module-card:hover {
-    border-left-width: 8px;
-    transform: translateY(-8px);
-    box-shadow: var(--shadow-mystical);
-}
-
-/* 統計卡片 */
-.stats-card {
-    text-align: center;
-    padding: 2rem;
-    background: var(--gradient-card);
-    border-radius: var(--radius-large);
-    box-shadow: var(--shadow-medium);
-    border: 2px solid var(--warning-color);
-    /* 添加浮動效果 */
-    transition: all 0.3s ease;
-    transform: translateY(0);
-}
-
-.stats-card:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-magic);
-}
-
-.stats-number {
-    font-size: 3rem;
-    font-weight: bold;
-    margin-bottom: 0.5rem;
-    background: var(--gradient-magic);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-.stats-label {
-    font-size: 1rem;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-/* 按鈕樣式 - FLOS 時尚風格 */
+/* 按鈕樣式 */
 .btn {
-    border-radius: var(--radius-button);
-    padding: 12px 24px;
-    font-weight: 500;
-    letter-spacing: 0.02em;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius-lg);
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-block;
     transition: all 0.3s ease;
-    border: 1px solid transparent;
+    border: 2px solid transparent;
     position: relative;
     overflow: hidden;
-    font-size: 0.9rem;
-}
-
-.btn:hover {
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-light);
 }
 
 .btn-primary {
-    background: var(--flos-gold);
-    color: var(--flos-primary);
+    background: linear-gradient(135deg, var(--flos-gold) 0%, var(--flos-gold-light) 100%);
+    color: var(--flos-bg-primary);
     border-color: var(--flos-gold);
+    box-shadow: 0 4px 8px rgba(212, 175, 55, 0.3);
 }
 
 .btn-primary:hover {
-    background: var(--flos-light-gold);
-    border-color: var(--flos-light-gold);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(212, 175, 55, 0.4);
+    color: var(--flos-bg-primary);
 }
 
-.btn-success {
-    background: var(--flos-accent);
-    color: var(--text-white);
-    border-color: var(--flos-accent);
+.btn-secondary {
+    background: 
+        linear-gradient(135deg, 
+            rgba(42, 52, 65, 0.8) 0%, 
+            rgba(26, 31, 46, 0.8) 100%
+        );
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: var(--flos-text-primary);
+    border-color: var(--flos-border);
 }
 
-.btn-success:hover {
-    background: #3a8aef;
-    border-color: #3a8aef;
-}
-
-.btn-warning {
-    background: transparent;
-    color: var(--flos-gold);
+.btn-secondary:hover {
     border-color: var(--flos-gold);
+    color: var(--flos-gold);
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
 }
 
-.btn-warning:hover {
-    background: var(--flos-gold);
-    color: var(--flos-primary);
+.btn-accent {
+    background: linear-gradient(135deg, var(--flos-accent-blue) 0%, #3b82f6 100%);
+    color: white;
+    border-color: var(--flos-accent-blue);
 }
 
-.btn-danger {
-    background: #ef4444;
-    color: var(--text-white);
-    border-color: #ef4444;
+.btn-accent:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(74, 158, 255, 0.4);
+    color: white;
 }
 
-.btn-danger:hover {
-    background: #dc2626;
-    border-color: #dc2626;
+/* 表格樣式 */
+.table {
+    background: 
+        linear-gradient(135deg, 
+            rgba(26, 31, 46, 0.6) 0%, 
+            rgba(42, 52, 65, 0.4) 50%, 
+            rgba(26, 31, 46, 0.6) 100%
+        );
+    backdrop-filter: blur(10px) saturate(1.2);
+    -webkit-backdrop-filter: blur(10px) saturate(1.2);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 2px solid var(--flos-border);
 }
 
-/* 立體導航按鈕 */
-.nav-btn {
-    display: inline-block;
-    padding: 12px 24px;
-    background: var(--gradient-nav);
-    color: var(--text-white);
-    text-decoration: none;
-    border-radius: var(--radius-medium);
-    transition: all 0.3s ease;
-    box-shadow: var(--shadow-medium);
-    position: relative;
-    border: 2px solid var(--warning-color);
+.table th {
+    background: var(--flos-bg-tertiary);
+    color: var(--flos-gold);
     font-weight: 600;
-    /* 添加浮動效果 */
-    transform: translateY(0);
+    border-bottom: 2px solid var(--flos-border);
+    padding: 1rem;
 }
 
-.nav-btn:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-magic);
-    color: var(--warning-color);
-    text-decoration: none;
-    border-color: var(--text-light);
+.table td {
+    color: var(--flos-text-secondary);
+    border-bottom: 1px solid var(--flos-border);
+    padding: 1rem;
 }
 
-.nav-btn::before {
+.table tbody tr:hover {
+    background: rgba(212, 175, 55, 0.1);
+}
+
+/* 表單樣式 */
+.form-control {
+    background: 
+        linear-gradient(135deg, 
+            rgba(15, 20, 25, 0.8) 0%, 
+            rgba(26, 31, 46, 0.6) 100%
+        );
+    backdrop-filter: blur(8px) saturate(1.1);
+    -webkit-backdrop-filter: blur(8px) saturate(1.1);
+    border: 2px solid var(--flos-border);
+    border-radius: var(--radius-md);
+    color: var(--flos-text-primary);
+    padding: 0.75rem 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: var(--flos-gold);
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+    background: 
+        linear-gradient(135deg, 
+            rgba(26, 31, 46, 0.9) 0%, 
+            rgba(42, 52, 65, 0.7) 100%
+        );
+}
+
+.form-control::placeholder {
+    color: var(--flos-text-muted);
+}
+
+/* 統計卡片 */
+.stat-card {
+    background: 
+        linear-gradient(135deg, 
+            rgba(15, 20, 25, 0.8) 0%, 
+            rgba(26, 31, 46, 0.6) 50%, 
+            rgba(15, 20, 25, 0.8) 100%
+        );
+    backdrop-filter: blur(10px) saturate(1.2);
+    -webkit-backdrop-filter: blur(10px) saturate(1.2);
+    border: 2px solid var(--flos-border);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 
+        0 4px 8px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(212, 175, 55, 0.1),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+}
+
+.stat-card::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, rgba(218, 165, 55, 0.2) 0%, transparent 100%);
-    border-radius: var(--radius-medium);
-    opacity: 0;
-    transition: opacity 0.3s ease;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--flos-gold), transparent);
+    opacity: 0.3;
 }
 
-.nav-btn:hover::before {
-    opacity: 1;
+.stat-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--flos-gold);
+    box-shadow: 
+        0 8px 16px rgba(0, 0, 0, 0.3),
+        0 0 15px rgba(212, 175, 55, 0.2),
+        inset 0 1px 0 rgba(212, 175, 55, 0.2),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.2);
 }
 
-/* 表單樣式 */
-.form-control {
-    border-radius: var(--radius-small);
-    border: 2px solid var(--warning-color);
-    padding: 12px 15px;
-    transition: all 0.3s ease;
-    background: rgba(245, 245, 220, 0.9);
-    color: var(--text-primary);
-    font-weight: 600;
-    /* 添加浮動效果 */
-    transform: translateY(0);
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--flos-gold);
+    margin-bottom: 0.5rem;
+    text-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
 }
 
-.form-control:focus {
-    border-color: var(--text-light);
-    box-shadow: var(--shadow-light);
-    transform: translateY(-2px);
-    background: rgba(245, 245, 220, 1);
+.stat-label {
+    color: var(--flos-text-muted);
+    font-size: 1rem;
+    font-weight: 500;
 }
 
-.form-select {
-    border-radius: var(--radius-small);
-    border: 2px solid var(--warning-color);
-    padding: 12px 15px;
-    transition: all 0.3s ease;
-    background: rgba(245, 245, 220, 0.9);
-    color: var(--text-primary);
-    font-weight: 600;
-    /* 添加浮動效果 */
-    transform: translateY(0);
-}
-
-.form-select:focus {
-    border-color: var(--text-light);
-    box-shadow: var(--shadow-light);
-    transform: translateY(-2px);
-    background: rgba(245, 245, 220, 1);
-}
-
-.form-label {
-    font-weight: 600;
-    color: var(--primary-color);
-    margin-bottom: 8px;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
-}
-
-/* 網格佈局 */
-.grid-container {
+/* 功能方格 */
+.feature-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 2rem;
-    margin-top: 2rem;
+    margin: 2rem 0;
+}
+
+.feature-card {
+    background: 
+        linear-gradient(135deg, 
+            rgba(26, 31, 46, 0.8) 0%, 
+            rgba(42, 52, 65, 0.6) 50%, 
+            rgba(26, 31, 46, 0.8) 100%
+        );
+    backdrop-filter: blur(12px) saturate(1.3);
+    -webkit-backdrop-filter: blur(12px) saturate(1.3);
+    border: 2px solid var(--flos-border);
+    border-radius: var(--radius-card);
+    padding: 2rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s ease;
+    cursor: pointer;
+    box-shadow: 
+        0 6px 12px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(212, 175, 55, 0.1),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+}
+
+.feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--flos-gold), transparent);
+    opacity: 0.4;
+}
+
+.feature-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.1), transparent);
+    transition: left 0.6s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    border-color: var(--flos-gold);
+    box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.4),
+        0 0 30px rgba(212, 175, 55, 0.3),
+        inset 0 1px 0 rgba(212, 175, 55, 0.3),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.3);
+}
+
+.feature-card:hover::after {
+    left: 100%;
+}
+
+.feature-icon {
+    font-size: 3rem;
+    color: var(--flos-gold);
+    margin-bottom: 1rem;
+    text-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+}
+
+.feature-title {
+    color: var(--flos-text-primary);
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.feature-description {
+    color: var(--flos-text-muted);
+    font-size: 0.9rem;
+    line-height: 1.5;
 }
 
 /* 響應式設計 */
-@media (max-width: 1024px) {
-    .page-title h1 {
-        font-size: 2.5rem;
-    }
-    
-    .container {
-        padding: 0 15px;
-    }
-}
-
 @media (max-width: 768px) {
-    .page-title h1 {
-        font-size: 2rem;
+    .container, .container-fluid {
+        padding: 1rem;
     }
     
-    .grid-container {
+    .feature-grid {
         grid-template-columns: 1fr;
         gap: 1rem;
     }
     
-    .card-body {
+    .card {
         padding: 1.5rem;
     }
     
-    .navbar-nav {
-        text-align: center;
-    }
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.5rem; }
     
-    .navbar-nav .nav-link {
-        margin: 5px 0;
-    }
-    
-    .stats-number {
-        font-size: 2.5rem;
-    }
-    
-    .btn {
-        padding: 10px 20px;
-        font-size: 0.9rem;
-    }
-}
-
-@media (max-width: 576px) {
-    .container {
-        padding: 0 10px;
-    }
-    
-    .page-title h1 {
-        font-size: 1.8rem;
-    }
-    
-    .card-body {
-        padding: 1rem;
-    }
-    
-    .btn {
-        padding: 8px 16px;
-        font-size: 0.8rem;
-    }
-    
-    .stats-number {
+    .stat-number {
         font-size: 2rem;
     }
-    
-    .navbar-brand {
-        font-size: 1.2rem;
-    }
 }
 
-/* 動畫效果 */
+/* 自定義滾動條 */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--flos-bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, var(--flos-gold-dark), var(--flos-gold));
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, var(--flos-gold), var(--flos-gold-light));
+}
+
+/* 載入動畫 */
 @keyframes fadeInUp {
     from {
         opacity: 0;
@@ -560,193 +550,20 @@ body::before {
     }
 }
 
-@keyframes magicGlow {
-    0%, 100% {
-        box-shadow: var(--shadow-medium);
-    }
-    50% {
-        box-shadow: var(--shadow-magic);
-    }
-}
-
 .fade-in-up {
     animation: fadeInUp 0.6s ease-out;
 }
 
-.magic-glow {
-    animation: magicGlow 2s ease-in-out infinite;
+/* 金色光暈動畫 */
+@keyframes goldGlow {
+    0%, 100% {
+        box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 30px rgba(212, 175, 55, 0.5);
+    }
 }
 
-/* 載入動畫 */
-.loading {
-    display: inline-block;
-    width: 20px;
-    height: 20px;
-    border: 3px solid rgba(218, 165, 55, 0.3);
-    border-radius: 50%;
-    border-top-color: var(--warning-color);
-    animation: spin 1s ease-in-out infinite;
-}
-
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
-
-/* 工具提示 */
-.tooltip-custom {
-    position: relative;
-    cursor: help;
-}
-
-.tooltip-custom::after {
-    content: attr(data-tooltip);
-    position: absolute;
-    bottom: 125%;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--dark-color);
-    color: var(--text-white);
-    padding: 8px 12px;
-    border-radius: var(--radius-small);
-    font-size: 0.8rem;
-    white-space: nowrap;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s ease;
-    z-index: 1000;
-    border: 1px solid var(--warning-color);
-}
-
-.tooltip-custom:hover::after {
-    opacity: 1;
-    visibility: visible;
-}
-
-/* 狀態指示器 */
-.status-indicator {
-    display: inline-block;
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    margin-right: 8px;
-}
-
-.status-online {
-    background: var(--success-color);
-    box-shadow: 0 0 10px rgba(34, 139, 34, 0.5);
-}
-
-.status-offline {
-    background: var(--text-secondary);
-}
-
-.status-busy {
-    background: var(--accent-color);
-    box-shadow: 0 0 10px rgba(220, 20, 60, 0.5);
-}
-
-/* 進度條 */
-.progress-custom {
-    height: 8px;
-    background: rgba(139, 69, 19, 0.3);
-    border-radius: 4px;
-    overflow: hidden;
-    border: 1px solid var(--warning-color);
-}
-
-.progress-bar-custom {
-    height: 100%;
-    background: var(--gradient-magic);
-    transition: width 0.6s ease;
-}
-
-/* 徽章 */
-.badge-custom {
-    display: inline-block;
-    padding: 4px 8px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    border-radius: 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    border: 1px solid;
-}
-
-.badge-new {
-    background: var(--slytherin-green);
-    color: var(--text-white);
-    border-color: var(--success-color);
-}
-
-.badge-hot {
-    background: var(--gryffindor-red);
-    color: var(--text-white);
-    border-color: var(--accent-color);
-}
-
-.badge-pro {
-    background: var(--hufflepuff-yellow);
-    color: var(--dark-color);
-    border-color: var(--warning-color);
-}
-
-/* 特殊效果 */
-.mystical-border {
-    border: 2px solid;
-    border-image: var(--gradient-mystical) 1;
-    border-radius: var(--radius-medium);
-}
-
-.magic-text {
-    background: var(--gradient-magic);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    font-weight: bold;
-}
-
-/* 黑色時尚名片版首頁風格 */
-.home-card {
-    background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #2c1810 100%);
-    color: var(--text-white);
-    border: 2px solid var(--warning-color);
-    box-shadow: var(--shadow-mystical);
-}
-
-.home-card .card-title {
-    color: var(--warning-color);
-    text-shadow: 0 0 10px var(--warning-color);
-}
-
-.home-card .card-text {
-    color: var(--text-light);
-}
-
-/* 確保同意書介面穩定性 */
-.consent-form-container,
-.consent-form-container * {
-    position: static !important;
-    transform: none !important;
-    transition: none !important;
-}
-
-.consent-form-container:hover,
-.consent-form-container *:hover {
-    transform: none !important;
-}
-
-/* 醫療行為警告樣式 */
-.medical-warning {
-    background: linear-gradient(135deg, #8b0000 0%, #dc143c 100%);
-    color: var(--text-white);
-    border: 2px solid #ff6b6b;
-    border-radius: var(--radius-medium);
-    padding: 1rem;
-    margin: 1rem 0;
-    box-shadow: var(--shadow-medium);
-}
-
-.medical-warning .fas {
-    color: #ffff00;
-    text-shadow: 0 0 5px #ffff00;
+.gold-glow {
+    animation: goldGlow 2s ease-in-out infinite;
 }
