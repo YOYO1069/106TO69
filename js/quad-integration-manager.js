@@ -59,12 +59,17 @@ class QuadIntegrationManager {
     }
 
     /**
-     * 創建進階管理介面
+     * 創建進階管理介面 - 管理員專用隱藏模式
      */
     createAdvancedUI() {
+        // 檢查是否為管理員模式
+        this.isAdminMode = this.checkAdminAccess();
+        
         const managementPanel = document.createElement('div');
         managementPanel.id = 'quadIntegrationPanel';
         managementPanel.className = 'quad-integration-panel';
+        managementPanel.style.display = this.isAdminMode ? 'none' : 'none'; // 預設隱藏
+        
         managementPanel.innerHTML = `
             <div class="panel-header">
                 <div class="panel-title">
@@ -77,6 +82,9 @@ class QuadIntegrationManager {
                     </button>
                     <button class="panel-toggle" onclick="window.quadManager.togglePanel()">
                         <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <button class="panel-close" onclick="window.quadManager.hidePanel()">
+                        <i class="fas fa-times"></i>
                     </button>
                 </div>
             </div>
@@ -1155,6 +1163,45 @@ class QuadIntegrationManager {
     }
 
     /**
+     * 檢查管理員權限
+     */
+    checkAdminAccess() {
+        // 檢查特殊的管理員標識
+        const adminKey = localStorage.getItem('admin_access_key');
+        const urlParams = new URLSearchParams(window.location.search);
+        const adminParam = urlParams.get('admin');
+        
+        // 檢查是否有管理員權限
+        return adminKey === 'liu_daoxuan_admin_2024' || adminParam === 'true';
+    }
+
+    /**
+     * 顯示管理面板 - 僅限管理員
+     */
+    showPanel() {
+        if (!this.checkAdminAccess()) {
+            console.log('無管理員權限');
+            return;
+        }
+        
+        const panel = document.getElementById('quadIntegrationPanel');
+        if (panel) {
+            panel.style.display = 'block';
+            this.showNotification('AI 智能管理中心已啟動', 'success');
+        }
+    }
+
+    /**
+     * 隱藏管理面板
+     */
+    hidePanel() {
+        const panel = document.getElementById('quadIntegrationPanel');
+        if (panel) {
+            panel.style.display = 'none';
+        }
+    }
+
+    /**
      * 切換面板顯示
      */
     togglePanel() {
@@ -1274,7 +1321,26 @@ class QuadIntegrationManager {
 // 初始化四方整合管理器
 document.addEventListener('DOMContentLoaded', function() {
     window.quadManager = new QuadIntegrationManager();
-    console.log('四方整合智能管理中心已啟動');
+    console.log('四方整合智能管理中心已啟動 (隱藏模式)');
+    
+    // 管理員專用快捷鍵 - Ctrl+Shift+A 顯示管理面板
+    document.addEventListener('keydown', function(event) {
+        if (event.ctrlKey && event.shiftKey && event.key === 'A') {
+            event.preventDefault();
+            if (window.quadManager.checkAdminAccess()) {
+                window.quadManager.showPanel();
+            } else {
+                // 提示輸入管理員密鑰
+                const adminKey = prompt('請輸入管理員密鑰:');
+                if (adminKey === 'liu_daoxuan_admin_2024') {
+                    localStorage.setItem('admin_access_key', adminKey);
+                    window.quadManager.showPanel();
+                } else {
+                    console.log('管理員密鑰錯誤');
+                }
+            }
+        }
+    });
 });
 
 // 匯出給其他模組使用

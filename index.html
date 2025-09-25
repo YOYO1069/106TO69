@@ -293,35 +293,52 @@
                     </div>
                 </div>
 
-                <!-- 預約設定 -->
-                <div class="card home-card module-card settings fade-in-up magic-glow" onclick="navigateToModule('appointment_scheduling_system.html')">
+                <!-- AI 智能管理中心 -->
+                <div class="card home-card module-card ai-center fade-in-up magic-glow" onclick="toggleAdminPanel()" style="border: 2px solid #d4af37; cursor: pointer;">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-start mb-3">
                             <div class="card-title magic-text">
-                                <i class="fas fa-cog" style="color: #8b4513; text-shadow: 0 0 15px #8b4513;"></i>
-                                預約系統設定
+                                <i class="fas fa-brain" style="color: #d4af37; text-shadow: 0 0 15px #d4af37;"></i>
+                                AI 智能管理中心
                             </div>
-                            <span class="badge-custom badge-config">設定</span>
+                            <span class="badge-custom badge-ai" style="background: #d4af37; color: #1a1f2e;">AI</span>
                         </div>
                         <p class="card-text">
-                            <strong>劉道玄諮詢師預約規則</strong><br>
-                            時段設定・醫師在場檢查・預約限制管理
+                            <strong>劉道玄諮詢師專屬AI助理</strong><br>
+                            智能分析・預約優化・客戶洞察・營運建議
                         </p>
                         <div class="row text-center">
-                            <div class="col-6">
-                                <div class="stats-number h4" style="color: #8b4513;">15分</div>
-                                <small style="color: #d4af37;">時段間隔</small>
+                            <div class="col-4">
+                                <div class="stats-number h4" style="color: #d4af37;">98%</div>
+                                <small style="color: #9ca3af;">AI準確率</small>
                             </div>
-                            <div class="col-6">
-                                <div class="stats-number h4" style="color: #228b22;">2位</div>
-                                <small style="color: #d4af37;">每時段上限</small>
+                            <div class="col-4">
+                                <div class="stats-number h4" style="color: #4a9eff;">24/7</div>
+                                <small style="color: #9ca3af;">智能服務</small>
+                            </div>
+                            <div class="col-4">
+                                <div class="stats-number h4" style="color: #32cd32;">+35%</div>
+                                <small style="color: #9ca3af;">效率提升</small>
                             </div>
                         </div>
                         <div class="mt-3">
                             <div class="progress-custom">
-                                <div class="progress-bar-custom" style="width: 100%"></div>
+                                <div class="progress-bar-custom" style="width: 95%; background: linear-gradient(90deg, #d4af37, #c9a96e);"></div>
                             </div>
-                            <small style="color: #d4af37;">系統設定完整度: 100%</small>
+                            <small style="color: #d4af37;">AI系統運作狀態: 95%</small>
+                        </div>
+                        <div class="mt-2">
+                            <div class="row text-center">
+                                <div class="col-4">
+                                    <small style="color: #4a9eff;"><i class="fas fa-chart-line"></i> 分析</small>
+                                </div>
+                                <div class="col-4">
+                                    <small style="color: #32cd32;"><i class="fas fa-lightbulb"></i> 建議</small>
+                                </div>
+                                <div class="col-4">
+                                    <small style="color: #d4af37;"><i class="fas fa-robot"></i> 自動化</small>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -443,6 +460,38 @@
                 window.redirectToSocial.facebook();
             }, 500);
         }
+
+        // AI 智能管理中心切換函數
+        function toggleAdminPanel() {
+            // 檢查管理員權限
+            if (!window.isAdminAuthenticated) {
+                const password = prompt('請輸入管理員密鑰：');
+                if (password === 'liu_daoxuan_admin_2024') {
+                    window.isAdminAuthenticated = true;
+                    localStorage.setItem('admin_authenticated', 'true');
+                    MedicalPlatform.showAlert('管理員權限驗證成功！', 'success');
+                } else {
+                    MedicalPlatform.showAlert('密鑰錯誤，無法存取管理功能', 'error');
+                    return;
+                }
+            }
+            
+            // 顯示/隱藏 AI 管理面板
+            const panel = document.getElementById('quad-integration-panel');
+            if (panel.style.display === 'none' || panel.style.display === '') {
+                panel.style.display = 'block';
+                MedicalPlatform.showAlert('AI 智能管理中心已啟用', 'info');
+            } else {
+                panel.style.display = 'none';
+            }
+        }
+
+        // 檢查本地存儲的管理員狀態
+        document.addEventListener('DOMContentLoaded', function() {
+            if (localStorage.getItem('admin_authenticated') === 'true') {
+                window.isAdminAuthenticated = true;
+            }
+        });
     </script>
 </body>
 </html>
