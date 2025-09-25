@@ -76,6 +76,11 @@ function handleAppointmentMessage(messageText, userId) {
                     actions: [
                         {
                             type: 'uri',
+                            label: '🔥 夯客預約系統',
+                            uri: 'https://liff.line.me/2008079261-3lyOnYBB'
+                        },
+                        {
+                            type: 'uri',
                             label: '📅 預約傳送門',
                             uri: BOOKING_PORTAL_URL
                         },
@@ -83,11 +88,6 @@ function handleAppointmentMessage(messageText, userId) {
                             type: 'uri',
                             label: '🗓️ 查看行事曆',
                             uri: GOOGLE_CALENDAR_URL
-                        },
-                        {
-                            type: 'message',
-                            label: '💬 諮詢服務',
-                            text: '我想了解諮詢服務'
                         }
                     ]
                 }
