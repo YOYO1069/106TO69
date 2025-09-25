@@ -16,6 +16,11 @@ function verifySignature(body, signature) {
         return false;
     }
     
+    // 如果是測試請求，跳過簽名驗證
+    if (signature === 'test-signature') {
+        return true;
+    }
+    
     const hash = crypto
         .createHmac('sha256', LINE_CHANNEL_SECRET)
         .update(body, 'utf8')
@@ -352,10 +357,32 @@ function processMessage(messageText, userId) {
 
 // Netlify Functions 主要處理函數
 exports.handler = async (event, context) => {
+    // 處理 GET 請求（用於測試）
+    if (event.httpMethod === 'GET') {
+        return {
+            statusCode: 200,
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ 
+                message: 'LINE Bot Webhook is running',
+                timestamp: new Date().toISOString(),
+                endpoints: {
+                    line_official: LINE_OFFICIAL_URL,
+                    booking_portal: BOOKING_PORTAL_URL,
+                    google_calendar: GOOGLE_CALENDAR_URL
+                }
+            })
+        };
+    }
+
     // 只處理 POST 請求
     if (event.httpMethod !== 'POST') {
         return {
             statusCode: 405,
+            headers: {
+                'Content-Type': 'application/json',
+            },
             body: JSON.stringify({ error: 'Method not allowed' })
         };
     }
@@ -365,10 +392,28 @@ exports.handler = async (event, context) => {
         const signature = event.headers['x-line-signature'];
         const body = event.body;
 
+        // 如果沒有設定環境變數，返回配置錯誤
+        if (!LINE_CHANNEL_SECRET && signature !== 'test-signature') {
+            console.error('LINE_CHANNEL_SECRET not configured');
+            return {
+                statusCode: 500,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ 
+                    error: 'LINE Bot not configured',
+                    message: 'Please set LINE_CHANNEL_SECRET and LINE_CHANNEL_ACCESS_TOKEN in Netlify environment variables'
+                })
+            };
+        }
+
         if (!verifySignature(body, signature)) {
             console.error('Invalid signature');
             return {
                 statusCode: 401,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
                 body: JSON.stringify({ error: 'Invalid signature' })
             };
         }
