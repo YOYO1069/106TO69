@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>劉道玄醫師醫療管理平台 - FLOS 深色時尚風格</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* FLOS 深色時尚風格 */
+        :root {
+            --flos-bg-primary: #0f1419;
+            --flos-bg-secondary: #1a1f2e;
+            --flos-bg-tertiary: #2a3441;
+            --flos-gold: #d4af37;
+            --flos-gold-light: #e6c866;
+            --flos-text-primary: #f8fafc;
+            --flos-text-secondary: #cbd5e1;
+            --flos-text-muted: #94a3b8;
+            --flos-border: #334155;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.02) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(212, 175, 55, 0.01) 0%, transparent 50%),
+                linear-gradient(135deg, var(--flos-bg-primary) 0%, var(--flos-bg-secondary) 50%, var(--flos-bg-tertiary) 100%);
+            color: var(--flos-text-primary);
+            min-height: 100vh;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                repeating-linear-gradient(
+                    45deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(255, 255, 255, 0.005) 2px,
+                    rgba(255, 255, 255, 0.005) 4px
+                ),
+                repeating-linear-gradient(
+                    -45deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(0, 0, 0, 0.01) 2px,
+                    rgba(0, 0, 0, 0.01) 4px
+                );
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* 導航列 */
+        .navbar {
+            background: 
+                linear-gradient(135deg, 
+                    rgba(26, 31, 46, 0.7) 0%, 
+                    rgba(42, 52, 65, 0.5) 50%, 
+                    rgba(26, 31, 46, 0.7) 100%
+                );
+            backdrop-filter: blur(15px) saturate(1.4);
+            -webkit-backdrop-filter: blur(15px) saturate(1.4);
+            border-bottom: 2px solid var(--flos-border);
+            box-shadow: 
+                0 4px 8px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(212, 175, 55, 0.1);
+        }
+
+        .navbar-brand {
+            color: var(--flos-gold) !important;
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+        }
+
+        .nav-link {
+            color: var(--flos-text-secondary) !important;
+            font-weight: 500;
+            padding: 0.5rem 1rem !important;
+            border-radius: 0.375rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--flos-gold) !important;
+            background: rgba(212, 175, 55, 0.1);
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+        }
+
+        /* 主要內容區域 */
+        .main-content {
+            padding: 2rem;
+        }
+
+        .hero-section {
+            text-align: center;
+            padding: 3rem 0;
+            background: 
+                linear-gradient(135deg, 
+                    rgba(26, 31, 46, 0.6) 0%, 
+                    rgba(42, 52, 65, 0.4) 50%, 
+                    rgba(26, 31, 46, 0.6) 100%
+                );
+            backdrop-filter: blur(15px) saturate(1.4);
+            -webkit-backdrop-filter: blur(15px) saturate(1.4);
+            border-radius: 1rem;
+            border: 2px solid var(--flos-border);
+            margin-bottom: 3rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 
+                0 8px 16px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(212, 175, 55, 0.2),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+        }
+
+        .hero-title {
+            color: var(--flos-gold);
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+        }
+
+        .hero-subtitle {
+            color: var(--flos-text-secondary);
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+
+        /* 社群媒體預約區域 */
+        .social-booking {
+            background: 
+                linear-gradient(135deg, 
+                    rgba(26, 31, 46, 0.8) 0%, 
+                    rgba(42, 52, 65, 0.6) 50%, 
+                    rgba(26, 31, 46, 0.8) 100%
+                );
+            backdrop-filter: blur(12px) saturate(1.3);
+            -webkit-backdrop-filter: blur(12px) saturate(1.3);
+            border: 2px solid var(--flos-border);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 
+                0 6px 12px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(212, 175, 55, 0.1),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+        }
+
+        .social-booking::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--flos-gold), transparent);
+            opacity: 0.4;
+        }
+
+        .social-booking h3 {
+            color: var(--flos-gold);
+            margin-bottom: 1.5rem;
+        }
+
+        .social-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .social-btn {
+            padding: 1rem 2rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .social-btn.line {
+            background: linear-gradient(135deg, #00B900 0%, #00C300 100%);
+            color: white;
+        }
+
+        .social-btn.instagram {
+            background: linear-gradient(135deg, #E4405F 0%, #C13584 50%, #833AB4 100%);
+            color: white;
+        }
+
+        .social-btn.facebook {
+            background: linear-gradient(135deg, #1877F2 0%, #42A5F5 100%);
+            color: white;
+        }
+
+        .social-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        /* 功能方格區域 */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .feature-card {
+            background: 
+                linear-gradient(135deg, 
+                    rgba(26, 31, 46, 0.8) 0%, 
+                    rgba(42, 52, 65, 0.6) 50%, 
+                    rgba(26, 31, 46, 0.8) 100%
+                );
+            backdrop-filter: blur(12px) saturate(1.3);
+            -webkit-backdrop-filter: blur(12px) saturate(1.3);
+            border: 2px solid var(--flos-gold);
+            border-radius: 1rem;
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            cursor: pointer;
+            box-shadow: 
+                0 6px 12px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(212, 175, 55, 0.1),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--flos-gold), transparent);
+            opacity: 0.6;
+        }
+
+        .feature-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.1), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            border-color: var(--flos-gold-light);
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.4),
+                0 0 30px rgba(212, 175, 55, 0.3),
+                inset 0 1px 0 rgba(212, 175, 55, 0.3),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.3);
+        }
+
+        .feature-card:hover::after {
+            left: 100%;
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            color: var(--flos-gold);
+            margin-bottom: 1rem;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+        }
+
+        .feature-title {
+            color: var(--flos-text-primary);
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-description {
+            color: var(--flos-text-muted);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        /* 統計數據區域 */
+        .stats-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .stat-card {
+            background: 
+                linear-gradient(135deg, 
+                    rgba(15, 20, 25, 0.8) 0%, 
+                    rgba(26, 31, 46, 0.6) 50%, 
+                    rgba(15, 20, 25, 0.8) 100%
+                );
+            backdrop-filter: blur(10px) saturate(1.2);
+            -webkit-backdrop-filter: blur(10px) saturate(1.2);
+            border: 2px solid var(--flos-border);
+            border-radius: 1rem;
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 
+                0 4px 8px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(212, 175, 55, 0.1),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--flos-gold), transparent);
+            opacity: 0.3;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--flos-gold);
+            box-shadow: 
+                0 8px 16px rgba(0, 0, 0, 0.3),
+                0 0 15px rgba(212, 175, 55, 0.2),
+                inset 0 1px 0 rgba(212, 175, 55, 0.2),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--flos-gold);
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+        }
+
+        .stat-label {
+            color: var(--flos-text-muted);
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        /* AI 智能管理中心 */
+        .ai-management {
+            background: 
+                linear-gradient(135deg, 
+                    rgba(26, 31, 46, 0.9) 0%, 
+                    rgba(42, 52, 65, 0.7) 50%, 
+                    rgba(26, 31, 46, 0.9) 100%
+                );
+            backdrop-filter: blur(15px) saturate(1.4);
+            -webkit-backdrop-filter: blur(15px) saturate(1.4);
+            border: 3px solid var(--flos-gold);
+            border-radius: 1rem;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 
+                0 10px 20px rgba(0, 0, 0, 0.4),
+                0 0 30px rgba(212, 175, 55, 0.3),
+                inset 0 2px 0 rgba(212, 175, 55, 0.2),
+                inset 0 -2px 0 rgba(0, 0, 0, 0.3);
+        }
+
+        .ai-management::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--flos-gold-light), transparent);
+            opacity: 0.8;
+        }
+
+        /* 響應式設計 */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+            
+            .feature-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .social-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .stats-section {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 導航列 -->
+    <nav class="navbar navbar-expand-lg sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-user-md me-2"></i>
+                劉道玄諮詢師預約系統
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="#">首頁</a>
+                <a class="nav-link" href="#">預約管理</a>
+                <a class="nav-link" href="#">醫療系統</a>
+                <a class="nav-link" href="#">數據分析</a>
+                <a class="nav-link" href="#">營運管理</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要內容 -->
+    <div class="main-content">
+        <!-- 英雄區域 -->
+        <div class="hero-section">
+            <h1 class="hero-title">
+                <i class="fas fa-user-md"></i>
+                劉道玄諮詢師預約系統
+            </h1>
+            <p class="hero-subtitle">專業美容諮詢 • 智能化管理 • 安全可靠</p>
+            <div class="contact-info">
+                <span class="me-4">
+                    <i class="fas fa-map-marker-alt"></i>
+                    診所地址：台灣台北市忠孝復興
+                </span>
+                <span class="me-4">
+                    <i class="fas fa-phone"></i>
+                    聯絡電話：請透過線上預約系統
+                </span>
+                <span>
+                    <i class="fas fa-globe"></i>
+                    官方網址：https://sage-marigold-0f346a.netlify.app
+                </span>
+            </div>
+        </div>
+
+        <!-- 社群媒體預約 -->
+        <div class="social-booking">
+            <h3><i class="fas fa-share-alt me-2"></i>多元社群預約通道</h3>
+            <p class="mb-4">劉道玄諮詢師客戶可透過以下管道預約：</p>
+            <div class="social-buttons">
+                <a href="#" class="social-btn line">
+                    <i class="fab fa-line"></i>
+                    LINE預約
+                    <small class="d-block">主要預約管道</small>
+                </a>
+                <a href="#" class="social-btn instagram">
+                    <i class="fab fa-instagram"></i>
+                    IG預約
+                    <small class="d-block">視覺諮詢</small>
+                </a>
+                <a href="#" class="social-btn facebook">
+                    <i class="fab fa-facebook"></i>
+                    FB預約
+                    <small class="d-block">社群互動</small>
+                </a>
+            </div>
+        </div>
+
+        <!-- 功能方格 -->
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-calendar-alt"></i>
+                </div>
+                <h4 class="feature-title">劉道玄諮詢師行事曆</h4>
+                <p class="feature-description">
+                    核心 • 專屬預約行事曆，FullCalendar整合，即時同步，多社群來源標示
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-clipboard-list"></i>
+                </div>
+                <h4 class="feature-title">預約表單管理</h4>
+                <p class="feature-description">
+                    管理 • 劉道玄諮詢師客戶表單管理，表單狀態追蹤，多社群來源整合，智能歸類
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-cogs"></i>
+                </div>
+                <h4 class="feature-title">預約系統設定</h4>
+                <p class="feature-description">
+                    設定 • 劉道玄諮詢師預約規則，時段設定，智能在線檢查，預約限制管理
+                </p>
+            </div>
+
+            <div class="feature-card ai-management">
+                <div class="feature-icon">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <h4 class="feature-title">AI 智能管理中心</h4>
+                <p class="feature-description">
+                    智能 • 管理員專用AI助理，數據分析，智能洞察，系統優化建議
+                </p>
+                <small class="text-muted d-block mt-2">
+                    <i class="fas fa-lock me-1"></i>
+                    管理員專用功能
+                </small>
+            </div>
+        </div>
+
+        <!-- 統計數據 -->
+        <div class="stats-section">
+            <div class="stat-card">
+                <div class="stat-number">156</div>
+                <div class="stat-label">今日預約</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">43</div>
+                <div class="stat-label">本週預約</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">89%</div>
+                <div class="stat-label">滿意度</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">15</div>
+                <div class="stat-label">時段間隔</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">24</div>
+                <div class="stat-label">每時段上限</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 添加載入動畫
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.feature-card, .stat-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(30px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+
+        // AI 管理中心點擊事件
+        document.querySelector('.ai-management').addEventListener('click', function() {
+            const password = prompt('請輸入管理員密鑰：');
+            if (password === 'liu_daoxuan_admin_2024') {
+                alert('✅ AI 智能管理中心已啟用！\n\n功能包含：\n• 服務狀態監控\n• AI 智能洞察\n• 數據分析報告\n• 系統優化建議');
+            } else if (password !== null) {
+                alert('❌ 密鑰錯誤，無法存取管理功能');
+            }
+        });
+    </script>
+</body>
+</html>
