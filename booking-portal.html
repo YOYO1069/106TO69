@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>預約傳送門 - 劉道玄諮詢師</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- 自定義樣式 -->
+    <link rel="stylesheet" href="css/main.css">
+    
+    <style>
+        .calendar-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .portal-title {
+            text-align: center;
+            color: #ffd700;
+            text-shadow: 0 0 20px #ffd700;
+            margin-bottom: 30px;
+        }
+        
+        .contact-info {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 2px solid #ffd700;
+        }
+        
+        .contact-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            color: #ffd700;
+        }
+        
+        .contact-item i {
+            width: 30px;
+            margin-right: 15px;
+            font-size: 1.2em;
+        }
+        
+        .line-btn {
+            background: linear-gradient(135deg, #00c300 0%, #00a000 100%);
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.2em;
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: 0 5px 15px rgba(0, 195, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .line-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 195, 0, 0.4);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- 導航列 -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-user-md"></i>
+                劉道玄諮詢師預約系統
+            </a>
+            
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="index.html">
+                    <i class="fas fa-home"></i> 返回首頁
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要內容 -->
+    <div class="container mt-4">
+        <div class="portal-title">
+            <h1><i class="fas fa-calendar-alt"></i> 預約傳送門</h1>
+            <p>劉道玄諮詢師專屬預約系統</p>
+        </div>
+
+        <!-- 聯絡資訊 -->
+        <div class="row mb-4">
+            <div class="col-md-8 mx-auto">
+                <div class="contact-info">
+                    <h4 class="text-center mb-4"><i class="fas fa-info-circle"></i> 聯絡資訊</h4>
+                    
+                    <div class="contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div>
+                            <strong>診所地址：</strong>台灣台北市忠孝復興
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        <div>
+                            <strong>聯絡電話：</strong>請透過線上預約系統或下面傳送門網址
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <i class="fas fa-globe"></i>
+                        <div>
+                            <strong>官方網站：</strong>
+                            <a href="https://sage-marigold-0f346a.netlify.app" target="_blank" class="text-warning">
+                                https://sage-marigold-0f346a.netlify.app
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <i class="fab fa-line"></i>
+                        <div>
+                            <strong>LINE 官方：</strong>
+                            <a href="https://lin.ee/vb6ULgR" target="_blank" class="line-btn ms-2">
+                                <i class="fab fa-line"></i> 立即加入 LINE
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Google Calendar 嵌入 -->
+        <div class="row">
+            <div class="col-12">
+                <div class="calendar-container">
+                    <h4 class="text-center mb-4 text-warning">
+                        <i class="fas fa-calendar-check"></i> 線上預約行事曆
+                    </h4>
+                    
+                    <div class="ratio ratio-16x9">
+                        <iframe 
+                            src="https://calendar.google.com/calendar/embed?src=6bef0ee912b7ee1742123668e09eff427c258884010b7d36add1d1c9b1510658%40group.calendar.google.com&ctz=Asia%2FTaipei"
+                            style="border: 0; border-radius: 10px;"
+                            frameborder="0" 
+                            scrolling="no">
+                        </iframe>
+                    </div>
+                    
+                    <div class="text-center mt-3">
+                        <p class="text-light">
+                            <i class="fas fa-info-circle"></i> 
+                            請直接在行事曆上選擇您希望的預約時間，或透過 LINE 官方帳號聯繫
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 快速操作 -->
+        <div class="row mt-4">
+            <div class="col-md-6 mx-auto text-center">
+                <div class="card" style="background: rgba(255, 255, 255, 0.1); border: 1px solid #ffd700;">
+                    <div class="card-body">
+                        <h5 class="card-title text-warning">
+                            <i class="fas fa-rocket"></i> 快速預約
+                        </h5>
+                        <p class="card-text text-light">
+                            建議透過 LINE 官方帳號進行預約，可獲得最即時的回覆和服務
+                        </p>
+                        <a href="https://lin.ee/vb6ULgR" target="_blank" class="line-btn">
+                            <i class="fab fa-line"></i> 前往 LINE 預約
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 頁腳 -->
+    <footer class="mt-5 py-4" style="background: rgba(0, 0, 0, 0.3);">
+        <div class="container text-center">
+            <p class="text-light mb-0">
+                © 2024 劉道玄諮詢師預約系統 | 專業美容諮詢服務
+            </p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

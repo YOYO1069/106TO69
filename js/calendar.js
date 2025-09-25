@@ -3,7 +3,7 @@ class CalendarIntegration {
     constructor() {
         this.isSignedIn = false;
         this.gapi = null;
-        this.calendarId = 'primary';
+        this.calendarId = '6bef0ee912b7ee1742123668e09eff427c258884010b7d36add1d1c9b1510658@group.calendar.google.com';
         this.apiKey = null; // 需要在環境變數中設置
         this.clientId = null; // 需要在環境變數中設置
         this.discoveryDoc = 'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest';
