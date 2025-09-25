@@ -4,6 +4,11 @@ const crypto = require('crypto');
 const LINE_CHANNEL_SECRET = process.env.LINE_CHANNEL_SECRET;
 const LINE_CHANNEL_ACCESS_TOKEN = process.env.LINE_CHANNEL_ACCESS_TOKEN;
 
+// 劉道玄諮詢師 LINE 官方帳號設定
+const LINE_OFFICIAL_URL = 'https://lin.ee/vb6ULgR';
+const BOOKING_PORTAL_URL = 'https://sage-marigold-0f346a.netlify.app/booking-portal.html';
+const GOOGLE_CALENDAR_URL = 'https://calendar.google.com/calendar/embed?src=6bef0ee912b7ee1742123668e09eff427c258884010b7d36add1d1c9b1510658%40group.calendar.google.com&ctz=Asia%2FTaipei';
+
 // 驗證 LINE 簽名
 function verifySignature(body, signature) {
     if (!LINE_CHANNEL_SECRET) {
@@ -54,30 +59,30 @@ function handleAppointmentMessage(messageText, userId) {
         return [
             {
                 type: 'text',
-                text: '📅 歡迎預約劉道玄醫美 & Flos 曜診所！\n\n營業時間：\n週二-五：12:00-20:00\n週六：11:00-20:00\n\n請選擇預約方式：'
+                text: '✨ 歡迎預約劉道玄諮詢師美容諮詢！\n\n🏢 診所地址：台灣台北市忠孝復興\n📞 聯絡方式：請透過線上預約系統\n🌐 官方網站：https://sage-marigold-0f346a.netlify.app\n\n請選擇預約方式：'
             },
             {
                 type: 'template',
                 altText: '預約選項',
                 template: {
                     type: 'buttons',
-                    title: '預約方式',
+                    title: '劉道玄諮詢師預約',
                     text: '請選擇您偏好的預約方式',
                     actions: [
                         {
                             type: 'uri',
-                            label: '線上預約系統',
-                            uri: 'https://sage-marigold-0f346a.netlify.app/appointment_scheduling_system.html'
+                            label: '📅 預約傳送門',
+                            uri: BOOKING_PORTAL_URL
+                        },
+                        {
+                            type: 'uri',
+                            label: '🗓️ 查看行事曆',
+                            uri: GOOGLE_CALENDAR_URL
                         },
                         {
                             type: 'message',
-                            label: '電話預約',
-                            text: '我要電話預約'
-                        },
-                        {
-                            type: 'message',
-                            label: '查看療程項目',
-                            text: '療程項目'
+                            label: '💬 諮詢服務',
+                            text: '我想了解諮詢服務'
                         }
                     ]
                 }
