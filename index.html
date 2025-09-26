@@ -1,496 +1,1457 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
+    <link rel="stylesheet" href="flos-style.css">
+    <link rel="stylesheet" href="member-styles.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>劉道玄美容諮詢平台 - 專業美容諮詢系統</title>
-    
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- 自定義樣式 -->
-    <link rel="stylesheet" href="css/main.css">
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏥</text></svg>">
+    <title>劉道玄曜診所雲整合系統</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="js/integration-system.js"></script>
+    <script src="js/enhanced_google_calendar_sync.js"></script>
+    <script src="js/appointment_manager.js"></script>
+    <script src="js/calendar_integration.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft JhengHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 50%, #1a1a1a 100%);
+            min-height: 100vh;
+            color: #d4af37;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* 增強光線效果 */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(212, 175, 55, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(184, 134, 11, 0.12) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(218, 165, 32, 0.08) 0%, transparent 50%),
+                linear-gradient(45deg, transparent 30%, rgba(212, 175, 55, 0.03) 50%, transparent 70%);
+            animation: lightMove 15s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        @keyframes lightMove {
+            0%, 100% { transform: translateX(0) translateY(0) rotate(0deg); }
+            33% { transform: translateX(-20px) translateY(-20px) rotate(1deg); }
+            66% { transform: translateX(20px) translateY(20px) rotate(-1deg); }
+        }
+
+        /* 頂部導航 */
+        .top-nav {
+            background: rgba(26, 26, 26, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 2px solid rgba(212, 175, 55, 0.4);
+            box-shadow: 0 2px 20px rgba(212, 175, 55, 0.1);
+            padding: 1rem 2rem;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 300;
+            color: #d4af37;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 0.3rem;
+            list-style: none;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .nav-menu a {
+            color: rgba(212, 175, 55, 0.8);
+            text-decoration: none;
+            padding: 0.4rem 0.8rem;
+            transition: all 0.3s ease;
+            font-weight: 300;
+            font-size: 0.8rem;
+            border-radius: 6px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            background: linear-gradient(145deg, rgba(42, 42, 42, 0.6), rgba(26, 26, 26, 0.6));
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+            white-space: nowrap;
+            
+            /* 浮雕效果 */
+            box-shadow: 
+                inset 0 1px 0 rgba(212, 175, 55, 0.1),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.2),
+                0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-menu a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .nav-menu a:hover::before {
+            left: 100%;
+        }
+
+        .nav-menu a:hover {
+            color: #d4af37;
+            border-color: rgba(212, 175, 55, 0.5);
+            background: linear-gradient(145deg, rgba(52, 52, 52, 0.8), rgba(36, 36, 36, 0.8));
+            transform: translateY(-1px);
+            box-shadow: 
+                inset 0 1px 0 rgba(212, 175, 55, 0.2),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.3),
+                0 4px 12px rgba(0, 0, 0, 0.3),
+                0 0 10px rgba(212, 175, 55, 0.1);
+        }
+
+        .nav-menu a:active {
+            transform: translateY(0);
+            box-shadow: 
+                inset 0 2px 4px rgba(0, 0, 0, 0.3),
+                0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        /* 系統狀態指示器 */
+        .system-status {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: #d4af37;
+            font-size: 0.9rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #4ade80;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+            box-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.1); }
+        }
+
+        /* 主要內容 */
+        .main-container {
+            margin-top: 100px;
+            padding: 3rem 2rem;
+            min-height: calc(100vh - 100px);
+        }
+
+        .dashboard-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .dashboard-title {
+            font-size: 3rem;
+            color: #d4af37;
+            font-weight: 300;
+            letter-spacing: 3px;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+        }
+
+        .dashboard-subtitle {
+            font-size: 1.1rem;
+            color: rgba(212, 175, 55, 0.7);
+            font-weight: 300;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .system-purpose {
+            font-size: 0.9rem;
+            color: rgba(212, 175, 55, 0.6);
+            font-style: italic;
+        }
+
+        /* 功能卡片網格 */
+        .function-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .function-card {
+            background: linear-gradient(145deg, rgba(42, 42, 42, 0.9), rgba(26, 26, 26, 0.9));
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: left;
+            transition: all 0.4s ease;
+            cursor: pointer;
+            position: relative;
+            backdrop-filter: blur(10px);
+            
+            /* 浮雕效果 */
+            box-shadow: 
+                inset 0 1px 0 rgba(212, 175, 55, 0.1),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.3),
+                0 5px 15px rgba(0, 0, 0, 0.3),
+                0 0 0 1px rgba(212, 175, 55, 0.1);
+        }
+
+        /* 金色光線框線效果 */
+        .function-card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, 
+                transparent 30%, 
+                rgba(212, 175, 55, 0.6) 50%, 
+                transparent 70%);
+            border-radius: 15px;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            z-index: -1;
+        }
+
+        .function-card:hover::before {
+            opacity: 1;
+            animation: borderGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes borderGlow {
+            0%, 100% { 
+                background: linear-gradient(45deg, 
+                    transparent 30%, 
+                    rgba(212, 175, 55, 0.6) 50%, 
+                    transparent 70%);
+            }
+            50% { 
+                background: linear-gradient(45deg, 
+                    transparent 20%, 
+                    rgba(212, 175, 55, 0.8) 50%, 
+                    transparent 80%);
+            }
+        }
+
+        .function-card:hover {
+            background: linear-gradient(145deg, rgba(52, 52, 52, 0.95), rgba(36, 36, 36, 0.95));
+            border-color: rgba(212, 175, 55, 0.6);
+            transform: translateY(-8px);
+            box-shadow: 
+                inset 0 2px 0 rgba(212, 175, 55, 0.2),
+                inset 0 -2px 0 rgba(0, 0, 0, 0.4),
+                0 15px 30px rgba(0, 0, 0, 0.4),
+                0 0 20px rgba(212, 175, 55, 0.2);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .function-icon {
+            font-size: 2.5rem;
+            color: #d4af37;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+        }
+
+        .function-title {
+            font-size: 1.3rem;
+            color: #d4af37;
+            margin-bottom: 0.5rem;
+            font-weight: 400;
+            letter-spacing: 1px;
+        }
+
+        .function-description {
+            color: rgba(212, 175, 55, 0.8);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        .function-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #d4af37;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: rgba(212, 175, 55, 0.6);
+        }
+
+        .badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(212, 175, 55, 0.2);
+            color: #d4af37;
+            padding: 0.2rem 0.5rem;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            letter-spacing: 1px;
+        }
+
+        .badge.core { background: rgba(220, 20, 60, 0.3); color: #dc143c; }
+        .badge.new { background: rgba(70, 130, 180, 0.3); color: #4682b4; }
+        .badge.hot { background: rgba(255, 165, 0, 0.3); color: #ffa500; }
+
+        /* 右下角設定齒輪 */
+        .settings-gear {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(145deg, rgba(52, 52, 52, 0.9), rgba(26, 26, 26, 0.9));
+            border: 2px solid rgba(212, 175, 55, 0.4);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: 
+                0 5px 15px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(212, 175, 55, 0.1);
+        }
+
+        .settings-gear:hover {
+            background: linear-gradient(145deg, rgba(62, 52, 42, 0.95), rgba(36, 26, 16, 0.95));
+            border-color: #d4af37;
+            transform: rotate(90deg) scale(1.1);
+            box-shadow: 
+                0 8px 25px rgba(0, 0, 0, 0.4),
+                0 0 20px rgba(212, 175, 55, 0.3),
+                inset 0 2px 0 rgba(212, 175, 55, 0.2);
+        }
+
+        .settings-gear i {
+            color: #d4af37;
+            font-size: 1.3rem;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+        }
+
+        /* 響應式設計 */
+        @media (max-width: 1200px) {
+            .nav-menu a {
+                font-size: 0.75rem;
+                padding: 0.3rem 0.6rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-menu {
+                gap: 0.2rem;
+                justify-content: space-around;
+            }
+            
+            .nav-menu a {
+                font-size: 0.7rem;
+                padding: 0.3rem 0.5rem;
+                flex: 1;
+                text-align: center;
+                min-width: 0;
+            }
+            
+            .logo h1 {
+                font-size: 1.2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .nav-menu {
+                flex-direction: column;
+                gap: 0.3rem;
+            }
+            
+            .nav-menu a {
+                padding: 0.6rem;
+                font-size: 0.8rem;
+            }
+        }
+
+        .function-card {
+            padding: 1.5rem;
+        }
+
+            .nav-menu {
+                display: none;
+            }
+        }
+
+        /* 中心隱藏卡片 */
+        .ai-card {
+            display: none;
+            border-color: rgba(138, 43, 226, 0.5);
+            background: linear-gradient(145deg, rgba(52, 32, 62, 0.9), rgba(26, 16, 36, 0.9));
+        }
+
+        .ai-card.active {
+            display: block;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
 </head>
 <body>
-    <!-- 導航列 -->
-    <nav class="navbar navbar-expand-lg">
-        <div class="container">
-            <a class="navbar-brand" href="index.html">
-                <i class="fas fa-user-md"></i>
-                劉道玄諮詢師預約系統
-            </a>
-            
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="index.html">
-                            <i class="fas fa-home"></i> 首頁
-                        </a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="appointmentDropdown" role="button" data-bs-toggle="dropdown">
-                            <i class="fas fa-calendar-alt"></i> 預約管理
-                        </a>
-                        <ul class="dropdown-menu bg-dark">
-                            <li><a class="dropdown-item text-light" href="liu-daoxuan-calendar.html"><i class="fas fa-calendar"></i> 劉道玄行事曆</a></li>
-                            <li><a class="dropdown-item text-light" href="advanced-calendar-system.html"><i class="fas fa-brain"></i> AI 智能行事曆</a></li>
-                            <li><a class="dropdown-item text-light" href="appointment_scheduling_system.html"><i class="fas fa-clock"></i> 預約排程系統</a></li>
-                            <li><a class="dropdown-item text-light" href="appointment-form-management.html"><i class="fas fa-clipboard-list"></i> 預約表單管理</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item text-warning" href="booking-portal.html"><i class="fas fa-rocket"></i> 預約傳送門</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="medicalDropdown" role="button" data-bs-toggle="dropdown">
-                            <i class="fas fa-user-md"></i> 醫療系統
-                        </a>
-                        <ul class="dropdown-menu bg-dark">
-                            <li><a class="dropdown-item text-light" href="medical_records.html"><i class="fas fa-file-medical"></i> 病歷系統</a></li>
-                            <li><a class="dropdown-item text-light" href="treatment_management.html"><i class="fas fa-procedures"></i> 療程管理</a></li>
-                            <li><a class="dropdown-item text-light" href="consent_forms.html"><i class="fas fa-file-signature"></i> 同意書管理</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="analyticsDropdown" role="button" data-bs-toggle="dropdown">
-                            <i class="fas fa-chart-bar"></i> 數據分析
-                        </a>
-                        <ul class="dropdown-menu bg-dark">
-                            <li><a class="dropdown-item text-light" href="data_statistics.html"><i class="fas fa-chart-pie"></i> 數據統計</a></li>
-                            <li><a class="dropdown-item text-light" href="smart-crm-system.html"><i class="fas fa-users-cog"></i> 智能CRM</a></li>
-                            <li><a class="dropdown-item text-light" href="conversion-optimization.html"><i class="fas fa-chart-line"></i> 轉換優化</a></li>
-                            <li><a class="dropdown-item text-light" href="revenue-analytics.html"><i class="fas fa-dollar-sign"></i> 營收分析</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="managementDropdown" role="button" data-bs-toggle="dropdown">
-                            <i class="fas fa-cogs"></i> 營運管理
-                        </a>
-                        <ul class="dropdown-menu bg-dark">
-                            <li><a class="dropdown-item text-light" href="performance_management.html"><i class="fas fa-trophy"></i> 業績管理</a></li>
-                            <li><a class="dropdown-item text-light" href="price_management.html"><i class="fas fa-tags"></i> 價格管理</a></li>
-                            <li><a class="dropdown-item text-light" href="smart_scheduling.html"><i class="fas fa-calendar-check"></i> 智能排程</a></li>
-                            <li><a class="dropdown-item text-light" href="employee_benefits.html"><i class="fas fa-gift"></i> 員工福利</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="toolsDropdown" role="button" data-bs-toggle="dropdown">
-                            <i class="fas fa-tools"></i> 工具測試
-                        </a>
-                        <ul class="dropdown-menu bg-dark">
-                            <li><a class="dropdown-item text-light" href="chat-data-management.html"><i class="fas fa-comments"></i> 聊天資料管理</a></li>
-                            <li><a class="dropdown-item text-light" href="line-bot-test.html"><i class="fab fa-line"></i> LINE Bot 測試</a></li>
-                            <li><a class="dropdown-item text-light" href="test-google-services.html"><i class="fab fa-google"></i> Google 服務測試</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" onclick="logout()">
-                            <i class="fas fa-sign-out-alt"></i> 登出
-                        </a>
-                    </li>
-                </ul>
-            </div>
+    <!-- 頂部導航 -->
+    <nav class="top-nav">
+        <div class="logo">
+            劉道玄曜診所雲整合系統
+        </div>
+        <ul class="nav-menu">
+            <li><a href="#dashboard" title="系統首頁">首頁</a></li>
+            <li><a href="liu-daoxuan-calendar.html" title="預約管理系統">預約</a></li>
+            <li><a href="electronic-medical-records.html" title="電子病歷系統">病歷</a></li>
+            <li><a href="treatment-management.html" title="療程管理">療程</a></li>
+            <li><a href="consent_forms.html" title="電子同意書">同意書</a></li>
+            <li><a href="data_statistics.html" title="數據統計分析">統計</a></li>
+            <li><a href="performance-management.html" title="業績管理">業績</a></li>
+            <li><a href="price_management.html" title="價格管理">價格</a></li>
+        </ul>
+        <div class="system-status">
+            <div class="status-dot"></div>
+            <span>系統運行中</span>
         </div>
     </nav>
 
     <!-- 主要內容 -->
-    <main class="main-content">
-        <div class="container">
-            <!-- 頁面標題 -->
-            <div class="page-title fade-in-up">
-                <h1><i class="fas fa-user-md"></i> 劉道玄諮詢師預約管理系統</h1>
-                <p>🏢 診所地址：台灣台北市忠孝復興 | 📞 聯絡電話：請透過線上預約系統 | 🌐 官方網站：https://sage-marigold-0f346a.netlify.app | 📱 LINE 官方：https://lin.ee/vb6ULgR</p>
-                
-                <!-- 社群引導區 -->
-                <div class="social-guide mt-4">
-                    <div class="row justify-content-center">
-                        <div class="col-md-8">
-                            <div class="alert alert-info">
-                                <h6><i class="fas fa-users"></i> 多社群預約通道</h6>
-                                <p class="mb-2">劉道玄諮詢師客戶可透過以下管道預約：</p>
-                                <div class="row text-center">
-                                    <div class="col-4">
-                                        <a href="https://lin.ee/vb6ULgR" class="btn btn-success btn-sm w-100" target="_blank">
-                                            <i class="fab fa-line"></i> LINE預約
-                                        </a>
-                                        <small class="text-muted d-block mt-1">主要預約管道</small>
-                                    </div>
-                                    <div class="col-4">
-                                        <a href="#" class="btn btn-danger btn-sm w-100" onclick="redirectToIG()">
-                                            <i class="fab fa-instagram"></i> IG預約
-                                        </a>
-                                        <small class="text-muted d-block mt-1">視覺諮詢</small>
-                                    </div>
-                                    <div class="col-4">
-                                        <a href="#" class="btn btn-primary btn-sm w-100" onclick="redirectToFB()">
-                                            <i class="fab fa-facebook"></i> FB預約
-                                        </a>
-                                        <small class="text-muted d-block mt-1">社群互動</small>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+    <div class="main-container">
+        <div class="dashboard-header">
+            <h1 class="dashboard-title">曜醫美診所</h1>
+            <p class="dashboard-subtitle">Flos Medical Clinic</p>
+            <p class="system-purpose">專業醫美服務・智能化管理・安全可靠</p>
+        </div>
+
+        <!-- 功能卡片網格 -->
+        <div class="function-grid">
+            <!-- 預約管理 -->
+            <div class="function-card" onclick="navigateToModule('liu-daoxuan-calendar.html')">
+                <div class="badge core">核心</div>
+                <div class="function-icon">
+                    <i class="fas fa-calendar-alt"></i>
+                </div>
+                <h3 class="function-title">預約管理</h3>
+                <p class="function-description">智能排程・醫師在場檢查</p>
+                <div class="function-stats">
+                    <div class="stat-item">
+                        <div class="stat-number">0</div>
+                        <div class="stat-label">今日預約</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">15</div>
+                        <div class="stat-label">本週預約</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">85%</div>
+                        <div class="stat-label">滿載率</div>
                     </div>
                 </div>
             </div>
 
-            <!-- 快速統計 -->
-            <div class="row mb-5">
-                <div class="col-md-3 col-sm-6 mb-3">
-                    <div class="card stats-card appointment fade-in-up">
-                        <div class="card-body">
-                            <div class="stats-number text-danger">
-                                <i class="fas fa-calendar-check"></i>
-                                <span id="todayAppointments">0</span>
-                            </div>
-                            <div class="stats-label">今日預約</div>
-                        </div>
-                    </div>
+            <!-- 病歷系統 -->
+            <div class="function-card" onclick="navigateToModule('electronic-medical-records.html')">
+                <div class="function-icon">
+                    <i class="fas fa-file-medical"></i>
                 </div>
-                <div class="col-md-3 col-sm-6 mb-3">
-                    <div class="card stats-card medical-records fade-in-up">
-                        <div class="card-body">
-                            <div class="stats-number text-primary">
-                                <i class="fas fa-file-medical"></i>
-                                <span id="totalRecords">0</span>
-                            </div>
-                            <div class="stats-label">總病歷數</div>
-                        </div>
+                <h3 class="function-title">病歷系統</h3>
+                <p class="function-description">電子病歷・療程記錄</p>
+                <div class="function-stats">
+                    <div class="stat-item">
+                        <div class="stat-number">0</div>
+                        <div class="stat-label">總病歷數</div>
                     </div>
-                </div>
-                <div class="col-md-3 col-sm-6 mb-3">
-                    <div class="card stats-card consent-forms fade-in-up">
-                        <div class="card-body">
-                            <div class="stats-number text-success">
-                                <i class="fas fa-file-signature"></i>
-                                <span id="pendingConsents">0</span>
-                            </div>
-                            <div class="stats-label">待簽同意書</div>
-                        </div>
+                    <div class="stat-item">
+                        <div class="stat-number">0</div>
+                        <div class="stat-label">本月新增</div>
                     </div>
-                </div>
-                <div class="col-md-3 col-sm-6 mb-3">
-                    <div class="card stats-card performance fade-in-up">
-                        <div class="card-body">
-                            <div class="stats-number text-warning">
-                                <i class="fas fa-dollar-sign"></i>
-                                <span id="monthlyRevenue">0</span>
-                            </div>
-                            <div class="stats-label">本月營收</div>
-                        </div>
+                    <div class="stat-item">
+                        <div class="stat-number">100%</div>
+                        <div class="stat-label">完整度</div>
                     </div>
                 </div>
             </div>
 
-            <!-- 劉道玄諮詢師預約核心功能 -->
-            <div class="grid-container">
-                <!-- 劉道玄行事曆 - 核心功能 -->
-                <div class="card home-card module-card appointment fade-in-up magic-glow" onclick="navigateToModule('liu-daoxuan-calendar.html')" style="border: 3px solid #dc143c;">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-start mb-3">
-                            <div class="card-title magic-text">
-                                <i class="fas fa-calendar-alt" style="color: #dc143c; text-shadow: 0 0 15px #dc143c;"></i>
-                                劉道玄諮詢師行事曆
-                            </div>
-                            <span class="badge-custom badge-hot" style="background: #dc143c;">核心</span>
-                        </div>
-                        <p class="card-text">
-                            <strong>專屬預約行事曆</strong><br>
-                            FullCalendar整合・即時同步・多社群來源標示
-                        </p>
-                        <div class="row text-center">
-                            <div class="col-4">
-                                <div class="stats-number h4" style="color: #dc143c;">18</div>
-                                <small style="color: #d4af37;">今日預約</small>
-                            </div>
-                            <div class="col-4">
-                                <div class="stats-number h4" style="color: #4682b4;">45</div>
-                                <small style="color: #d4af37;">本週預約</small>
-                            </div>
-                            <div class="col-4">
-                                <div class="stats-number h4" style="color: #228b22;">85%</div>
-                                <small style="color: #d4af37;">滿載率</small>
-                            </div>
-                        </div>
-                        <div class="mt-3">
-                            <div class="progress-custom">
-                                <div class="progress-bar-custom" style="width: 85%"></div>
-                            </div>
-                            <small style="color: #d4af37;">劉道玄諮詢師檔期滿載率: 85%</small>
-                        </div>
-                        <div class="mt-2">
-                            <div class="row text-center">
-                                <div class="col-4">
-                                    <small style="color: #32cd32;"><i class="fab fa-line"></i> LINE: 60%</small>
-                                </div>
-                                <div class="col-4">
-                                    <small style="color: #e4405f;"><i class="fab fa-instagram"></i> IG: 25%</small>
-                                </div>
-                                <div class="col-4">
-                                    <small style="color: #1877f2;"><i class="fab fa-facebook"></i> FB: 15%</small>
-                                </div>
-                            </div>
-                        </div>
+            <!-- 療程管理 -->
+            <div class="function-card" onclick="navigateToModule('treatment-management.html')">
+                <div class="function-icon">
+                    <i class="fas fa-spa"></i>
+                </div>
+                <h3 class="function-title">療程管理</h3>
+                <p class="function-description">療程設定・價格管理</p>
+                <div class="function-stats">
+                    <div class="stat-item">
+                        <div class="stat-number">0</div>
+                        <div class="stat-label">進行中療程</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">12</div>
+                        <div class="stat-label">療程項目</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">95%</div>
+                        <div class="stat-label">滿意度</div>
                     </div>
                 </div>
-
-                <!-- 預約表單管理 -->
-                <div class="card home-card module-card forms fade-in-up magic-glow" onclick="navigateToModule('appointment-form-management.html')" style="border: 2px solid #4682b4;">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-start mb-3">
-                            <div class="card-title magic-text">
-                                <i class="fas fa-clipboard-list" style="color: #4682b4; text-shadow: 0 0 15px #4682b4;"></i>
-                                預約表單管理
-                            </div>
-                            <span class="badge-custom badge-new" style="background: #4682b4;">管理</span>
-                        </div>
-                        <p class="card-text">
-                            <strong>劉道玄諮詢師客戶資料</strong><br>
-                            表單狀態追蹤・多社群來源整合・智能篩選分類
-                        </p>
-                        <div class="row text-center">
-                            <div class="col-4">
-                                <div class="stats-number h4" style="color: #4682b4;">156</div>
-                                <small style="color: #d4af37;">總表單</small>
-                            </div>
-                            <div class="col-4">
-                                <div class="stats-number h4" style="color: #ffa500;">23</div>
-                                <small style="color: #d4af37;">待處理</small>
-                            </div>
-                            <div class="col-4">
-                                <div class="stats-number h4" style="color: #32cd32;">89</div>
-                                <small style="color: #d4af37;">已確認</small>
-                            </div>
-                        </div>
-                        <div class="mt-3">
-                            <div class="progress-custom">
-                                <div class="progress-bar-custom" style="width: 85%"></div>
-                            </div>
-                            <small style="color: #d4af37;">表單處理效率: 85%</small>
-                        </div>
-                        <div class="mt-2">
-                            <div class="row text-center">
-                                <div class="col-4">
-                                    <small style="color: #32cd32;"><i class="fas fa-check"></i> 已完成: 44</small>
-                                </div>
-                                <div class="col-4">
-                                    <small style="color: #ffa500;"><i class="fas fa-clock"></i> 處理中: 23</small>
-                                </div>
-                                <div class="col-4">
-                                    <small style="color: #dc143c;"><i class="fas fa-times"></i> 已取消: 0</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- AI 智能管理中心 -->
-                <div class="card home-card module-card ai-center fade-in-up magic-glow" onclick="toggleAdminPanel()" style="border: 2px solid #d4af37; cursor: pointer;">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-start mb-3">
-                            <div class="card-title magic-text">
-                                <i class="fas fa-brain" style="color: #d4af37; text-shadow: 0 0 15px #d4af37;"></i>
-                                AI 智能管理中心
-                            </div>
-                            <span class="badge-custom badge-ai" style="background: #d4af37; color: #1a1f2e;">AI</span>
-                        </div>
-                        <p class="card-text">
-                            <strong>劉道玄諮詢師專屬AI助理</strong><br>
-                            智能分析・預約優化・客戶洞察・營運建議
-                        </p>
-                        <div class="row text-center">
-                            <div class="col-4">
-                                <div class="stats-number h4" style="color: #d4af37;">98%</div>
-                                <small style="color: #9ca3af;">AI準確率</small>
-                            </div>
-                            <div class="col-4">
-                                <div class="stats-number h4" style="color: #4a9eff;">24/7</div>
-                                <small style="color: #9ca3af;">智能服務</small>
-                            </div>
-                            <div class="col-4">
-                                <div class="stats-number h4" style="color: #32cd32;">+35%</div>
-                                <small style="color: #9ca3af;">效率提升</small>
-                            </div>
-                        </div>
-                        <div class="mt-3">
-                            <div class="progress-custom">
-                                <div class="progress-bar-custom" style="width: 95%; background: linear-gradient(90deg, #d4af37, #c9a96e);"></div>
-                            </div>
-                            <small style="color: #d4af37;">AI系統運作狀態: 95%</small>
-                        </div>
-                        <div class="mt-2">
-                            <div class="row text-center">
-                                <div class="col-4">
-                                    <small style="color: #4a9eff;"><i class="fas fa-chart-line"></i> 分析</small>
-                                </div>
-                                <div class="col-4">
-                                    <small style="color: #32cd32;"><i class="fas fa-lightbulb"></i> 建議</small>
-                                </div>
-                                <div class="col-4">
-                                    <small style="color: #d4af37;"><i class="fas fa-robot"></i> 自動化</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
             </div>
 
-            <!-- 快速操作區 -->
-            <div class="row mt-5">
-                <div class="col-12">
-                    <div class="card fade-in-up">
-                        <div class="card-header">
-                            <h5 class="mb-0">
-                                <i class="fas fa-bolt"></i>
-                                快速操作
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-3 col-sm-6 mb-3">
-                                    <button class="btn btn-primary w-100" onclick="quickAction('new-appointment')">
-                                        <i class="fas fa-plus"></i>
-                                        新增預約
-                                    </button>
-                                </div>
-                                <div class="col-md-3 col-sm-6 mb-3">
-                                    <button class="btn btn-success w-100" onclick="quickAction('new-record')">
-                                        <i class="fas fa-file-plus"></i>
-                                        新增病歷
-                                    </button>
-                                </div>
-                                <div class="col-md-3 col-sm-6 mb-3">
-                                    <button class="btn btn-warning w-100" onclick="quickAction('daily-report')">
-                                        <i class="fas fa-chart-bar"></i>
-                                        日報表
-                                    </button>
-                                </div>
-                                <div class="col-md-3 col-sm-6 mb-3">
-                                    <button class="btn btn-danger w-100" onclick="quickAction('emergency')">
-                                        <i class="fas fa-exclamation-triangle"></i>
-                                        緊急處理
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+            <!-- 同意書管理 -->
+            <div class="function-card" onclick="navigateToModule('consent_forms.html')">
+                <div class="badge core">核心</div>
+                <div class="function-icon">
+                    <i class="fas fa-file-signature"></i>
+                </div>
+                <h3 class="function-title">同意書管理</h3>
+                <p class="function-description">數位簽署・法規遵循・安全存儲</p>
+                <div class="function-stats">
+                    <div class="stat-item">
+                        <div class="stat-number">3</div>
+                        <div class="stat-label">待簽署</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">28</div>
+                        <div class="stat-label">已完成</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">100%</div>
+                        <div class="stat-label">合規率</div>
                     </div>
                 </div>
+            </div>
+
+            <!-- 業績管理 -->
+            <div class="function-card" onclick="navigateToModule('performance-management.html')">
+                <div class="function-icon">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <h3 class="function-title">業績管理</h3>
+                <p class="function-description">績效追蹤・佣金計算</p>
+                <div class="function-stats">
+                    <div class="stat-item">
+                        <div class="stat-number">$$0</div>
+                        <div class="stat-label">本月營收</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">0</div>
+                        <div class="stat-label">完成案例</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">0%</div>
+                        <div class="stat-label">成長率</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 智能排程 -->
+            <div class="function-card" onclick="navigateToModule('smart_scheduling.html')">
+                <div class="badge new">NEW</div>
+                <div class="function-icon">
+                    <i class="fas fa-users-cog"></i>
+                </div>
+                <h3 class="function-title">智能排程</h3>
+                <p class="function-description">人員分配・負荷平衡</p>
+            </div>
+
+            <!-- 價格管理 -->
+            <div class="function-card" onclick="navigateToModule('price_management.html')">
+                <div class="badge hot">HOT</div>
+                <div class="function-icon">
+                    <i class="fas fa-dollar-sign"></i>
+                </div>
+                <h3 class="function-title">價格管理</h3>
+                <p class="function-description">優惠價格・促銷策略</p>
+            </div>
+
+            <!-- 員工福利 -->
+            <div class="function-card" onclick="navigateToModule('employee_benefits.html')">
+                <div class="badge">PRO</div>
+                <div class="function-icon">
+                    <i class="fas fa-gift"></i>
+                </div>
+                <h3 class="function-title">員工福利</h3>
+                <p class="function-description">福利管理・薪資計算</p>
+            </div>
+
+            <!-- 數據統計 -->
+            <div class="function-card" onclick="navigateToModule('data_statistics.html')">
+                <div class="function-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3 class="function-title">數據統計</h3>
+                <p class="function-description">營運分析・趨勢預測</p>
+            </div>
+
+            <!-- AI智能助理 - 隱藏功能 -->
+            <div class="function-card ai-card" id="ai-assistant" onclick="navigateToModule('smart-crm-system.html')">
+                <div class="function-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <h3 class="function-title">AI智能助理</h3>
+                <p class="function-description">AI驅動的智能分析和建議系統</p>
             </div>
         </div>
-    </main>
+    </div>
 
-    <!-- 頁腳 -->
-    <footer class="bg-dark text-light py-4 mt-5">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-6">
-                    <h6>劉道玄美容諮詢平台</h6>
-                    <p class="mb-0">專業醫美服務・智能化管理・安全可靠</p>
-                </div>
-                <div class="col-md-6 text-md-end">
-                    <p class="mb-0">
-                        <i class="fas fa-phone"></i> 預約專線: 02-XXXX-XXXX<br>
-                        <i class="fas fa-map-marker-alt"></i> 台北市信義區
-                    </p>
-                </div>
-            </div>
-        </div>
-    </footer>
+    <!-- 右下角設定齒輪 -->
+    <div class="settings-gear" onclick="openSettings()">
+        <i class="fas fa-cog"></i>
+    </div>
 
-    <!-- Bootstrap 5 JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- 自定義 JavaScript -->
-    <script src="js/main.js"></script>
-    <script src="js/social-integration.js"></script>
-    <script src="js/ai-assistant.js"></script>
-    <script src="js/integration-manager.js"></script>
-    <script src="js/quad-integration-manager.js"></script>
-    
     <script>
-        // 頁面載入完成後初始化
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeDashboard();
-            loadStatistics();
-        });
-
-        // 快速操作函數
-        function quickAction(action) {
-            MedicalPlatform.showAlert(`執行快速操作: ${action}`, 'info');
-        }
-
-        // 模組導航函數
-        function navigateToModule(url) {
-            window.location.href = url;
-        }
-
-        // 登出函數
-        function logout() {
-            MedicalPlatform.logout();
-        }
-
-        // 社群重定向函數 - 使用整合模組
-        function redirectToLine() {
-            MedicalPlatform.showAlert('正在導向 LINE 預約系統...', 'info');
-            setTimeout(() => {
-                window.redirectToSocial.line();
-            }, 500);
-        }
-
-        function redirectToIG() {
-            MedicalPlatform.showAlert('正在導向 Instagram 預約...', 'info');
-            setTimeout(() => {
-                window.redirectToSocial.instagram();
-            }, 500);
-        }
-
-        function redirectToFB() {
-            MedicalPlatform.showAlert('正在導向 Facebook 預約...', 'info');
-            setTimeout(() => {
-                window.redirectToSocial.facebook();
-            }, 500);
-        }
-
-        // AI 智能管理中心切換函數
-        function toggleAdminPanel() {
-            // 檢查管理員權限
-            if (!window.isAdminAuthenticated) {
+        // 中心快捷鍵
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.shiftKey && e.key === 'A') {
+                e.preventDefault();
                 const password = prompt('請輸入管理員密鑰：');
                 if (password === 'liu_daoxuan_admin_2024') {
-                    window.isAdminAuthenticated = true;
-                    localStorage.setItem('admin_authenticated', 'true');
-                    MedicalPlatform.showAlert('管理員權限驗證成功！', 'success');
-                } else {
-                    MedicalPlatform.showAlert('密鑰錯誤，無法存取管理功能', 'error');
-                    return;
+                    const aiCard = document.getElementById('ai-assistant');
+                    aiCard.classList.add('active');
+                    showNotification('AI智能助理已啟用', 'success');
+                } else if (password !== null) {
+                    showNotification('密鑰錯誤', 'error');
                 }
             }
-            
-            // 顯示/隱藏 AI 管理面板
-            const panel = document.getElementById('quad-integration-panel');
-            if (panel.style.display === 'none' || panel.style.display === '') {
-                panel.style.display = 'block';
-                MedicalPlatform.showAlert('AI 智能管理中心已啟用', 'info');
-            } else {
-                panel.style.display = 'none';
+        });
+
+        // 功能模組導航
+        function navigateToModule(page) {
+            window.location.href = page;
+        }
+
+        // 設定面板
+        function openSettings() {
+            createSettingsPanel();
+        }
+
+        // 創建設定面板
+        function createSettingsPanel() {
+            // 移除現有面板
+            const existingPanel = document.getElementById('settings-panel');
+            if (existingPanel) {
+                existingPanel.remove();
+                return;
+            }
+
+            const panel = document.createElement('div');
+            panel.id = 'settings-panel';
+            panel.innerHTML = `
+                <div class="settings-overlay" onclick="closeSettings()"></div>
+                <div class="settings-content">
+                    <div class="settings-header">
+                        <h3><i class="fas fa-cog"></i> 系統設定</h3>
+                        <button class="close-btn" onclick="closeSettings()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="settings-body">
+                        <div class="setting-group">
+                            <h4><i class="fas fa-palette"></i> 顯示設定</h4>
+                            <div class="setting-item">
+                                <label>主題模式</label>
+                                <select id="theme-select">
+                                    <option value="flos">FLOS醫美風格</option>
+                                    <option value="dark">深色模式</option>
+                                    <option value="light">淺色模式</option>
+                                </select>
+                            </div>
+                            <div class="setting-item">
+                                <label>動畫效果</label>
+                                <input type="checkbox" id="animations" checked>
+                                <span class="checkmark"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="setting-group">
+                            <h4><i class="fas fa-bell"></i> 通知設定</h4>
+                            <div class="setting-item">
+                                <label>桌面通知</label>
+                                <input type="checkbox" id="desktop-notifications" checked>
+                                <span class="checkmark"></span>
+                            </div>
+                            <div class="setting-item">
+                                <label>聲音提醒</label>
+                                <input type="checkbox" id="sound-alerts">
+                                <span class="checkmark"></span>
+                            </div>
+                        </div>
+
+                        <div class="setting-group">
+                            <h4><i class="fas fa-user-cog"></i> 帳戶設定</h4>
+                            <div class="setting-item">
+                                <label>自動登入</label>
+                                <input type="checkbox" id="auto-login" checked>
+                                <span class="checkmark"></span>
+                            </div>
+                            <div class="setting-item">
+                                <label>記住偏好</label>
+                                <input type="checkbox" id="remember-prefs" checked>
+                                <span class="checkmark"></span>
+                            </div>
+                        </div>
+
+                        <div class="setting-group">
+                            <h4><i class="fas fa-tools"></i> 系統工具</h4>
+                            <button class="tool-btn" onclick="clearCache()">
+                                <i class="fas fa-trash"></i> 清除緩存
+                            </button>
+                            <button class="tool-btn" onclick="exportData()">
+                                <i class="fas fa-download"></i> 匯出數據
+                            </button>
+                            <button class="tool-btn" onclick="systemInfo()">
+                                <i class="fas fa-info-circle"></i> 系統資訊
+                            </button>
+                        </div>
+
+                        <div class="setting-group">
+                            <h4><i class="fas fa-shield-alt"></i> 安全設定</h4>
+                            <button class="tool-btn danger" onclick="changePassword()">
+                                <i class="fas fa-key"></i> 修改密碼
+                            </button>
+                            <button class="tool-btn" onclick="viewLogs()">
+                                <i class="fas fa-list"></i> 查看日誌
+                            </button>
+                            <button class="tool-btn" onclick="showRoleManager()">
+                                <i class="fas fa-users-cog"></i> 權限管理
+                            </button>
+                        </div>
+
+                        <div class="setting-group" id="roleManagerSection" style="display: none;">
+                            <h4><i class="fas fa-key"></i> 權限認證</h4>
+                            <div class="role-status">
+                                <label>當前身份：</label>
+                                <span id="currentRoleDisplay" class="role-badge employee">一般員工</span>
+                            </div>
+                            <div class="role-input-group">
+                                <input type="password" id="roleCodeInput" placeholder="輸入權限代碼" class="role-input">
+                                <button class="verify-btn" onclick="verifyRoleCode()">驗證</button>
+                            </div>
+                            <div id="roleCodeError" class="error-message" style="display: none;"></div>
+                            <div class="role-actions">
+                                <button class="tool-btn" onclick="resetRole()">
+                                    <i class="fas fa-undo"></i> 重置權限
+                                </button>
+                                <button class="tool-btn" onclick="showActivityLog()">
+                                    <i class="fas fa-history"></i> 活動日誌
+                                </button>
+                            </div>
+                            <div id="roleFeatures" class="role-features">
+                                <p class="text-muted">請輸入權限代碼以啟用功能</p>
+                            </div>
+                            <div id="activityLogContainer" class="activity-log" style="display: none;"></div>
+                        </div>
+                    </div>
+                    <div class="settings-footer">
+                        <button class="save-btn" onclick="saveSettings()">
+                            <i class="fas fa-save"></i> 儲存設定
+                        </button>
+                        <button class="reset-btn" onclick="resetSettings()">
+                            <i class="fas fa-undo"></i> 重置
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            panel.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: 5000;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                animation: fadeIn 0.3s ease;
+            `;
+
+            // 添加樣式
+            const style = document.createElement('style');
+            style.textContent = `
+                .settings-overlay {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0, 0, 0, 0.7);
+                    backdrop-filter: blur(5px);
+                }
+
+                .settings-content {
+                    position: relative;
+                    width: 90%;
+                    max-width: 600px;
+                    max-height: 80vh;
+                    background: linear-gradient(145deg, rgba(42, 42, 42, 0.95), rgba(26, 26, 26, 0.95));
+                    border: 2px solid rgba(212, 175, 55, 0.4);
+                    border-radius: 20px;
+                    backdrop-filter: blur(20px);
+                    overflow: hidden;
+                    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+                }
+
+                .settings-header {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    padding: 1.5rem 2rem;
+                    border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+                    background: rgba(212, 175, 55, 0.1);
+                }
+
+                .settings-header h3 {
+                    color: #d4af37;
+                    font-weight: 300;
+                    letter-spacing: 1px;
+                }
+
+                .close-btn {
+                    background: none;
+                    border: none;
+                    color: #d4af37;
+                    font-size: 1.2rem;
+                    cursor: pointer;
+                    padding: 0.5rem;
+                    border-radius: 50%;
+                    transition: all 0.3s ease;
+                }
+
+                .close-btn:hover {
+                    background: rgba(212, 175, 55, 0.2);
+                    transform: rotate(90deg);
+                }
+
+                .settings-body {
+                    padding: 2rem;
+                    max-height: 60vh;
+                    overflow-y: auto;
+                }
+
+                .setting-group {
+                    margin-bottom: 2rem;
+                }
+
+                .setting-group h4 {
+                    color: #d4af37;
+                    font-size: 1.1rem;
+                    margin-bottom: 1rem;
+                    padding-bottom: 0.5rem;
+                    border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+                }
+
+                .setting-item {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    padding: 0.8rem 0;
+                    border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+                }
+
+                .setting-item label {
+                    color: rgba(212, 175, 55, 0.8);
+                    font-weight: 300;
+                }
+
+                .setting-item select {
+                    background: rgba(42, 42, 42, 0.8);
+                    border: 1px solid rgba(212, 175, 55, 0.3);
+                    color: #d4af37;
+                    padding: 0.5rem;
+                    border-radius: 5px;
+                }
+
+                .setting-item input[type="checkbox"] {
+                    width: 20px;
+                    height: 20px;
+                    accent-color: #d4af37;
+                }
+
+                .tool-btn {
+                    display: block;
+                    width: 100%;
+                    background: rgba(42, 42, 42, 0.8);
+                    border: 1px solid rgba(212, 175, 55, 0.3);
+                    color: #d4af37;
+                    padding: 0.8rem;
+                    margin: 0.5rem 0;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                    text-align: left;
+                }
+
+                .tool-btn:hover {
+                    background: rgba(52, 52, 52, 0.9);
+                    border-color: rgba(212, 175, 55, 0.6);
+                    transform: translateX(5px);
+                }
+
+                .tool-btn.danger {
+                    border-color: rgba(220, 20, 60, 0.5);
+                    color: #dc143c;
+                }
+
+                .tool-btn.danger:hover {
+                    border-color: rgba(220, 20, 60, 0.8);
+                    background: rgba(220, 20, 60, 0.1);
+                }
+
+                .settings-footer {
+                    display: flex;
+                    gap: 1rem;
+                    padding: 1.5rem 2rem;
+                    border-top: 1px solid rgba(212, 175, 55, 0.3);
+                    background: rgba(212, 175, 55, 0.05);
+                }
+
+                .save-btn, .reset-btn {
+                    flex: 1;
+                    padding: 0.8rem;
+                    border: 1px solid rgba(212, 175, 55, 0.4);
+                    border-radius: 8px;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                    font-weight: 500;
+                }
+
+                .save-btn {
+                    background: rgba(212, 175, 55, 0.2);
+                    color: #d4af37;
+                }
+
+                .save-btn:hover {
+                    background: rgba(212, 175, 55, 0.3);
+                    transform: translateY(-2px);
+                }
+
+                .reset-btn {
+                    background: rgba(42, 42, 42, 0.8);
+                    color: rgba(212, 175, 55, 0.8);
+                }
+
+                .reset-btn:hover {
+                    background: rgba(52, 52, 52, 0.9);
+                    color: #d4af37;
+                }
+
+                @keyframes fadeIn {
+                    from { opacity: 0; transform: scale(0.9); }
+                    to { opacity: 1; transform: scale(1); }
+                }
+            `;
+
+            document.head.appendChild(style);
+            document.body.appendChild(panel);
+        }
+
+        // 關閉設定面板
+        function closeSettings() {
+            const panel = document.getElementById('settings-panel');
+            if (panel) {
+                panel.style.animation = 'fadeOut 0.3s ease';
+                setTimeout(() => panel.remove(), 300);
             }
         }
 
-        // 檢查本地存儲的管理員狀態
-        document.addEventListener('DOMContentLoaded', function() {
-            if (localStorage.getItem('admin_authenticated') === 'true') {
-                window.isAdminAuthenticated = true;
+        // 設定功能
+        function clearCache() {
+            localStorage.clear();
+            sessionStorage.clear();
+            showNotification('緩存已清除', 'success');
+        }
+
+        function exportData() {
+            const data = {
+                settings: localStorage.getItem('flos-settings') || '{}',
+                timestamp: new Date().toISOString()
+            };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'flos-system-data.json';
+            a.click();
+            showNotification('數據已匯出', 'success');
+        }
+
+        function systemInfo() {
+            const info = `
+系統資訊：
+- 瀏覽器：${navigator.userAgent}
+- 螢幕解析度：${screen.width}x${screen.height}
+- 時區：${Intl.DateTimeFormat().resolvedOptions().timeZone}
+- 語言：${navigator.language}
+- 在線狀態：${navigator.onLine ? '已連線' : '離線'}
+            `;
+            alert(info);
+        }
+
+        function changePassword() {
+            const newPassword = prompt('請輸入新的管理員密鑰：');
+            if (newPassword && newPassword.length >= 8) {
+                localStorage.setItem('flos-admin-key', newPassword);
+                showNotification('密碼已更新', 'success');
+            } else if (newPassword !== null) {
+                showNotification('密碼長度至少8位', 'error');
             }
+        }
+
+        function viewLogs() {
+            const logs = localStorage.getItem('flos-logs') || '[]';
+            const logWindow = window.open('', '_blank', 'width=800,height=600');
+            logWindow.document.write(`
+                <html>
+                <head><title>系統日誌</title></head>
+    <link rel="stylesheet" href="flos-style.css">
+    <link rel="stylesheet" href="member-styles.css">
+                <body style="background: #1a1a1a; color: #d4af37; font-family: monospace; padding: 20px;">
+                    <h2>FLOS系統日誌</h2>
+                    <pre>${JSON.stringify(JSON.parse(logs), null, 2)}</pre>
+                </body>
+                </html>
+            `);
+        }
+
+        function saveSettings() {
+            const settings = {
+                theme: document.getElementById('theme-select')?.value || 'flos',
+                animations: document.getElementById('animations')?.checked || true,
+                desktopNotifications: document.getElementById('desktop-notifications')?.checked || true,
+                soundAlerts: document.getElementById('sound-alerts')?.checked || false,
+                autoLogin: document.getElementById('auto-login')?.checked || true,
+                rememberPrefs: document.getElementById('remember-prefs')?.checked || true
+            };
+            localStorage.setItem('flos-settings', JSON.stringify(settings));
+            showNotification('設定已儲存', 'success');
+            closeSettings();
+        }
+
+        function resetSettings() {
+            if (confirm('確定要重置所有設定嗎？')) {
+                localStorage.removeItem('flos-settings');
+                showNotification('設定已重置', 'success');
+                closeSettings();
+            }
+        }
+
+        // 通知系統
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 100px;
+                right: 20px;
+                background: rgba(42, 42, 42, 0.95);
+                border: 1px solid rgba(212, 175, 55, 0.3);
+                border-radius: 10px;
+                padding: 1rem 1.5rem;
+                color: #d4af37;
+                z-index: 3000;
+                transform: translateX(400px);
+                transition: transform 0.3s ease;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+
+            setTimeout(() => {
+                notification.style.transform = 'translateX(400px)';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        // 權限管理系統
+        let currentUserRole = 'employee';
+        let currentUserName = '一般員工';
+        
+        // 權限代碼配置 - 四級權限系統
+        const roleCodes = {
+            // 隱藏管理員權限（最高級）
+            'MASTER_ADMIN_2024': { role: 'hidden_admin', name: '隱藏管理員', level: 4 },
+            // A級權限 - 三組差異化通行碼
+            'PREMIUM_ACCESS_2024': { role: 'a_level', name: 'A級權限', level: 3 },
+            'EXECUTIVE_PASS_2024': { role: 'a_level', name: 'A級權限', level: 3 },
+            'DIRECTOR_KEY_2024': { role: 'a_level', name: 'A級權限', level: 3 },
+            // B級權限 - 三組差異化通行碼
+            'STANDARD_ACCESS_2024': { role: 'b_level', name: 'B級權限', level: 2 },
+            'MANAGER_PASS_2024': { role: 'b_level', name: 'B級權限', level: 2 },
+            'SUPERVISOR_KEY_2024': { role: 'b_level', name: 'B級權限', level: 2 },
+            // 保留原有系統權限
+            'FLOS_SUPER_2024': { role: 'hidden_admin', name: '隱藏管理員', level: 4 },
+            'FLOS_LIU_2024': { role: 'a_level', name: 'A級權限', level: 3 },
+            'FLOS_MANAGER_2024': { role: 'a_level', name: 'A級權限', level: 3 }
+        };
+
+        // 功能權限配置 - 四級權限系統
+        const permissions = {
+            // 隱藏管理員權限（最高級）
+            hidden_admin: {
+                all: true,
+                salary_management: true,
+                staff_management: true,
+                system_backup: true,
+                financial_reports: true,
+                price_management: true,
+                data_export: true,
+                special_features: true,
+                advanced_analytics: true,
+                system_settings: true
+            },
+            // A級權限
+            a_level: {
+                appointment_management: true,
+                medical_records: true,
+                treatment_management: true,
+                patient_management: true,
+                staff_basic_management: true,
+                salary_view: true,
+                price_management: true,
+                reports_full: true,
+                special_features: true,
+                data_export: true
+            },
+            // B級權限
+            b_level: {
+                appointment_management: true,
+                medical_records: true,
+                treatment_management: true,
+                patient_management: true,
+                price_view: true,
+                reports_basic: true,
+                staff_view: true
+            },
+            // 一般員工（無需通行碼）
+            employee: {
+                appointment_view: true,
+                appointment_add: true,
+                medical_records_view: true,
+                treatment_records: true,
+                basic_functions: true
+            }
+        };
+
+        // 顯示權限管理面板
+        function showRoleManager() {
+            const section = document.getElementById('roleManagerSection');
+            section.style.display = section.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // 權限驗證
+        function verifyRoleCode() {
+            const code = document.getElementById('roleCodeInput').value.trim();
+            const errorMsg = document.getElementById('roleCodeError');
+            
+            if (roleCodes[code]) {
+                const roleInfo = roleCodes[code];
+                currentUserRole = roleInfo.role;
+                currentUserName = roleInfo.name;
+                
+                // 更新UI顯示
+                updateRoleDisplay();
+                
+                // 啟用對應功能
+                enableRoleFeatures();
+                
+                // 清空輸入框
+                document.getElementById('roleCodeInput').value = '';
+                errorMsg.style.display = 'none';
+                
+                // 顯示成功訊息
+                showNotification(`歡迎，${currentUserName}！權限已啟用`, 'success');
+                
+                // 記錄登入日誌
+                logUserActivity('權限啟用', `${currentUserName} 啟用了 ${roleInfo.role} 權限`);
+                
+            } else if (code) {
+                errorMsg.textContent = '權限代碼錯誤，請重新輸入';
+                errorMsg.style.display = 'block';
+                document.getElementById('roleCodeInput').value = '';
+            } else {
+                errorMsg.textContent = '請輸入權限代碼';
+                errorMsg.style.display = 'block';
+            }
+        }
+
+        // 更新角色顯示
+        function updateRoleDisplay() {
+            const roleDisplay = document.getElementById('currentRoleDisplay');
+            const roleClasses = {
+                'hidden_admin': 'hidden-admin',
+                'a_level': 'a-level',
+                'b_level': 'b-level',
+                'employee': 'employee'
+            };
+            
+            roleDisplay.textContent = currentUserName;
+            roleDisplay.className = `role-badge ${roleClasses[currentUserRole] || 'employee'}`;
+        }
+
+        // 啟用角色功能
+        function enableRoleFeatures() {
+            const userPermissions = permissions[currentUserRole] || {};
+            
+            // 更新設定面板中的功能列表
+            updateSettingsFeatures();
+            
+            // 根據權限顯示/隱藏主頁面功能
+            updateMainPageFeatures();
+        }
+
+        // 更新設定面板功能列表
+        function updateSettingsFeatures() {
+            const featuresContainer = document.getElementById('roleFeatures');
+            const userPermissions = permissions[currentUserRole] || {};
+            
+            let featuresHTML = '<h6 class="text-gold mb-3">可用功能</h6><div class="features-grid">';
+            
+            if (userPermissions.all) {
+                featuresHTML += '<div class="feature-item super"><i class="fas fa-crown"></i> 系統最高權限</div>';
+            }
+            
+            if (userPermissions.salary_management) {
+                featuresHTML += '<div class="feature-item enabled"><i class="fas fa-money-bill-wave"></i> 薪資管理</div>';
+            } else if (userPermissions.salary_view) {
+                featuresHTML += '<div class="feature-item limited"><i class="fas fa-eye"></i> 薪資查看</div>';
+            }
+            
+            if (userPermissions.staff_management) {
+                featuresHTML += '<div class="feature-item enabled"><i class="fas fa-users-cog"></i> 員工管理</div>';
+            } else if (userPermissions.staff_basic_management) {
+                featuresHTML += '<div class="feature-item limited"><i class="fas fa-users"></i> 基礎員工管理</div>';
+            }
+            
+            if (userPermissions.price_management) {
+                featuresHTML += '<div class="feature-item enabled"><i class="fas fa-tags"></i> 價格管理</div>';
+            } else if (userPermissions.price_view) {
+                featuresHTML += '<div class="feature-item limited"><i class="fas fa-eye"></i> 價格查看</div>';
+            }
+            
+            if (userPermissions.system_backup) {
+                featuresHTML += '<div class="feature-item enabled"><i class="fas fa-database"></i> 系統備份</div>';
+            }
+            
+            // 系統功能檢查 - 所有角色都可使用
+            featuresHTML += '<div class="feature-item enabled"><i class="fas fa-cogs"></i> 系統功能檢查</div>';
+            
+            if (userPermissions.appointment_management) {
+                featuresHTML += '<div class="feature-item enabled"><i class="fas fa-calendar-check"></i> 預約管理</div>';
+            } else if (userPermissions.appointment_view) {
+                featuresHTML += '<div class="feature-item limited"><i class="fas fa-calendar"></i> 預約查看</div>';
+            }
+            
+            if (userPermissions.medical_records) {
+                featuresHTML += '<div class="feature-item enabled"><i class="fas fa-file-medical"></i> 病歷管理</div>';
+            } else if (userPermissions.medical_records_view) {
+                featuresHTML += '<div class="feature-item limited"><i class="fas fa-file-medical-alt"></i> 病歷查看</div>';
+            }
+            
+            featuresHTML += '</div>';
+            featuresContainer.innerHTML = featuresHTML;
+        }
+
+        // 更新主頁面功能顯示
+        function updateMainPageFeatures() {
+            const userPermissions = permissions[currentUserRole] || {};
+            const functionCards = document.querySelectorAll('.function-card');
+            
+            functionCards.forEach(card => {
+                const cardTitle = card.querySelector('.function-title')?.textContent;
+                let shouldShow = true;
+                
+                // 根據卡片類型和權限決定是否顯示
+                switch(cardTitle) {
+                    case '員工福利':
+                        shouldShow = userPermissions.staff_management || userPermissions.salary_management || userPermissions.all;
+                        break;
+                    case '價格管理':
+                        shouldShow = userPermissions.price_management || userPermissions.price_view || userPermissions.all;
+                        break;
+                    case '智能排程':
+                        shouldShow = userPermissions.staff_management || userPermissions.staff_basic_management || userPermissions.all;
+                        break;
+                    case '數據統計':
+                        shouldShow = userPermissions.reports_view || userPermissions.reports_basic || userPermissions.reports_full || userPermissions.all;
+                        break;
+                    case 'AI智能助理':
+                        shouldShow = userPermissions.special_features || userPermissions.all;
+                        break;
+                    default:
+                        // 基本功能卡片（預約管理、病歷系統、療程管理、同意書管理、業績管理）對所有用戶可見
+                        shouldShow = true;
+                }
+                
+                // 應用顯示/隱藏
+                if (shouldShow) {
+                    card.style.display = 'block';
+                    card.style.opacity = '1';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            
+            // 特殊處理：未登入用戶隱藏所有需要權限的卡片
+            if (currentUserRole === 'employee') {
+                const restrictedCards = ['員工福利', '價格管理', '智能排程', '數據統計', 'AI智能助理'];
+                functionCards.forEach(card => {
+                    const cardTitle = card.querySelector('.function-title')?.textContent;
+                    if (restrictedCards.includes(cardTitle)) {
+                        card.style.display = 'none';
+                    }
+                });
+            }
+        }
+
+        // 重置權限
+        function resetRole() {
+            currentUserRole = 'employee';
+            currentUserName = '一般員工';
+            updateRoleDisplay();
+            
+            // 重置設定面板
+            document.getElementById('roleFeatures').innerHTML = '<p class="text-muted">請輸入權限代碼以啟用功能</p>';
+            
+            showNotification('權限已重置', 'info');
+            logUserActivity('權限重置', '用戶重置了權限設定');
+        }
+
+        // 檢查權限
+        function checkPermission(requiredPermission) {
+            const userPermissions = permissions[currentUserRole] || {};
+            return userPermissions[requiredPermission] || userPermissions.all || false;
+        }
+
+        // 記錄用戶活動
+        function logUserActivity(action, details) {
+            const timestamp = new Date().toLocaleString('zh-TW');
+            const logEntry = {
+                timestamp: timestamp,
+                user: currentUserName,
+                role: currentUserRole,
+                action: action,
+                details: details
+            };
+            
+            // 儲存到本地存儲
+            let activityLog = JSON.parse(localStorage.getItem('flos-activity-log') || '[]');
+            activityLog.unshift(logEntry);
+            
+            // 只保留最近100條記錄
+            if (activityLog.length > 100) {
+                activityLog = activityLog.slice(0, 100);
+            }
+            
+            localStorage.setItem('flos-activity-log', JSON.stringify(activityLog));
+        }
+
+        // 顯示活動日誌
+        function showActivityLog() {
+            if (!checkPermission('staff_management') && !checkPermission('all')) {
+                showNotification('需要管理權限才能查看活動日誌', 'error');
+                return;
+            }
+            
+            const activityLog = JSON.parse(localStorage.getItem('flos-activity-log') || '[]');
+            let logHTML = '<h6 class="text-gold mb-3">系統活動日誌</h6>';
+            
+            if (activityLog.length === 0) {
+                logHTML += '<p class="text-muted">暫無活動記錄</p>';
+            } else {
+                logHTML += '<div class="log-entries">';
+                activityLog.slice(0, 10).forEach(entry => {
+                    logHTML += `
+                        <div class="log-entry">
+                            <div class="log-header">
+                                <strong>${entry.user}</strong>
+                                <span class="log-time">${entry.timestamp}</span>
+                            </div>
+                            <div class="log-content">
+                                <span class="log-action">${entry.action}</span>: ${entry.details}
+                            </div>
+                        </div>
+                    `;
+                });
+                logHTML += '</div>';
+            }
+            
+            const container = document.getElementById('activityLogContainer');
+            container.innerHTML = logHTML;
+            container.style.display = container.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // 頁面載入完成後的初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            showNotification('劉道玄曜診所雲整合系統已就緒', 'success');
+            
+            // 初始化卡片顯示狀態（隱藏需要權限的卡片）
+            updateMainPageFeatures();
+            
+            // 檢查是否有儲存的權限狀態（可選）
+            // const savedRole = localStorage.getItem('flos-current-role');
+            // if (savedRole) { ... }
         });
     </script>
 </body>

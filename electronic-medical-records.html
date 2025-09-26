@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>電子病歷系統 - 劉道玄曜診所雲整合系統</title>
+    <link rel="stylesheet" href="flos-style.css">
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+            color: #d4af37;
+            font-family: 'Arial', sans-serif;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: rgba(26, 26, 26, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .navbar-brand {
+            color: #d4af37 !important;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .nav-link {
+            color: #d4af37 !important;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: #b8860b !important;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+        }
+
+        .container-fluid {
+            padding: 2rem;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: rgba(42, 42, 42, 0.8);
+            border-radius: 15px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .page-header h1 {
+            color: #d4af37;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+        }
+
+        .page-header p {
+            color: #cccccc;
+            font-size: 1.1rem;
+        }
+
+        .medical-card {
+            background: rgba(42, 42, 42, 0.9);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .medical-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .medical-card:hover::before {
+            left: 100%;
+        }
+
+        .medical-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 
+                0 15px 40px rgba(0, 0, 0, 0.4),
+                0 0 20px rgba(212, 175, 55, 0.2);
+        }
+
+        .btn-flos {
+            background: linear-gradient(45deg, #d4af37, #b8860b);
+            border: none;
+            color: #1a1a1a;
+            font-weight: bold;
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+        }
+
+        .btn-flos:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+            color: #1a1a1a;
+        }
+
+        .btn-outline-flos {
+            border: 2px solid #d4af37;
+            color: #d4af37;
+            background: transparent;
+            font-weight: bold;
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline-flos:hover {
+            background: #d4af37;
+            color: #1a1a1a;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+        }
+
+        .form-control {
+            background: rgba(26, 26, 26, 0.8);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            color: #d4af37;
+            border-radius: 10px;
+        }
+
+        .form-control:focus {
+            background: rgba(26, 26, 26, 0.9);
+            border-color: #d4af37;
+            box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.25);
+            color: #d4af37;
+        }
+
+        .form-label {
+            color: #d4af37;
+            font-weight: bold;
+        }
+
+        .table {
+            background: rgba(42, 42, 42, 0.9);
+            color: #d4af37;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .table th {
+            background: rgba(212, 175, 55, 0.2);
+            color: #d4af37;
+            border-color: rgba(212, 175, 55, 0.3);
+        }
+
+        .table td {
+            border-color: rgba(212, 175, 55, 0.2);
+        }
+
+        .modal-content {
+            background: rgba(26, 26, 26, 0.95);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            color: #d4af37;
+        }
+
+        .modal-header {
+            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .modal-footer {
+            border-top: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .photo-upload-area {
+            border: 2px dashed rgba(212, 175, 55, 0.5);
+            border-radius: 10px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .photo-upload-area:hover {
+            border-color: #d4af37;
+            background: rgba(212, 175, 55, 0.1);
+        }
+
+        .photo-preview {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 10px;
+            margin: 0.5rem;
+            border: 2px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .search-container {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .search-container .form-control {
+            padding-left: 3rem;
+        }
+
+        .search-container .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #d4af37;
+        }
+
+        .doctor-select {
+            background: rgba(26, 26, 26, 0.8);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            color: #d4af37;
+        }
+
+        .treatment-tag {
+            background: rgba(212, 175, 55, 0.2);
+            color: #d4af37;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.875rem;
+            margin: 0.25rem;
+            display: inline-block;
+        }
+
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: bold;
+        }
+
+        .status-active {
+            background: rgba(40, 167, 69, 0.2);
+            color: #28a745;
+            border: 1px solid rgba(40, 167, 69, 0.3);
+        }
+
+        .status-completed {
+            background: rgba(23, 162, 184, 0.2);
+            color: #17a2b8;
+            border: 1px solid rgba(23, 162, 184, 0.3);
+        }
+
+        .status-pending {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+            border: 1px solid rgba(255, 193, 7, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .container-fluid {
+                padding: 1rem;
+            }
+            
+            .page-header h1 {
+                font-size: 2rem;
+            }
+            
+            .medical-card {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 導航欄 -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-clinic-medical me-2"></i>
+                FLOS曜診所 | 內部管理系統
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">
+                            <i class="fas fa-home me-1"></i>首頁
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="appointment-core-system.html">
+                            <i class="fas fa-calendar-alt me-1"></i>預約管理
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="electronic-medical-records.html">
+                            <i class="fas fa-file-medical me-1"></i>電子病歷
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <!-- 頁面標題 -->
+        <div class="page-header">
+            <h1><i class="fas fa-file-medical me-3"></i>電子病歷管理系統</h1>
+            <p>完整的客戶病歷管理 • 療程記錄追蹤 • 照片對比分析</p>
+        </div>
+
+        <!-- 搜尋和新增區域 -->
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <div class="search-container">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="form-control" id="searchInput" placeholder="搜尋客戶姓名、電話或病歷號碼...">
+                </div>
+            </div>
+            <div class="col-md-4 text-end">
+                <button class="btn btn-flos" data-bs-toggle="modal" data-bs-target="#newRecordModal">
+                    <i class="fas fa-plus me-2"></i>新增病歷
+                </button>
+            </div>
+        </div>
+
+        <!-- 統計卡片 -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="medical-card text-center">
+                    <i class="fas fa-users fa-2x mb-3" style="color: #d4af37;"></i>
+                    <h3 id="totalPatients">0</h3>
+                    <p>總客戶數</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="medical-card text-center">
+                    <i class="fas fa-file-medical-alt fa-2x mb-3" style="color: #28a745;"></i>
+                    <h3 id="activeRecords">0</h3>
+                    <p>進行中療程</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="medical-card text-center">
+                    <i class="fas fa-check-circle fa-2x mb-3" style="color: #17a2b8;"></i>
+                    <h3 id="completedRecords">0</h3>
+                    <p>已完成療程</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="medical-card text-center">
+                    <i class="fas fa-calendar-day fa-2x mb-3" style="color: #ffc107;"></i>
+                    <h3 id="todayRecords">0</h3>
+                    <p>今日預約</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 病歷列表 -->
+        <div class="medical-card">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4><i class="fas fa-list me-2"></i>病歷記錄</h4>
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-outline-flos active" data-filter="all">全部</button>
+                    <button type="button" class="btn btn-outline-flos" data-filter="active">進行中</button>
+                    <button type="button" class="btn btn-outline-flos" data-filter="completed">已完成</button>
+                    <button type="button" class="btn btn-outline-flos" data-filter="pending">待處理</button>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>病歷號</th>
+                            <th>客戶姓名</th>
+                            <th>聯絡電話</th>
+                            <th>主治醫師</th>
+                            <th>療程項目</th>
+                            <th>狀態</th>
+                            <th>最後更新</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recordsTableBody">
+                        <!-- 動態載入病歷記錄 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 新增病歷模態框 -->
+    <div class="modal fade" id="newRecordModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-plus me-2"></i>新增電子病歷
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="newRecordForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="patientName" class="form-label">客戶姓名 *</label>
+                                    <input type="text" class="form-control" id="patientName" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="patientPhone" class="form-label">聯絡電話 *</label>
+                                    <input type="tel" class="form-control" id="patientPhone" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="patientBirthday" class="form-label">出生日期</label>
+                                    <input type="date" class="form-control" id="patientBirthday">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="patientGender" class="form-label">性別</label>
+                                    <select class="form-control" id="patientGender">
+                                        <option value="">請選擇</option>
+                                        <option value="male">男性</option>
+                                        <option value="female">女性</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="doctorSelect" class="form-label">主治醫師 *</label>
+                            <select class="form-control doctor-select" id="doctorSelect" required>
+                                <option value="">請選擇醫師</option>
+                                <option value="鍾曜任">鍾曜任醫師 (院長)</option>
+                                <option value="林思宇">林思宇醫師</option>
+                                <option value="伍詠聰">伍詠聰醫師</option>
+                                <option value="劉道玄">劉道玄諮詢師</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="treatmentSelect" class="form-label">療程項目 *</label>
+                            <select class="form-control" id="treatmentSelect" required>
+                                <option value="">請選擇療程</option>
+                                <optgroup label="肌膚管理">
+                                    <option value="Syndeo海菲秀">Syndeo海菲秀</option>
+                                    <option value="JetPeel潔比爾">JetPeel潔比爾</option>
+                                    <option value="SEYO水光儀">SEYO水光儀</option>
+                                    <option value="SMARTLUX照光機">SMARTLUX照光機</option>
+                                    <option value="CUREJET酷捷">CUREJET酷捷</option>
+                                </optgroup>
+                                <optgroup label="勻體緊緻">
+                                    <option value="InMode LIFT鑽石超塑">InMode LIFT鑽石超塑</option>
+                                    <option value="EMBODY核心美力">EMBODY核心美力</option>
+                                    <option value="Emsculpt NEO 熱磁減脂">Emsculpt NEO 熱磁減脂</option>
+                                    <option value="INDIBA英特波">INDIBA英特波</option>
+                                    <option value="Onda PRO超微波">Onda PRO超微波</option>
+                                </optgroup>
+                                <optgroup label="緊緻拉提">
+                                    <option value="DENSITY 無雙電波">DENSITY 無雙電波</option>
+                                    <option value="Coolfase皇后電波">Coolfase皇后電波</option>
+                                    <option value="Ultraformer MPT海芙音波媚必提">Ultraformer MPT海芙音波媚必提</option>
+                                    <option value="Ultherapy Prime美國音波 第二代">Ultherapy Prime美國音波 第二代</option>
+                                </optgroup>
+                                <optgroup label="皮膚雷射">
+                                    <option value="Capri 藍雷射">Capri 藍雷射</option>
+                                    <option value="Discovery Pico探索皮秒">Discovery Pico探索皮秒</option>
+                                    <option value="Pro U亞歷山大除毛">Pro U亞歷山大除毛</option>
+                                </optgroup>
+                                <optgroup label="微整注射">
+                                    <option value="保妥適">保妥適</option>
+                                    <option value="膚力原/膚漾美">膚力原/膚漾美</option>
+                                    <option value="Juvederm喬雅登">Juvederm喬雅登</option>
+                                    <option value="Juvelook喬雅露">Juvelook喬雅露</option>
+                                    <option value="優力柔(奇肌肉毒)">優力柔(奇肌肉毒)</option>
+                                </optgroup>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="treatmentNotes" class="form-label">療程備註</label>
+                            <textarea class="form-control" id="treatmentNotes" rows="3" placeholder="請輸入療程相關備註..."></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">療程前照片</label>
+                            <div class="photo-upload-area" onclick="document.getElementById('beforePhotos').click()">
+                                <i class="fas fa-cloud-upload-alt fa-2x mb-2"></i>
+                                <p>點擊上傳療程前照片</p>
+                                <input type="file" id="beforePhotos" multiple accept="image/*" style="display: none;">
+                            </div>
+                            <div id="beforePhotosPreview" class="mt-2"></div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-flos" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-flos" onclick="saveNewRecord()">儲存病歷</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 病歷詳情模態框 -->
+    <div class="modal fade" id="recordDetailModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-file-medical me-2"></i>病歷詳情
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="recordDetailContent">
+                    <!-- 動態載入病歷詳情 -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-flos" data-bs-dismiss="modal">關閉</button>
+                    <button type="button" class="btn btn-flos" onclick="editRecord()">編輯病歷</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // 病歷數據存儲
+        let medicalRecords = JSON.parse(localStorage.getItem('medicalRecords')) || [];
+        let currentRecordId = null;
+
+        // 初始化頁面
+        document.addEventListener('DOMContentLoaded', function() {
+            loadRecords();
+            updateStatistics();
+            setupEventListeners();
+        });
+
+        // 設置事件監聽器
+        function setupEventListeners() {
+            // 搜尋功能
+            document.getElementById('searchInput').addEventListener('input', function() {
+                filterRecords(this.value);
+            });
+
+            // 篩選按鈕
+            document.querySelectorAll('[data-filter]').forEach(button => {
+                button.addEventListener('click', function() {
+                    document.querySelectorAll('[data-filter]').forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    filterRecordsByStatus(this.dataset.filter);
+                });
+            });
+
+            // 照片上傳預覽
+            document.getElementById('beforePhotos').addEventListener('change', function() {
+                previewPhotos(this, 'beforePhotosPreview');
+            });
+        }
+
+        // 載入病歷記錄
+        function loadRecords() {
+            const tbody = document.getElementById('recordsTableBody');
+            tbody.innerHTML = '';
+
+            if (medicalRecords.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="text-center py-4">
+                            <i class="fas fa-inbox fa-3x mb-3" style="color: #666;"></i>
+                            <p>尚無病歷記錄</p>
+                            <button class="btn btn-flos" data-bs-toggle="modal" data-bs-target="#newRecordModal">
+                                <i class="fas fa-plus me-2"></i>新增第一筆病歷
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            medicalRecords.forEach(record => {
+                const row = createRecordRow(record);
+                tbody.appendChild(row);
+            });
+        }
+
+        // 創建病歷行
+        function createRecordRow(record) {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${record.id}</td>
+                <td>${record.patientName}</td>
+                <td>${record.patientPhone}</td>
+                <td>${record.doctor}</td>
+                <td><span class="treatment-tag">${record.treatment}</span></td>
+                <td><span class="status-badge status-${record.status}">${getStatusText(record.status)}</span></td>
+                <td>${formatDate(record.lastUpdated)}</td>
+                <td>
+                    <button class="btn btn-sm btn-outline-flos me-1" onclick="viewRecord('${record.id}')">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-flos me-1" onclick="editRecord('${record.id}')">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="deleteRecord('${record.id}')">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            `;
+            return tr;
+        }
+
+        // 獲取狀態文字
+        function getStatusText(status) {
+            const statusMap = {
+                'active': '進行中',
+                'completed': '已完成',
+                'pending': '待處理'
+            };
+            return statusMap[status] || '未知';
+        }
+
+        // 格式化日期
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('zh-TW');
+        }
+
+        // 更新統計數據
+        function updateStatistics() {
+            const totalPatients = medicalRecords.length;
+            const activeRecords = medicalRecords.filter(r => r.status === 'active').length;
+            const completedRecords = medicalRecords.filter(r => r.status === 'completed').length;
+            const todayRecords = medicalRecords.filter(r => {
+                const today = new Date().toDateString();
+                const recordDate = new Date(r.lastUpdated).toDateString();
+                return today === recordDate;
+            }).length;
+
+            document.getElementById('totalPatients').textContent = totalPatients;
+            document.getElementById('activeRecords').textContent = activeRecords;
+            document.getElementById('completedRecords').textContent = completedRecords;
+            document.getElementById('todayRecords').textContent = todayRecords;
+        }
+
+        // 儲存新病歷
+        function saveNewRecord() {
+            const form = document.getElementById('newRecordForm');
+            const formData = new FormData(form);
+            
+            const patientName = document.getElementById('patientName').value;
+            const patientPhone = document.getElementById('patientPhone').value;
+            const doctor = document.getElementById('doctorSelect').value;
+            const treatment = document.getElementById('treatmentSelect').value;
+
+            if (!patientName || !patientPhone || !doctor || !treatment) {
+                alert('請填寫所有必填欄位');
+                return;
+            }
+
+            const newRecord = {
+                id: 'MR' + Date.now(),
+                patientName: patientName,
+                patientPhone: patientPhone,
+                patientBirthday: document.getElementById('patientBirthday').value,
+                patientGender: document.getElementById('patientGender').value,
+                doctor: doctor,
+                treatment: treatment,
+                notes: document.getElementById('treatmentNotes').value,
+                status: 'active',
+                createdDate: new Date().toISOString(),
+                lastUpdated: new Date().toISOString(),
+                beforePhotos: [],
+                afterPhotos: [],
+                treatmentHistory: []
+            };
+
+            medicalRecords.unshift(newRecord);
+            localStorage.setItem('medicalRecords', JSON.stringify(medicalRecords));
+
+            // 關閉模態框並重新載入
+            const modal = bootstrap.Modal.getInstance(document.getElementById('newRecordModal'));
+            modal.hide();
+            form.reset();
+            document.getElementById('beforePhotosPreview').innerHTML = '';
+
+            loadRecords();
+            updateStatistics();
+
+            // 顯示成功訊息
+            showNotification('病歷新增成功！', 'success');
+        }
+
+        // 查看病歷詳情
+        function viewRecord(recordId) {
+            const record = medicalRecords.find(r => r.id === recordId);
+            if (!record) return;
+
+            const content = document.getElementById('recordDetailContent');
+            content.innerHTML = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-user me-2"></i>客戶資訊</h6>
+                        <table class="table table-sm">
+                            <tr><td>姓名</td><td>${record.patientName}</td></tr>
+                            <tr><td>電話</td><td>${record.patientPhone}</td></tr>
+                            <tr><td>生日</td><td>${record.patientBirthday || '未填寫'}</td></tr>
+                            <tr><td>性別</td><td>${record.patientGender === 'male' ? '男性' : record.patientGender === 'female' ? '女性' : '未填寫'}</td></tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-stethoscope me-2"></i>療程資訊</h6>
+                        <table class="table table-sm">
+                            <tr><td>主治醫師</td><td>${record.doctor}</td></tr>
+                            <tr><td>療程項目</td><td>${record.treatment}</td></tr>
+                            <tr><td>狀態</td><td><span class="status-badge status-${record.status}">${getStatusText(record.status)}</span></td></tr>
+                            <tr><td>建立日期</td><td>${formatDate(record.createdDate)}</td></tr>
+                        </table>
+                    </div>
+                </div>
+                ${record.notes ? `
+                    <div class="mt-3">
+                        <h6><i class="fas fa-sticky-note me-2"></i>療程備註</h6>
+                        <p class="bg-dark p-3 rounded">${record.notes}</p>
+                    </div>
+                ` : ''}
+            `;
+
+            const modal = new bootstrap.Modal(document.getElementById('recordDetailModal'));
+            modal.show();
+        }
+
+        // 編輯病歷
+        function editRecord(recordId) {
+            // 這裡可以實現編輯功能
+            showNotification('編輯功能開發中...', 'info');
+        }
+
+        // 刪除病歷
+        function deleteRecord(recordId) {
+            if (!confirm('確定要刪除這筆病歷嗎？此操作無法復原。')) return;
+
+            medicalRecords = medicalRecords.filter(r => r.id !== recordId);
+            localStorage.setItem('medicalRecords', JSON.stringify(medicalRecords));
+
+            loadRecords();
+            updateStatistics();
+            showNotification('病歷已刪除', 'success');
+        }
+
+        // 篩選記錄
+        function filterRecords(searchTerm) {
+            const rows = document.querySelectorAll('#recordsTableBody tr');
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                const isVisible = text.includes(searchTerm.toLowerCase());
+                row.style.display = isVisible ? '' : 'none';
+            });
+        }
+
+        // 按狀態篩選記錄
+        function filterRecordsByStatus(status) {
+            const tbody = document.getElementById('recordsTableBody');
+            tbody.innerHTML = '';
+
+            let filteredRecords = medicalRecords;
+            if (status !== 'all') {
+                filteredRecords = medicalRecords.filter(r => r.status === status);
+            }
+
+            filteredRecords.forEach(record => {
+                const row = createRecordRow(record);
+                tbody.appendChild(row);
+            });
+        }
+
+        // 照片預覽
+        function previewPhotos(input, previewId) {
+            const preview = document.getElementById(previewId);
+            preview.innerHTML = '';
+
+            if (input.files) {
+                Array.from(input.files).forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.className = 'photo-preview';
+                        preview.appendChild(img);
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
+        }
+
+        // 顯示通知
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+            notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+            notification.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, 5000);
+        }
+
+        // 模擬一些示例數據（僅用於演示）
+        if (medicalRecords.length === 0) {
+            const sampleRecords = [
+                {
+                    id: 'MR001',
+                    patientName: '王小美',
+                    patientPhone: '0912345678',
+                    patientBirthday: '1990-05-15',
+                    patientGender: 'female',
+                    doctor: '鍾曜任',
+                    treatment: 'Syndeo海菲秀',
+                    notes: '客戶希望改善毛孔粗大問題',
+                    status: 'active',
+                    createdDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+                    lastUpdated: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+                    beforePhotos: [],
+                    afterPhotos: [],
+                    treatmentHistory: []
+                },
+                {
+                    id: 'MR002',
+                    patientName: '李先生',
+                    patientPhone: '0987654321',
+                    patientBirthday: '1985-08-20',
+                    patientGender: 'male',
+                    doctor: '林思宇',
+                    treatment: 'DENSITY 無雙電波',
+                    notes: '希望改善臉部鬆弛',
+                    status: 'completed',
+                    createdDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+                    lastUpdated: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+                    beforePhotos: [],
+                    afterPhotos: [],
+                    treatmentHistory: []
+                }
+            ];
+            
+            medicalRecords = sampleRecords;
+            localStorage.setItem('medicalRecords', JSON.stringify(medicalRecords));
+        }
+    </script>
+</body>
+</html>

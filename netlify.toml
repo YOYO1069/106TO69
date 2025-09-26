@@ -1,18 +1,8 @@
 [build]
   publish = "."
-  command = "echo 'Build complete'"
-
+  
 [build.environment]
   NODE_VERSION = "18"
-
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-
-[functions]
-  directory = "netlify/functions"
-  node_bundler = "esbuild"
 
 [[headers]]
   for = "/*"
@@ -23,35 +13,21 @@
     Referrer-Policy = "strict-origin-when-cross-origin"
 
 [[headers]]
-  for = "/css/*"
+  for = "*.html"
   [headers.values]
-    Cache-Control = "public, max-age=31536000"
+    Cache-Control = "public, max-age=0, must-revalidate"
 
 [[headers]]
-  for = "/js/*"
+  for = "*.css"
   [headers.values]
-    Cache-Control = "public, max-age=31536000"
+    Cache-Control = "public, max-age=31536000, immutable"
 
 [[headers]]
-  for = "/assets/*"
+  for = "*.js"
   [headers.values]
-    Cache-Control = "public, max-age=31536000"
+    Cache-Control = "public, max-age=31536000, immutable"
 
-# 環境變數設定說明
-# 需要在 Netlify 控制台設定以下環境變數：
-# OPENAI_API_KEY - OpenAI API 金鑰（AI 助理功能）
-# NETLIFY_ACCESS_TOKEN - Netlify Personal Access Token
-# NETLIFY_SITE_ID - Netlify 網站 ID
-# MANUS_API_KEY - Manus 平台 API 金鑰
-# MANUS_PROJECT_ID - Manus 專案 ID（預設：liu-daoxuan-medical）
-# AIRTABLE_API_KEY - Airtable Personal Access Token
-# AIRTABLE_BASE_ID - Airtable Base ID（劉道玄醫師預約系統）
-# LINE_CHANNEL_SECRET - LINE Bot 頻道密鑰
-# LINE_CHANNEL_ACCESS_TOKEN - LINE Bot 存取權杖
-# GOOGLE_CALENDAR_API_KEY - Google Calendar API 金鑰
-# GOOGLE_CALENDAR_CLIENT_ID - Google Calendar OAuth 客戶端 ID
-# GOOGLE_CLIENT_EMAIL - Google 服務帳戶信箱
-# GOOGLE_PRIVATE_KEY - Google 服務帳戶私鑰
-# GOOGLE_PROJECT_ID - Google 專案 ID
-# GOOGLE_SPREADSHEET_ID - Google 試算表 ID (預設：1nmFj0647LO44Gl54DvZEXdNYuZlFLGvueEM1XEqEa8g)
-# GOOGLE_AI_API_KEY - Google AI (Gemini) API 金鑰
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

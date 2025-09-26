@@ -1,0 +1,163 @@
+/* 四級權限系統樣式 */
+.role-badge.hidden-admin {
+    background: linear-gradient(135deg, #8B0000, #DC143C);
+    color: #fff;
+    font-weight: bold;
+    box-shadow: 0 0 20px rgba(139, 0, 0, 0.8);
+    border: 2px solid #FFD700;
+    animation: pulse-admin 2s infinite;
+}
+
+@keyframes pulse-admin {
+    0%, 100% { box-shadow: 0 0 20px rgba(139, 0, 0, 0.8); }
+    50% { box-shadow: 0 0 30px rgba(139, 0, 0, 1); }
+}
+
+.role-badge.a-level {
+    background: linear-gradient(135deg, #4169E1, #1E90FF);
+    color: #fff;
+    font-weight: bold;
+    box-shadow: 0 0 15px rgba(65, 105, 225, 0.6);
+}
+
+.role-badge.b-level {
+    background: linear-gradient(135deg, #32CD32, #228B22);
+    color: #fff;
+    font-weight: bold;
+    box-shadow: 0 0 15px rgba(50, 205, 50, 0.5);
+}
+
+.role-badge.employee {
+    background: linear-gradient(135deg, #696969, #808080);
+    color: #fff;
+    font-weight: normal;
+    box-shadow: 0 0 10px rgba(105, 105, 105, 0.4);
+}
+
+/* 權限專屬功能卡片樣式 */
+.function-card.admin-exclusive {
+    border: 2px solid #DC143C;
+    box-shadow: 0 0 20px rgba(220, 20, 60, 0.3);
+}
+
+.function-card.a-level-exclusive {
+    border: 2px solid #4169E1;
+    box-shadow: 0 0 20px rgba(65, 105, 225, 0.3);
+}
+
+.function-card.b-level-exclusive {
+    border: 2px solid #32CD32;
+    box-shadow: 0 0 20px rgba(50, 205, 50, 0.3);
+}
+
+.function-card.admin-exclusive::before {
+    content: '管理員專屬';
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: linear-gradient(135deg, #8B0000, #DC143C);
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: bold;
+}
+
+.function-card.a-level-exclusive::before {
+    content: 'A級專屬';
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: linear-gradient(135deg, #4169E1, #1E90FF);
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: bold;
+}
+
+.function-card.b-level-exclusive::before {
+    content: 'B級專屬';
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: linear-gradient(135deg, #32CD32, #228B22);
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: bold;
+}
+
+/* 權限提示樣式 */
+.permission-hint {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(26, 26, 46, 0.95);
+    border: 2px solid rgba(212, 175, 55, 0.6);
+    border-radius: 15px;
+    padding: 2rem;
+    text-align: center;
+    color: #d4af37;
+    z-index: 9999;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+}
+
+.permission-hint h3 {
+    margin-bottom: 1rem;
+    color: #d4af37;
+}
+
+.permission-hint p {
+    margin-bottom: 1.5rem;
+    color: rgba(212, 175, 55, 0.8);
+}
+
+.permission-hint button {
+    background: linear-gradient(145deg, rgba(212, 175, 55, 0.8), rgba(184, 134, 11, 0.8));
+    border: none;
+    color: #1a1a2e;
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.permission-hint button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+}
+
+/* 權限等級指示器 */
+.permission-level-indicator {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.permission-level-indicator.hidden-admin {
+    background: #DC143C;
+    box-shadow: 0 0 10px rgba(220, 20, 60, 0.8);
+}
+
+.permission-level-indicator.a-level {
+    background: #4169E1;
+    box-shadow: 0 0 8px rgba(65, 105, 225, 0.6);
+}
+
+.permission-level-indicator.b-level {
+    background: #32CD32;
+    box-shadow: 0 0 8px rgba(50, 205, 50, 0.5);
+}
+
+.permission-level-indicator.employee {
+    background: #808080;
+    box-shadow: 0 0 6px rgba(128, 128, 128, 0.4);
+}

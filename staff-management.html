@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>員工權限管理 - 劉道玄曜診所雲整合系統</title>
+    <link rel="stylesheet" href="flos-style.css">
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+            color: #d4af37;
+            font-family: 'Arial', sans-serif;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: rgba(26, 26, 26, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .permission-card {
+            background: rgba(42, 42, 42, 0.9);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .permission-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 
+                0 15px 40px rgba(0, 0, 0, 0.4),
+                0 0 20px rgba(212, 175, 55, 0.2);
+        }
+
+        .role-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.875rem;
+        }
+
+        .role-employee {
+            background: rgba(40, 167, 69, 0.2);
+            color: #28a745;
+            border: 1px solid rgba(40, 167, 69, 0.3);
+        }
+
+        .role-manager {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+            border: 1px solid rgba(255, 193, 7, 0.3);
+        }
+
+        .role-owner {
+            background: rgba(220, 53, 69, 0.2);
+            color: #dc3545;
+            border: 1px solid rgba(220, 53, 69, 0.3);
+        }
+
+        .permission-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            margin: 0.5rem 0;
+            background: rgba(26, 26, 26, 0.5);
+            border-radius: 8px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .permission-toggle {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .permission-toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #d4af37;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .btn-flos {
+            background: linear-gradient(45deg, #d4af37, #b8860b);
+            border: none;
+            color: #1a1a1a;
+            font-weight: bold;
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+        }
+
+        .btn-flos:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+            color: #1a1a1a;
+        }
+
+        .access-code-input {
+            background: rgba(42, 42, 42, 0.8);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            color: #d4af37;
+            border-radius: 10px;
+            padding: 0.75rem;
+        }
+
+        .access-code-input:focus {
+            background: rgba(42, 42, 42, 0.9);
+            border-color: #d4af37;
+            color: #d4af37;
+            box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.25);
+        }
+
+        .staff-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #d4af37, #b8860b);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #1a1a1a;
+            font-weight: bold;
+        }
+
+        .activity-log {
+            background: rgba(26, 26, 26, 0.5);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-top: 1rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .log-entry {
+            padding: 0.5rem;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+            font-size: 0.875rem;
+        }
+
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+
+        .log-time {
+            color: #888;
+            font-size: 0.75rem;
+        }
+
+        @media (max-width: 768px) {
+            .permission-card {
+                padding: 1rem;
+            }
+            
+            .staff-avatar {
+                width: 50px;
+                height: 50px;
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 導航欄 -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-clinic-medical me-2"></i>
+                FLOS曜診所 | 內部管理系統
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">
+                            <i class="fas fa-home me-1"></i>首頁
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="appointment-core-system.html">
+                            <i class="fas fa-calendar-alt me-1"></i>預約管理
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="staff-management.html">
+                            <i class="fas fa-users me-1"></i>員工管理
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid p-4">
+        <!-- 頁面標題 -->
+        <div class="text-center mb-4">
+            <h1 class="text-gold mb-3">
+                <i class="fas fa-users-cog me-3"></i>員工權限管理系統
+            </h1>
+            <p class="lead">三級權限控制 • 安全管理 • 操作記錄</p>
+        </div>
+
+        <!-- 權限等級說明 -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="permission-card text-center">
+                    <i class="fas fa-user fa-3x mb-3 text-success"></i>
+                    <h4>員工權限</h4>
+                    <span class="role-badge role-employee">EMPLOYEE</span>
+                    <p class="mt-3">基礎功能使用權限，無需特殊認證</p>
+                    <ul class="list-unstyled text-start mt-3">
+                        <li><i class="fas fa-check text-success me-2"></i>查看預約</li>
+                        <li><i class="fas fa-check text-success me-2"></i>新增預約</li>
+                        <li><i class="fas fa-check text-success me-2"></i>查看病歷</li>
+                        <li><i class="fas fa-check text-success me-2"></i>療程記錄</li>
+                        <li><i class="fas fa-times text-danger me-2"></i>價格管理</li>
+                        <li><i class="fas fa-times text-danger me-2"></i>員工管理</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="permission-card text-center">
+                    <i class="fas fa-user-tie fa-3x mb-3 text-warning"></i>
+                    <h4>管理員權限</h4>
+                    <span class="role-badge role-manager">MANAGER</span>
+                    <p class="mt-3">需要管理通行碼，店長/副店長專用</p>
+                    <ul class="list-unstyled text-start mt-3">
+                        <li><i class="fas fa-check text-success me-2"></i>所有員工權限</li>
+                        <li><i class="fas fa-check text-success me-2"></i>修改預約</li>
+                        <li><i class="fas fa-check text-success me-2"></i>編輯病歷</li>
+                        <li><i class="fas fa-check text-success me-2"></i>數據統計</li>
+                        <li><i class="fas fa-check text-success me-2"></i>系統設定</li>
+                        <li><i class="fas fa-times text-danger me-2"></i>薪資管理</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="permission-card text-center">
+                    <i class="fas fa-crown fa-3x mb-3 text-danger"></i>
+                    <h4>老闆權限</h4>
+                    <span class="role-badge role-owner">OWNER</span>
+                    <p class="mt-3">系統管理員權限</p>
+                    <ul class="list-unstyled text-start mt-3">
+                        <li><i class="fas fa-check text-success me-2"></i>所有管理員權限</li>
+                        <li><i class="fas fa-check text-success me-2"></i>價格設定</li>
+                        <li><i class="fas fa-check text-success me-2"></i>員工管理</li>
+                        <li><i class="fas fa-check text-success me-2"></i>薪資管理</li>
+                        <li><i class="fas fa-check text-success me-2"></i>財務報表</li>
+                        <li><i class="fas fa-check text-success me-2"></i>系統備份</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 權限認證區域 -->
+        <div class="row mb-4">
+            <div class="col-md-6 mx-auto">
+                <div class="permission-card">
+                    <h5 class="text-center mb-4">
+                        <i class="fas fa-key me-2"></i>權限認證中心
+                    </h5>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">當前權限等級</label>
+                        <div class="text-center">
+                            <span id="currentRole" class="role-badge role-employee">員工權限</span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="accessCode" class="form-label">管理通行碼</label>
+                        <input type="password" class="form-control access-code-input" id="accessCode" 
+                               placeholder="輸入管理通行碼以提升權限">
+                    </div>
+
+                    <div class="text-center">
+                        <button class="btn btn-flos" onclick="verifyAccessCode()">
+                            <i class="fas fa-unlock me-2"></i>驗證權限
+                        </button>
+                        <button class="btn btn-outline-secondary ms-2" onclick="resetPermissions()">
+                            <i class="fas fa-undo me-2"></i>重置權限
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 員工列表管理 -->
+        <div class="row" id="staffManagementSection" style="display: none;">
+            <div class="col-12">
+                <div class="permission-card">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5>
+                            <i class="fas fa-users me-2"></i>員工權限管理
+                        </h5>
+                        <button class="btn btn-flos btn-sm" onclick="addNewStaff()">
+                            <i class="fas fa-user-plus me-2"></i>新增員工
+                        </button>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 col-lg-4 mb-3">
+                            <div class="permission-card">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="staff-avatar me-3">劉</div>
+                                    <div>
+                                        <h6 class="mb-1">劉道玄諮詢師</h6>
+                                        <span class="role-badge role-owner">老闆權限</span>
+                                    </div>
+                                </div>
+                                <div class="permission-item">
+                                    <span>所有功能權限</span>
+                                    <i class="fas fa-check-circle text-success"></i>
+                                </div>
+                                <small class="text-muted">最後登入: 2024-09-25 14:30</small>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 col-lg-4 mb-3">
+                            <div class="permission-card">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="staff-avatar me-3">鍾</div>
+                                    <div>
+                                        <h6 class="mb-1">鍾曜任醫師</h6>
+                                        <span class="role-badge role-manager">管理員權限</span>
+                                    </div>
+                                </div>
+                                <div class="permission-item">
+                                    <span>預約管理</span>
+                                    <label class="permission-toggle">
+                                        <input type="checkbox" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="permission-item">
+                                    <span>病歷管理</span>
+                                    <label class="permission-toggle">
+                                        <input type="checkbox" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="permission-item">
+                                    <span>數據統計</span>
+                                    <label class="permission-toggle">
+                                        <input type="checkbox" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <small class="text-muted">最後登入: 2024-09-25 12:15</small>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 col-lg-4 mb-3">
+                            <div class="permission-card">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="staff-avatar me-3">伍</div>
+                                    <div>
+                                        <h6 class="mb-1">伍詠聰醫師</h6>
+                                        <span class="role-badge role-manager">管理員權限</span>
+                                    </div>
+                                </div>
+                                <div class="permission-item">
+                                    <span>預約管理</span>
+                                    <label class="permission-toggle">
+                                        <input type="checkbox" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="permission-item">
+                                    <span>病歷管理</span>
+                                    <label class="permission-toggle">
+                                        <input type="checkbox" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="permission-item">
+                                    <span>療程管理</span>
+                                    <label class="permission-toggle">
+                                        <input type="checkbox" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <small class="text-muted">最後登入: 2024-09-25 10:45</small>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 col-lg-4 mb-3">
+                            <div class="permission-card">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="staff-avatar me-3">李</div>
+                                    <div>
+                                        <h6 class="mb-1">李小美</h6>
+                                        <span class="role-badge role-employee">員工權限</span>
+                                    </div>
+                                </div>
+                                <div class="permission-item">
+                                    <span>預約查看</span>
+                                    <label class="permission-toggle">
+                                        <input type="checkbox" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="permission-item">
+                                    <span>病歷查看</span>
+                                    <label class="permission-toggle">
+                                        <input type="checkbox" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="permission-item">
+                                    <span>療程記錄</span>
+                                    <label class="permission-toggle">
+                                        <input type="checkbox" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <small class="text-muted">最後登入: 2024-09-25 09:20</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 操作日誌 -->
+        <div class="row" id="activityLogSection" style="display: none;">
+            <div class="col-12">
+                <div class="permission-card">
+                    <h5 class="mb-4">
+                        <i class="fas fa-history me-2"></i>系統操作日誌
+                    </h5>
+                    
+                    <div class="activity-log">
+                        <div class="log-entry">
+                            <div class="d-flex justify-content-between">
+                                <span><i class="fas fa-user text-warning me-2"></i>鍾曜任醫師 修改了預約設定</span>
+                                <span class="log-time">2024-09-25 14:30</span>
+                            </div>
+                        </div>
+                        <div class="log-entry">
+                            <div class="d-flex justify-content-between">
+                                <span><i class="fas fa-file-medical text-info me-2"></i>伍詠聰醫師 新增了病歷記錄</span>
+                                <span class="log-time">2024-09-25 12:15</span>
+                            </div>
+                        </div>
+                        <div class="log-entry">
+                            <div class="d-flex justify-content-between">
+                                <span><i class="fas fa-calendar text-success me-2"></i>李小美 新增了預約</span>
+                                <span class="log-time">2024-09-25 10:45</span>
+                            </div>
+                        </div>
+                        <div class="log-entry">
+                            <div class="d-flex justify-content-between">
+                                <span><i class="fas fa-cog text-danger me-2"></i>劉道玄諮詢師 修改了系統設定</span>
+                                <span class="log-time">2024-09-25 09:20</span>
+                            </div>
+                        </div>
+                        <div class="log-entry">
+                            <div class="d-flex justify-content-between">
+                                <span><i class="fas fa-shield-alt text-warning me-2"></i>系統自動備份完成</span>
+                                <span class="log-time">2024-09-25 06:00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // 權限管理系統
+        let currentPermissionLevel = 'employee';
+        
+        // 權限密鑰配置
+        const accessCodes = {
+            'liu_admin_2024': 'manager',    // 管理員權限
+            'liu_owner_2024': 'owner'       // 老闆權限
+        };
+
+        // 驗證權限碼
+        function verifyAccessCode() {
+            const code = document.getElementById('accessCode').value;
+            const currentRoleElement = document.getElementById('currentRole');
+            
+            if (accessCodes[code]) {
+                currentPermissionLevel = accessCodes[code];
+                
+                // 更新權限顯示
+                switch (currentPermissionLevel) {
+                    case 'manager':
+                        currentRoleElement.textContent = '管理員權限';
+                        currentRoleElement.className = 'role-badge role-manager';
+                        showManagerFeatures();
+                        break;
+                    case 'owner':
+                        currentRoleElement.textContent = '老闆權限';
+                        currentRoleElement.className = 'role-badge role-owner';
+                        showOwnerFeatures();
+                        break;
+                }
+                
+                // 清空輸入框
+                document.getElementById('accessCode').value = '';
+                
+                // 顯示成功訊息
+                showNotification('權限驗證成功！', 'success');
+                
+                // 記錄操作日誌
+                logActivity('權限提升', `提升至${currentPermissionLevel}權限`);
+                
+            } else if (code) {
+                showNotification('權限碼錯誤，請重新輸入', 'error');
+                document.getElementById('accessCode').value = '';
+            } else {
+                showNotification('請輸入權限碼', 'warning');
+            }
+        }
+
+        // 重置權限
+        function resetPermissions() {
+            currentPermissionLevel = 'employee';
+            const currentRoleElement = document.getElementById('currentRole');
+            
+            currentRoleElement.textContent = '員工權限';
+            currentRoleElement.className = 'role-badge role-employee';
+            
+            // 隱藏高級功能
+            document.getElementById('staffManagementSection').style.display = 'none';
+            document.getElementById('activityLogSection').style.display = 'none';
+            
+            showNotification('權限已重置為員工權限', 'info');
+            logActivity('權限重置', '重置為員工權限');
+        }
+
+        // 顯示管理員功能
+        function showManagerFeatures() {
+            document.getElementById('activityLogSection').style.display = 'block';
+        }
+
+        // 顯示老闆功能
+        function showOwnerFeatures() {
+            document.getElementById('staffManagementSection').style.display = 'block';
+            document.getElementById('activityLogSection').style.display = 'block';
+        }
+
+        // 新增員工
+        function addNewStaff() {
+            if (currentPermissionLevel !== 'owner') {
+                showNotification('需要老闆權限才能新增員工', 'error');
+                return;
+            }
+            
+            const name = prompt('請輸入員工姓名:');
+            if (name) {
+                showNotification(`員工 ${name} 已新增`, 'success');
+                logActivity('新增員工', `新增員工: ${name}`);
+            }
+        }
+
+        // 顯示通知
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `alert alert-${type === 'error' ? 'danger' : type === 'success' ? 'success' : type === 'warning' ? 'warning' : 'info'} position-fixed`;
+            notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'error' ? 'exclamation-triangle' : type === 'success' ? 'check-circle' : type === 'warning' ? 'exclamation-circle' : 'info-circle'} me-2"></i>
+                ${message}
+                <button type="button" class="btn-close" onclick="this.parentElement.remove()"></button>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // 3秒後自動移除
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.remove();
+                }
+            }, 3000);
+        }
+
+        // 記錄操作日誌
+        function logActivity(action, details) {
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log-entry';
+            logEntry.innerHTML = `
+                <div class="d-flex justify-content-between">
+                    <span><i class="fas fa-user text-info me-2"></i>系統管理員 ${action}: ${details}</span>
+                    <span class="log-time">${new Date().toLocaleString('zh-TW')}</span>
+                </div>
+            `;
+            
+            const activityLog = document.querySelector('.activity-log');
+            activityLog.insertBefore(logEntry, activityLog.firstChild);
+        }
+
+        // 檢查權限
+        function checkPermission(requiredLevel) {
+            const levels = { employee: 1, manager: 2, owner: 3 };
+            return levels[currentPermissionLevel] >= levels[requiredLevel];
+        }
+
+        // 頁面載入時初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 檢查是否有儲存的權限狀態
+            const savedPermission = localStorage.getItem('currentPermission');
+            if (savedPermission && accessCodes[savedPermission]) {
+                // 這裡可以選擇是否自動恢復權限狀態
+                // verifyAccessCode(); // 取消註解以啟用自動恢復
+            }
+            
+            // 監聽Enter鍵
+            document.getElementById('accessCode').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    verifyAccessCode();
+                }
+            });
+        });
+
+        // 權限檢查裝飾器
+        function requirePermission(level) {
+            return function(target, propertyKey, descriptor) {
+                const originalMethod = descriptor.value;
+                descriptor.value = function(...args) {
+                    if (checkPermission(level)) {
+                        return originalMethod.apply(this, args);
+                    } else {
+                        showNotification(`需要${level}權限才能執行此操作`, 'error');
+                        return false;
+                    }
+                };
+                return descriptor;
+            };
+        }
+    </script>
+</body>
+</html>

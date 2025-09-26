@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <link rel="stylesheet" href="flos-style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>劉道玄諮詢師預約系統 - 線上查詢與預約</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- FullCalendar CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.css" rel="stylesheet">
+    
+    <!-- 自定義樣式 -->
+    <link rel="stylesheet" href="css/main.css">
+    
+    <style>
+        /* 公開預約頁面特定樣式 */
+        .public-booking-container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 30px;
+            background: rgba(26, 31, 46, 0.7);
+            border-radius: 15px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .booking-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+        }
+        
+        .booking-title {
+            color: #d4af37;
+            font-size: 2rem;
+            margin: 0;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+        }
+        
+        .booking-subtitle {
+            color: #e0e6ed;
+            font-size: 1.2rem;
+            margin-top: 10px;
+        }
+        
+        .calendar-container {
+            background: rgba(26, 31, 46, 0.8);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+        
+        .booking-info {
+            background: rgba(26, 31, 46, 0.8);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+        
+        .booking-form {
+            background: rgba(26, 31, 46, 0.8);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            display: none;
+        }
+        
+        .form-control {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            color: #e0e6ed;
+            margin-bottom: 15px;
+        }
+        
+        .form-control::placeholder {
+            color: rgba(224, 230, 237, 0.5);
+        }
+        
+        .form-label {
+            color: #d4af37;
+        }
+        
+        .btn-booking {
+            background: rgba(212, 175, 55, 0.2);
+            border: 1px solid rgba(212, 175, 55, 0.5);
+            color: #d4af37;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-booking:hover {
+            background: rgba(212, 175, 55, 0.3);
+            color: #fff;
+        }
+        
+        .time-slot {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .time-slot:hover {
+            background: rgba(212, 175, 55, 0.1);
+            border-color: rgba(212, 175, 55, 0.4);
+        }
+        
+        .time-slot.available {
+            border-left: 4px solid #28a745;
+        }
+        
+        .time-slot.booked {
+            border-left: 4px solid #dc3545;
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        
+        .time-slot-time {
+            font-weight: bold;
+            color: #d4af37;
+        }
+        
+        .time-slot-status {
+            float: right;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+        }
+        
+        .status-available {
+            background: rgba(40, 167, 69, 0.2);
+            color: #28a745;
+        }
+        
+        .status-booked {
+            background: rgba(220, 53, 69, 0.2);
+            color: #dc3545;
+        }
+        
+        .service-type {
+            margin-bottom: 20px;
+        }
+        
+        .service-type label {
+            display: block;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .service-type input[type="radio"] {
+            display: none;
+        }
+        
+        .service-type input[type="radio"]:checked + label {
+            background: rgba(212, 175, 55, 0.2);
+            border-color: rgba(212, 175, 55, 0.5);
+        }
+        
+        .service-type label:hover {
+            background: rgba(212, 175, 55, 0.1);
+        }
+        
+        .service-icon {
+            margin-right: 10px;
+            color: #d4af37;
+        }
+        
+        .service-duration {
+            float: right;
+            color: #e0e6ed;
+            font-size: 0.9rem;
+        }
+        
+        .booking-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+        
+        .booking-step {
+            flex: 1;
+            text-align: center;
+            padding: 15px 10px;
+            background: rgba(26, 31, 46, 0.8);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 5px;
+            margin: 0 5px;
+            position: relative;
+        }
+        
+        .booking-step:not(:last-child):after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            right: -15px;
+            width: 20px;
+            height: 2px;
+            background: rgba(212, 175, 55, 0.3);
+            transform: translateY(-50%);
+        }
+        
+        .booking-step.active {
+            background: rgba(212, 175, 55, 0.2);
+            border-color: rgba(212, 175, 55, 0.5);
+        }
+        
+        .booking-step-number {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            line-height: 30px;
+            background: rgba(212, 175, 55, 0.2);
+            border-radius: 50%;
+            color: #d4af37;
+            margin-bottom: 10px;
+        }
+        
+        .booking-step.active .booking-step-number {
+            background: rgba(212, 175, 55, 0.5);
+            color: #fff;
+        }
+        
+        .booking-step-text {
+            color: #e0e6ed;
+            font-size: 0.9rem;
+        }
+        
+        .booking-step.active .booking-step-text {
+            color: #d4af37;
+        }
+        
+        .social-login {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .social-btn {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            line-height: 50px;
+            border-radius: 50%;
+            margin: 0 10px;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .line-btn {
+            background: #06C755;
+            color: #fff;
+        }
+        
+        .line-btn:hover {
+            background: #05a648;
+            transform: scale(1.1);
+        }
+        
+        .fb-btn {
+            background: #4267B2;
+            color: #fff;
+        }
+        
+        .fb-btn:hover {
+            background: #365899;
+            transform: scale(1.1);
+        }
+        
+        .ig-btn {
+            background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+            color: #fff;
+        }
+        
+        .ig-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .booking-notice {
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #ffc107;
+        }
+        
+        .booking-success {
+            background: rgba(40, 167, 69, 0.1);
+            border: 1px solid rgba(40, 167, 69, 0.3);
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #28a745;
+            display: none;
+        }
+        
+        .booking-error {
+            background: rgba(220, 53, 69, 0.1);
+            border: 1px solid rgba(220, 53, 69, 0.3);
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #dc3545;
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .booking-steps {
+                flex-direction: column;
+            }
+            
+            .booking-step {
+                margin: 5px 0;
+            }
+            
+            .booking-step:not(:last-child):after {
+                content: '';
+                position: absolute;
+                top: auto;
+                bottom: -10px;
+                right: 50%;
+                width: 2px;
+                height: 15px;
+                background: rgba(212, 175, 55, 0.3);
+                transform: translateX(50%);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 導航列 -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-user-md"></i>
+                劉道玄諮詢師預約系統
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">
+                            <i class="fas fa-home"></i> 首頁
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="public_booking_calendar.html">
+                            <i class="fas fa-calendar-alt"></i> 線上預約
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="services.html">
+                            <i class="fas fa-spa"></i> 服務項目
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="contact.html">
+                            <i class="fas fa-envelope"></i> 聯絡我們
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="login.html">
+                            <i class="fas fa-sign-in-alt"></i> 會員登入
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要內容 -->
+    <div class="public-booking-container">
+        <div class="booking-header">
+            <h1 class="booking-title">劉道玄諮詢師預約系統</h1>
+            <p class="booking-subtitle">查看可預約時段並立即線上預約</p>
+        </div>
+        
+        <!-- 預約步驟 -->
+        <div class="booking-steps">
+            <div class="booking-step active" id="step1">
+                <div class="booking-step-number">1</div>
+                <div class="booking-step-text">選擇日期</div>
+            </div>
+            <div class="booking-step" id="step2">
+                <div class="booking-step-number">2</div>
+                <div class="booking-step-text">選擇時段</div>
+            </div>
+            <div class="booking-step" id="step3">
+                <div class="booking-step-number">3</div>
+                <div class="booking-step-text">填寫資料</div>
+            </div>
+            <div class="booking-step" id="step4">
+                <div class="booking-step-number">4</div>
+                <div class="booking-step-text">完成預約</div>
+            </div>
+        </div>
+        
+        <!-- 社群登入 -->
+        <div class="social-login">
+            <p class="text-light mb-3">使用社群帳號快速預約</p>
+            <a href="#" class="social-btn line-btn" onclick="loginWithLine()">
+                <i class="fab fa-line"></i>
+            </a>
+            <a href="#" class="social-btn fb-btn" onclick="loginWithFacebook()">
+                <i class="fab fa-facebook-f"></i>
+            </a>
+            <a href="#" class="social-btn ig-btn" onclick="loginWithInstagram()">
+                <i class="fab fa-instagram"></i>
+            </a>
+        </div>
+        
+        <!-- 預約日曆 -->
+        <div class="calendar-container" id="calendar-view">
+            <div class="booking-notice mb-4">
+                <i class="fas fa-info-circle"></i> 請先選擇日期，再選擇可預約的時段。綠色表示可預約，紅色表示已滿。
+            </div>
+            <div id="booking-calendar" style="height: 600px; color: #e0e6ed;"></div>
+        </div>
+        
+        <!-- 時段選擇 -->
+        <div class="booking-info" id="time-slot-view" style="display: none;">
+            <h3 class="text-center mb-4" style="color: #d4af37;">選擇預約時段</h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <h5 class="mb-3" style="color: #d4af37;">上午時段</h5>
+                    <div class="time-slots-morning">
+                        <!-- 時段將由JavaScript動態生成 -->
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <h5 class="mb-3" style="color: #d4af37;">下午時段</h5>
+                    <div class="time-slots-afternoon">
+                        <!-- 時段將由JavaScript動態生成 -->
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt-4">
+                <button class="btn btn-booking me-2" onclick="backToCalendar()">
+                    <i class="fas fa-arrow-left"></i> 返回日曆
+                </button>
+            </div>
+        </div>
+        
+        <!-- 預約表單 -->
+        <div class="booking-form" id="booking-form-view">
+            <h3 class="text-center mb-4" style="color: #d4af37;">填寫預約資料</h3>
+            
+            <div class="booking-notice mb-4">
+                <i class="fas fa-info-circle"></i> 您選擇的預約時間：<span id="selected-date-time">2025年9月25日 14:30-15:30</span>
+            </div>
+            
+            <h5 class="mb-3" style="color: #d4af37;">選擇服務項目</h5>
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="service-type">
+                        <input type="radio" name="service" id="service1" value="consultation" checked>
+                        <label for="service1">
+                            <i class="fas fa-comments service-icon"></i> 諮詢服務
+                            <span class="service-duration">60分鐘</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="service-type">
+                        <input type="radio" name="service" id="service2" value="botox">
+                        <label for="service2">
+                            <i class="fas fa-syringe service-icon"></i> 肉毒桿菌諮詢
+                            <span class="service-duration">60分鐘</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="service-type">
+                        <input type="radio" name="service" id="service3" value="filler">
+                        <label for="service3">
+                            <i class="fas fa-magic service-icon"></i> 玻尿酸諮詢
+                            <span class="service-duration">60分鐘</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="service-type">
+                        <input type="radio" name="service" id="service4" value="laser">
+                        <label for="service4">
+                            <i class="fas fa-bolt service-icon"></i> 雷射療程諮詢
+                            <span class="service-duration">60分鐘</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <h5 class="mb-3" style="color: #d4af37;">個人資料</h5>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">姓名</label>
+                        <input type="text" class="form-control" id="name" placeholder="請輸入您的姓名">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">手機號碼</label>
+                        <input type="tel" class="form-control" id="phone" placeholder="請輸入您的手機號碼">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="email" class="form-label">電子郵件</label>
+                        <input type="email" class="form-control" id="email" placeholder="請輸入您的電子郵件">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="line-id" class="form-label">LINE ID (選填)</label>
+                        <input type="text" class="form-control" id="line-id" placeholder="請輸入您的LINE ID">
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">備註 (選填)</label>
+                        <textarea class="form-control" id="notes" rows="3" placeholder="如有特殊需求，請在此說明"></textarea>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="booking-notice mb-4">
+                <i class="fas fa-exclamation-triangle"></i> 預約成功後，我們將發送確認訊息至您的手機。如需取消或更改預約，請提前24小時通知。
+            </div>
+            
+            <div class="text-center">
+                <button class="btn btn-booking me-2" onclick="backToTimeSlots()">
+                    <i class="fas fa-arrow-left"></i> 返回時段選擇
+                </button>
+                <button class="btn btn-booking" onclick="submitBooking()">
+                    <i class="fas fa-check"></i> 確認預約
+                </button>
+            </div>
+        </div>
+        
+        <!-- 預約成功 -->
+        <div class="booking-success" id="booking-success-view">
+            <div class="text-center mb-4">
+                <i class="fas fa-check-circle" style="font-size: 4rem; color: #28a745;"></i>
+                <h3 class="mt-3" style="color: #28a745;">預約成功！</h3>
+                <p>您已成功預約劉道玄諮詢師的諮詢服務</p>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 offset-md-3">
+                    <div class="card" style="background: rgba(26, 31, 46, 0.8); border: 1px solid rgba(212, 175, 55, 0.3);">
+                        <div class="card-body">
+                            <h5 class="card-title" style="color: #d4af37;">預約詳情</h5>
+                            <ul class="list-group list-group-flush" style="background: transparent;">
+                                <li class="list-group-item d-flex justify-content-between" style="background: transparent; border-color: rgba(212, 175, 55, 0.2);">
+                                    <span style="color: #e0e6ed;">預約日期</span>
+                                    <span style="color: #d4af37;" id="confirm-date">2025年9月25日</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between" style="background: transparent; border-color: rgba(212, 175, 55, 0.2);">
+                                    <span style="color: #e0e6ed;">預約時間</span>
+                                    <span style="color: #d4af37;" id="confirm-time">14:30-15:30</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between" style="background: transparent; border-color: rgba(212, 175, 55, 0.2);">
+                                    <span style="color: #e0e6ed;">服務項目</span>
+                                    <span style="color: #d4af37;" id="confirm-service">諮詢服務</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between" style="background: transparent; border-color: rgba(212, 175, 55, 0.2);">
+                                    <span style="color: #e0e6ed;">預約編號</span>
+                                    <span style="color: #d4af37;" id="confirm-id">BK-20250925-001</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="booking-notice mt-4">
+                        <i class="fas fa-info-circle"></i> 預約確認簡訊已發送至您的手機，請留意查收。
+                    </div>
+                    
+                    <div class="text-center mt-4">
+                        <button class="btn btn-booking" onclick="backToHome()">
+                            <i class="fas fa-home"></i> 返回首頁
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 頁腳 -->
+    <footer class="bg-dark text-light py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h6>劉道玄諮詢師預約系統</h6>
+                    <p class="mb-0">專業諮詢・客製化療程・美麗蛻變</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="mb-0">
+                        <i class="fas fa-phone"></i> 預約專線: 02-XXXX-XXXX<br>
+                        <i class="fas fa-map-marker-alt"></i> 台北市信義區
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- FullCalendar JS -->
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化行事曆
+            const calendarEl = document.getElementById('booking-calendar');
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek'
+                },
+                locale: 'zh-tw',
+                height: 'auto',
+                selectable: true,
+                selectMirror: true,
+                navLinks: true,
+                businessHours: {
+                    daysOfWeek: [1, 2, 3, 4, 5, 6], // 週一至週六
+                    startTime: '09:00',
+                    endTime: '18:00',
+                },
+                events: [
+                    {
+                        title: '已滿',
+                        start: '2025-09-25',
+                        backgroundColor: 'rgba(220, 53, 69, 0.5)',
+                        borderColor: '#dc3545'
+                    },
+                    {
+                        title: '尚有空位',
+                        start: '2025-09-26',
+                        backgroundColor: 'rgba(40, 167, 69, 0.5)',
+                        borderColor: '#28a745'
+                    },
+                    {
+                        title: '尚有空位',
+                        start: '2025-09-27',
+                        backgroundColor: 'rgba(40, 167, 69, 0.5)',
+                        borderColor: '#28a745'
+                    },
+                    {
+                        title: '尚有空位',
+                        start: '2025-09-28',
+                        backgroundColor: 'rgba(40, 167, 69, 0.5)',
+                        borderColor: '#28a745'
+                    },
+                    {
+                        title: '已滿',
+                        start: '2025-09-29',
+                        backgroundColor: 'rgba(220, 53, 69, 0.5)',
+                        borderColor: '#dc3545'
+                    },
+                    {
+                        title: '尚有空位',
+                        start: '2025-09-30',
+                        backgroundColor: 'rgba(40, 167, 69, 0.5)',
+                        borderColor: '#28a745'
+                    }
+                ],
+                dateClick: function(info) {
+                    // 檢查是否為過去日期
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    const selectedDate = new Date(info.dateStr);
+                    
+                    if (selectedDate < today) {
+                        alert('無法選擇過去的日期');
+                        return;
+                    }
+                    
+                    // 檢查是否為週日
+                    if (selectedDate.getDay() === 0) {
+                        alert('週日休診，請選擇其他日期');
+                        return;
+                    }
+                    
+                    // 儲存選擇的日期
+                    window.selectedDate = info.dateStr;
+                    
+                    // 顯示時段選擇
+                    showTimeSlots(info.dateStr);
+                }
+            });
+            
+            calendar.render();
+            
+            // 生成時段選擇
+            window.showTimeSlots = function(dateStr) {
+                // 更新步驟指示器
+                document.getElementById('step1').classList.remove('active');
+                document.getElementById('step2').classList.add('active');
+                
+                // 隱藏日曆，顯示時段選擇
+                document.getElementById('calendar-view').style.display = 'none';
+                document.getElementById('time-slot-view').style.display = 'block';
+                
+                // 格式化日期
+                const date = new Date(dateStr);
+                const formattedDate = `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
+                
+                // 生成上午時段
+                const morningContainer = document.querySelector('.time-slots-morning');
+                morningContainer.innerHTML = '';
+                
+                // 上午時段 (9:00 - 12:00)
+                const morningSlots = [
+                    { time: '09:00-10:00', available: true },
+                    { time: '10:00-11:00', available: true },
+                    { time: '11:00-12:00', available: false }
+                ];
+                
+                morningSlots.forEach(slot => {
+                    const timeSlot = document.createElement('div');
+                    timeSlot.className = `time-slot ${slot.available ? 'available' : 'booked'}`;
+                    if (slot.available) {
+                        timeSlot.onclick = function() {
+                            selectTimeSlot(formattedDate, slot.time);
+                        };
+                    }
+                    
+                    timeSlot.innerHTML = `
+                        <span class="time-slot-time">${slot.time}</span>
+                        <span class="time-slot-status ${slot.available ? 'status-available' : 'status-booked'}">
+                            ${slot.available ? '可預約' : '已預約'}
+                        </span>
+                    `;
+                    
+                    morningContainer.appendChild(timeSlot);
+                });
+                
+                // 生成下午時段
+                const afternoonContainer = document.querySelector('.time-slots-afternoon');
+                afternoonContainer.innerHTML = '';
+                
+                // 下午時段 (13:00 - 18:00)
+                const afternoonSlots = [
+                    { time: '13:00-14:00', available: true },
+                    { time: '14:00-15:00', available: false },
+                    { time: '15:00-16:00', available: true },
+                    { time: '16:00-17:00', available: true },
+                    { time: '17:00-18:00', available: false }
+                ];
+                
+                afternoonSlots.forEach(slot => {
+                    const timeSlot = document.createElement('div');
+                    timeSlot.className = `time-slot ${slot.available ? 'available' : 'booked'}`;
+                    if (slot.available) {
+                        timeSlot.onclick = function() {
+                            selectTimeSlot(formattedDate, slot.time);
+                        };
+                    }
+                    
+                    timeSlot.innerHTML = `
+                        <span class="time-slot-time">${slot.time}</span>
+                        <span class="time-slot-status ${slot.available ? 'status-available' : 'status-booked'}">
+                            ${slot.available ? '可預約' : '已預約'}
+                        </span>
+                    `;
+                    
+                    afternoonContainer.appendChild(timeSlot);
+                });
+            };
+            
+            // 選擇時段
+            window.selectTimeSlot = function(date, time) {
+                // 更新步驟指示器
+                document.getElementById('step2').classList.remove('active');
+                document.getElementById('step3').classList.add('active');
+                
+                // 儲存選擇的時段
+                window.selectedTime = time;
+                
+                // 更新預約表單中的日期時間
+                document.getElementById('selected-date-time').textContent = `${date} ${time}`;
+                
+                // 隱藏時段選擇，顯示預約表單
+                document.getElementById('time-slot-view').style.display = 'none';
+                document.getElementById('booking-form-view').style.display = 'block';
+            };
+            
+            // 返回日曆
+            window.backToCalendar = function() {
+                // 更新步驟指示器
+                document.getElementById('step2').classList.remove('active');
+                document.getElementById('step1').classList.add('active');
+                
+                // 顯示日曆，隱藏時段選擇
+                document.getElementById('calendar-view').style.display = 'block';
+                document.getElementById('time-slot-view').style.display = 'none';
+            };
+            
+            // 返回時段選擇
+            window.backToTimeSlots = function() {
+                // 更新步驟指示器
+                document.getElementById('step3').classList.remove('active');
+                document.getElementById('step2').classList.add('active');
+                
+                // 顯示時段選擇，隱藏預約表單
+                document.getElementById('time-slot-view').style.display = 'block';
+                document.getElementById('booking-form-view').style.display = 'none';
+            };
+            
+            // 提交預約
+            window.submitBooking = function() {
+                // 表單驗證
+                const name = document.getElementById('name').value;
+                const phone = document.getElementById('phone').value;
+                const email = document.getElementById('email').value;
+                
+                if (!name || !phone) {
+                    alert('請填寫姓名和手機號碼');
+                    return;
+                }
+                
+                // 更新步驟指示器
+                document.getElementById('step3').classList.remove('active');
+                document.getElementById('step4').classList.add('active');
+                
+                // 獲取選擇的服務
+                let service = '';
+                const serviceRadios = document.getElementsByName('service');
+                for (let i = 0; i < serviceRadios.length; i++) {
+                    if (serviceRadios[i].checked) {
+                        service = serviceRadios[i].nextElementSibling.textContent.trim();
+                        break;
+                    }
+                }
+                
+                // 更新確認頁面
+                const dateParts = document.getElementById('selected-date-time').textContent.split(' ');
+                document.getElementById('confirm-date').textContent = dateParts[0];
+                document.getElementById('confirm-time').textContent = dateParts[1];
+                document.getElementById('confirm-service').textContent = service;
+                document.getElementById('confirm-id').textContent = 'BK-' + new Date().getTime().toString().substr(-8);
+                
+                // 隱藏預約表單，顯示成功頁面
+                document.getElementById('booking-form-view').style.display = 'none';
+                document.getElementById('booking-success-view').style.display = 'block';
+                
+                // 模擬發送預約資料到後端
+                console.log('預約資料：', {
+                    date: window.selectedDate,
+                    time: window.selectedTime,
+                    name: name,
+                    phone: phone,
+                    email: email,
+                    lineId: document.getElementById('line-id').value,
+                    notes: document.getElementById('notes').value,
+                    service: service
+                });
+            };
+            
+            // 返回首頁
+            window.backToHome = function() {
+                window.location.href = 'index.html';
+            };
+            
+            // 社群登入
+            window.loginWithLine = function() {
+                alert('將跳轉至LINE登入頁面...');
+                // 實際應用中應該跳轉到LINE登入授權頁面
+            };
+            
+            window.loginWithFacebook = function() {
+                alert('將跳轉至Facebook登入頁面...');
+                // 實際應用中應該跳轉到Facebook登入授權頁面
+            };
+            
+            window.loginWithInstagram = function() {
+                alert('將跳轉至Instagram登入頁面...');
+                // 實際應用中應該跳轉到Instagram登入授權頁面
+            };
+        });
+    </script>
+</body>
+</html>

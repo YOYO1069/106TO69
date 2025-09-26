@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>預約管理系統 - FLOS曜診所</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="flos-style.css">
+    <script src="https://apis.google.com/js/api.js"></script>
+    <script src="https://accounts.google.com/gsi/client"></script>
+    <style>
+        .appointment-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        .appointment-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            background: linear-gradient(145deg, rgba(42, 42, 42, 0.9), rgba(26, 26, 26, 0.9));
+            border-radius: 15px;
+            padding: 2rem;
+            border: 2px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .appointment-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+            color: var(--warning-color);
+        }
+
+        /* 月份大表樣式 */
+        .calendar-container {
+            background: linear-gradient(145deg, rgba(42, 42, 42, 0.95), rgba(26, 26, 26, 0.95));
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            backdrop-filter: blur(15px);
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(212, 175, 55, 0.1);
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .calendar-nav {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            background: linear-gradient(145deg, rgba(212, 175, 55, 0.8), rgba(184, 134, 11, 0.8));
+            border: none;
+            border-radius: 10px;
+            padding: 0.8rem 1.2rem;
+            color: var(--dark-bg);
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+        }
+
+        .current-month {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--warning-color);
+            text-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+        }
+
+        .view-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .view-btn {
+            background: rgba(42, 42, 42, 0.8);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 8px;
+            padding: 0.6rem 1rem;
+            color: #ccc;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .view-btn.active {
+            background: var(--warning-color);
+            color: var(--dark-bg);
+            border-color: var(--warning-color);
+        }
+
+        /* 月份大表格 */
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2px;
+            background: rgba(212, 175, 55, 0.1);
+            border-radius: 10px;
+            padding: 2px;
+        }
+
+        .calendar-day-header {
+            background: linear-gradient(145deg, rgba(212, 175, 55, 0.9), rgba(184, 134, 11, 0.9));
+            color: var(--dark-bg);
+            padding: 1rem;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .calendar-day {
+            background: linear-gradient(145deg, rgba(42, 42, 42, 0.9), rgba(26, 26, 26, 0.9));
+            min-height: 120px;
+            padding: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            border: 1px solid rgba(212, 175, 55, 0.1);
+        }
+
+        .calendar-day:hover {
+            background: linear-gradient(145deg, rgba(212, 175, 55, 0.1), rgba(184, 134, 11, 0.1));
+            border-color: rgba(212, 175, 55, 0.5);
+            transform: scale(1.02);
+        }
+
+        .calendar-day.other-month {
+            opacity: 0.3;
+        }
+
+        .calendar-day.today {
+            border: 2px solid var(--warning-color);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+        }
+
+        .day-number {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: var(--warning-color);
+        }
+
+        .day-appointments {
+            font-size: 0.8rem;
+        }
+
+        .appointment-slot {
+            background: rgba(212, 175, 55, 0.2);
+            border-radius: 4px;
+            padding: 2px 4px;
+            margin: 1px 0;
+            font-size: 0.7rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .appointment-slot.full {
+            background: rgba(220, 53, 69, 0.3);
+            color: #ff6b6b;
+        }
+
+        .appointment-slot.blocked {
+            background: rgba(108, 117, 125, 0.3);
+            color: #6c757d;
+        }
+
+        /* 時段詳細檢視 */
+        .time-slots-container {
+            display: none;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .time-slot {
+            background: linear-gradient(145deg, rgba(42, 42, 42, 0.9), rgba(26, 26, 26, 0.9));
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .time-slot.available {
+            border-color: rgba(40, 167, 69, 0.5);
+        }
+
+        .time-slot.full {
+            border-color: rgba(255, 193, 7, 0.5);
+            background: linear-gradient(145deg, rgba(255, 193, 7, 0.1), rgba(255, 193, 7, 0.05));
+        }
+
+        .time-slot.blocked {
+            border-color: rgba(220, 53, 69, 0.5);
+            background: linear-gradient(145deg, rgba(220, 53, 69, 0.1), rgba(220, 53, 69, 0.05));
+            cursor: not-allowed;
+        }
+
+        .time-slot:hover:not(.blocked) {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(212, 175, 55, 0.2);
+        }
+
+        .slot-time {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--warning-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .slot-status {
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .slot-appointments {
+            font-size: 0.8rem;
+            color: #aaa;
+        }
+
+        /* 衝突檢測警告 */
+        .conflict-warning {
+            background: linear-gradient(145deg, rgba(220, 53, 69, 0.2), rgba(220, 53, 69, 0.1));
+            border: 2px solid rgba(220, 53, 69, 0.5);
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+            animation: conflictPulse 2s infinite;
+        }
+
+        @keyframes conflictPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* 統計面板 */
+        .stats-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(145deg, rgba(42, 42, 42, 0.9), rgba(26, 26, 26, 0.9));
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--warning-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+
+        /* 控制面板 */
+        .control-panel {
+            background: linear-gradient(145deg, rgba(42, 42, 42, 0.9), rgba(26, 26, 26, 0.9));
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .control-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .control-label {
+            color: var(--warning-color);
+            font-weight: bold;
+        }
+
+        .control-input {
+            background: rgba(42, 42, 42, 0.8);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 8px;
+            padding: 0.8rem;
+            color: white;
+        }
+
+        .control-input:focus {
+            border-color: var(--warning-color);
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+        }
+
+        /* 響應式設計 */
+        @media (max-width: 768px) {
+            .calendar-grid {
+                font-size: 0.8rem;
+            }
+            
+            .calendar-day {
+                min-height: 80px;
+                padding: 0.3rem;
+            }
+            
+            .calendar-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .current-month {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* 新增預約模態框 */
+        .appointment-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(145deg, rgba(42, 42, 42, 0.95), rgba(26, 26, 26, 0.95));
+            border: 2px solid rgba(212, 175, 55, 0.5);
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .modal-title {
+            color: var(--warning-color);
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: #aaa;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .close-btn:hover {
+            color: var(--warning-color);
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            color: var(--warning-color);
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            background: rgba(42, 42, 42, 0.8);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 8px;
+            padding: 0.8rem;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .form-input:focus {
+            border-color: var(--warning-color);
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+            outline: none;
+        }
+
+        .form-select {
+            width: 100%;
+            background: rgba(42, 42, 42, 0.8);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 8px;
+            padding: 0.8rem;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(145deg, rgba(212, 175, 55, 0.9), rgba(184, 134, 11, 0.9));
+            border: none;
+            border-radius: 10px;
+            padding: 0.8rem 2rem;
+            color: var(--dark-bg);
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 導航列 -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-clinic-medical"></i>
+                劉道玄曜診所雲整合系統
+            </a>
+            
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="index.html">
+                    <i class="fas fa-home"></i> 返回首頁
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要內容 -->
+    <main class="appointment-container">
+        <!-- 標題區域 -->
+        <div class="appointment-header">
+            <h1><i class="fas fa-calendar-alt"></i> FLOS曜診所預約管理系統</h1>
+            <p>15分鐘時段制 • 智能衝突檢測 • 多來源整合預約</p>
+        </div>
+
+        <!-- 統計面板 -->
+        <div class="stats-panel">
+            <div class="stat-card">
+                <div class="stat-number" id="todayAppointments">0</div>
+                <div class="stat-label">今日預約</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="monthAppointments">0</div>
+                <div class="stat-label">本月預約</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="conflictCount">0</div>
+                <div class="stat-label">衝突警告</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="availableSlots">0</div>
+                <div class="stat-label">可用時段</div>
+            </div>
+        </div>
+
+        <!-- 控制面板 -->
+        <div class="control-panel">
+            <h3><i class="fas fa-cogs"></i> 系統設定</h3>
+            <div class="control-row">
+                <div class="control-group">
+                    <label class="control-label">每時段最大人數</label>
+                    <select class="control-input" id="maxPersonsPerSlot">
+                        <option value="1">1人</option>
+                        <option value="2" selected>2人</option>
+                        <option value="3">3人</option>
+                        <option value="4">4人</option>
+                        <option value="5">5人</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">滿額後封鎖時間</label>
+                    <select class="control-input" id="blockDuration">
+                        <option value="15">15分鐘</option>
+                        <option value="30" selected>30分鐘</option>
+                        <option value="45">45分鐘</option>
+                        <option value="60">60分鐘</option>
+                        <option value="120">120分鐘</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">營業時間</label>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <input type="time" class="control-input" id="startTime" value="09:00" style="flex: 1;">
+                        <input type="time" class="control-input" id="endTime" value="18:00" style="flex: 1;">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">衝突檢測</label>
+                    <select class="control-input" id="conflictDetection">
+                        <option value="true" selected>啟用</option>
+                        <option value="false">關閉</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- 月份大表 -->
+        <div class="calendar-container">
+            <div class="calendar-header">
+                <div class="calendar-nav">
+                    <button class="nav-btn" onclick="previousMonth()">
+                        <i class="fas fa-chevron-left"></i> 上月
+                    </button>
+                    <div class="current-month" id="currentMonth">2025年9月</div>
+                    <button class="nav-btn" onclick="nextMonth()">
+                        下月 <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+                <div class="view-controls">
+                    <button class="view-btn active" onclick="switchView('month')">月檢視</button>
+                    <button class="view-btn" onclick="switchView('week')">週檢視</button>
+                    <button class="view-btn" onclick="switchView('day')">日檢視</button>
+                </div>
+            </div>
+
+            <!-- 月份檢視 -->
+            <div id="monthView" class="calendar-grid">
+                <div class="calendar-day-header">週日</div>
+                <div class="calendar-day-header">週一</div>
+                <div class="calendar-day-header">週二</div>
+                <div class="calendar-day-header">週三</div>
+                <div class="calendar-day-header">週四</div>
+                <div class="calendar-day-header">週五</div>
+                <div class="calendar-day-header">週六</div>
+                <!-- 日期格子將由JavaScript動態生成 -->
+            </div>
+
+            <!-- 時段詳細檢視 -->
+            <div id="timeSlotsView" class="time-slots-container">
+                <!-- 時段將由JavaScript動態生成 -->
+            </div>
+        </div>
+
+        <!-- 衝突警告區域 -->
+        <div id="conflictWarnings"></div>
+
+        <!-- 新增預約按鈕 -->
+        <div class="text-center mt-4">
+            <button class="btn btn-primary" onclick="openAppointmentModal()">
+                <i class="fas fa-plus"></i> 新增預約
+            </button>
+        </div>
+    </main>
+
+    <!-- 新增預約模態框 -->
+    <div id="appointmentModal" class="appointment-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">新增預約</h3>
+                <button class="close-btn" onclick="closeAppointmentModal()">&times;</button>
+            </div>
+            <form id="appointmentForm">
+                <div class="form-group">
+                    <label class="form-label">客戶姓名 *</label>
+                    <input type="text" class="form-input" id="customerName" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">聯絡電話 *</label>
+                    <input type="tel" class="form-input" id="customerPhone" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">預約日期 *</label>
+                    <input type="date" class="form-input" id="appointmentDate" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">預約時間 *</label>
+                    <select class="form-select" id="appointmentTime" required>
+                        <!-- 時間選項將由JavaScript動態生成 -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">療程項目</label>
+                    <select class="form-select" id="treatmentType">
+                        <option value="">請選擇療程</option>
+                        <option value="海菲秀">Syndeo海菲秀</option>
+                        <option value="水光儀">SEYO水光儀</option>
+                        <option value="電波拉提">DENSITY無雙電波</option>
+                        <option value="音波拉提">Ultraformer MPT海芙音波</option>
+                        <option value="皮秒雷射">Discovery Pico探索皮秒</option>
+                        <option value="除毛雷射">Pro U亞歷山大除毛</option>
+                        <option value="肉毒桿菌">保妥適肉毒桿菌</option>
+                        <option value="玻尿酸">Juvederm喬雅登玻尿酸</option>
+                        <option value="營養點滴">營養點滴</option>
+                        <option value="諮詢">療程諮詢</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">預約來源</label>
+                    <select class="form-select" id="appointmentSource">
+                        <option value="電話">電話預約</option>
+                        <option value="LINE">LINE預約</option>
+                        <option value="現場">現場預約</option>
+                        <option value="員工推薦">員工推薦</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">備註</label>
+                    <textarea class="form-input" id="appointmentNotes" rows="3" placeholder="特殊需求或注意事項"></textarea>
+                </div>
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-save"></i> 儲存預約
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // 全局變數
+        let currentDate = new Date();
+        let currentView = 'month';
+        let appointments = [];
+        let selectedDate = null;
+
+        // Google Calendar API 配置
+        const CLIENT_ID = '519705406951-rbdhk7l6et1vd1u83nv49hn1f53bjski.apps.googleusercontent.com';
+        const API_KEY = 'AIzaSyBH8vY9_wxtsfQdB04t89_1O_w1cDnyilFU';
+        const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest';
+        const SCOPES = 'https://www.googleapis.com/auth/calendar';
+
+        // 系統設定
+        let systemSettings = {
+            maxPersonsPerSlot: 2,
+            blockDuration: 30, // 分鐘
+            startTime: '09:00',
+            endTime: '18:00',
+            conflictDetection: true
+        };
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCalendar();
+            loadSystemSettings();
+            generateTimeSlots();
+            updateStatistics();
+            
+            // 設定變更監聽
+            document.getElementById('maxPersonsPerSlot').addEventListener('change', updateSystemSettings);
+            document.getElementById('blockDuration').addEventListener('change', updateSystemSettings);
+            document.getElementById('startTime').addEventListener('change', updateSystemSettings);
+            document.getElementById('endTime').addEventListener('change', updateSystemSettings);
+            document.getElementById('conflictDetection').addEventListener('change', updateSystemSettings);
+        });
+
+        // 初始化日曆
+        function initializeCalendar() {
+            updateCalendarHeader();
+            generateCalendar();
+        }
+
+        // 更新日曆標題
+        function updateCalendarHeader() {
+            const monthNames = ['1月', '2月', '3月', '4月', '5月', '6月', 
+                              '7月', '8月', '9月', '10月', '11月', '12月'];
+            document.getElementById('currentMonth').textContent = 
+                `${currentDate.getFullYear()}年${monthNames[currentDate.getMonth()]}`;
+        }
+
+        // 生成日曆
+        function generateCalendar() {
+            const monthView = document.getElementById('monthView');
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            
+            // 清除現有內容（保留標題行）
+            const headers = monthView.querySelectorAll('.calendar-day-header');
+            monthView.innerHTML = '';
+            headers.forEach(header => monthView.appendChild(header));
+            
+            // 計算月份第一天和最後一天
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const startDate = new Date(firstDay);
+            startDate.setDate(startDate.getDate() - firstDay.getDay());
+            
+            // 生成42個日期格子（6週 x 7天）
+            for (let i = 0; i < 42; i++) {
+                const date = new Date(startDate);
+                date.setDate(startDate.getDate() + i);
+                
+                const dayElement = createDayElement(date, month);
+                monthView.appendChild(dayElement);
+            }
+        }
+
+        // 創建日期元素
+        function createDayElement(date, currentMonth) {
+            const dayDiv = document.createElement('div');
+            dayDiv.className = 'calendar-day';
+            dayDiv.onclick = () => selectDate(date);
+            
+            // 判斷是否為其他月份
+            if (date.getMonth() !== currentMonth) {
+                dayDiv.classList.add('other-month');
+            }
+            
+            // 判斷是否為今天
+            const today = new Date();
+            if (date.toDateString() === today.toDateString()) {
+                dayDiv.classList.add('today');
+            }
+            
+            // 日期數字
+            const dayNumber = document.createElement('div');
+            dayNumber.className = 'day-number';
+            dayNumber.textContent = date.getDate();
+            dayDiv.appendChild(dayNumber);
+            
+            // 預約時段
+            const appointmentsDiv = document.createElement('div');
+            appointmentsDiv.className = 'day-appointments';
+            
+            const dayAppointments = getAppointmentsForDate(date);
+            const timeSlots = generateTimeSlotsForDate(date);
+            
+            // 顯示時段狀態
+            let availableCount = 0;
+            let fullCount = 0;
+            let blockedCount = 0;
+            
+            timeSlots.forEach(slot => {
+                const slotAppointments = dayAppointments.filter(apt => apt.time === slot.time);
+                if (slot.blocked) {
+                    blockedCount++;
+                } else if (slotAppointments.length >= systemSettings.maxPersonsPerSlot) {
+                    fullCount++;
+                } else {
+                    availableCount++;
+                }
+            });
+            
+            if (availableCount > 0) {
+                const availableSlot = document.createElement('div');
+                availableSlot.className = 'appointment-slot';
+                availableSlot.textContent = `可預約 ${availableCount}`;
+                appointmentsDiv.appendChild(availableSlot);
+            }
+            
+            if (fullCount > 0) {
+                const fullSlot = document.createElement('div');
+                fullSlot.className = 'appointment-slot full';
+                fullSlot.textContent = `已滿 ${fullCount}`;
+                appointmentsDiv.appendChild(fullSlot);
+            }
+            
+            if (blockedCount > 0) {
+                const blockedSlot = document.createElement('div');
+                blockedSlot.className = 'appointment-slot blocked';
+                blockedSlot.textContent = `封鎖 ${blockedCount}`;
+                appointmentsDiv.appendChild(blockedSlot);
+            }
+            
+            dayDiv.appendChild(appointmentsDiv);
+            return dayDiv;
+        }
+
+        // 生成指定日期的時段
+        function generateTimeSlotsForDate(date) {
+            const slots = [];
+            const startTime = systemSettings.startTime.split(':');
+            const endTime = systemSettings.endTime.split(':');
+            const startMinutes = parseInt(startTime[0]) * 60 + parseInt(startTime[1]);
+            const endMinutes = parseInt(endTime[0]) * 60 + parseInt(endTime[1]);
+            
+            for (let minutes = startMinutes; minutes < endMinutes; minutes += 15) {
+                const hours = Math.floor(minutes / 60);
+                const mins = minutes % 60;
+                const timeString = `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
+                
+                // 檢查是否被封鎖
+                const blocked = isTimeSlotBlocked(date, timeString);
+                
+                slots.push({
+                    time: timeString,
+                    blocked: blocked
+                });
+            }
+            
+            return slots;
+        }
+
+        // 檢查時段是否被封鎖
+        function isTimeSlotBlocked(date, time) {
+            const dateString = date.toISOString().split('T')[0];
+            const dayAppointments = getAppointmentsForDate(date);
+            
+            // 檢查當前時段是否已滿
+            const currentSlotAppointments = dayAppointments.filter(apt => apt.time === time);
+            if (currentSlotAppointments.length >= systemSettings.maxPersonsPerSlot) {
+                // 檢查後續時段是否需要封鎖
+                const currentMinutes = timeToMinutes(time);
+                const blockEndMinutes = currentMinutes + systemSettings.blockDuration;
+                
+                // 封鎖後續時段
+                return true;
+            }
+            
+            // 檢查是否在其他滿額時段的封鎖範圍內
+            for (let apt of dayAppointments) {
+                const slotAppointments = dayAppointments.filter(a => a.time === apt.time);
+                if (slotAppointments.length >= systemSettings.maxPersonsPerSlot) {
+                    const aptMinutes = timeToMinutes(apt.time);
+                    const blockEndMinutes = aptMinutes + systemSettings.blockDuration;
+                    const currentMinutes = timeToMinutes(time);
+                    
+                    if (currentMinutes > aptMinutes && currentMinutes < blockEndMinutes) {
+                        return true;
+                    }
+                }
+            }
+            
+            return false;
+        }
+
+        // 時間轉換為分鐘
+        function timeToMinutes(timeString) {
+            const [hours, minutes] = timeString.split(':').map(Number);
+            return hours * 60 + minutes;
+        }
+
+        // 獲取指定日期的預約
+        function getAppointmentsForDate(date) {
+            const dateString = date.toISOString().split('T')[0];
+            return appointments.filter(apt => apt.date === dateString);
+        }
+
+        // 選擇日期
+        function selectDate(date) {
+            selectedDate = date;
+            if (currentView === 'month') {
+                switchView('day');
+                showTimeSlotsForDate(date);
+            }
+        }
+
+        // 顯示指定日期的時段
+        function showTimeSlotsForDate(date) {
+            const timeSlotsView = document.getElementById('timeSlotsView');
+            timeSlotsView.innerHTML = '';
+            
+            const timeSlots = generateTimeSlotsForDate(date);
+            const dayAppointments = getAppointmentsForDate(date);
+            
+            timeSlots.forEach(slot => {
+                const slotDiv = document.createElement('div');
+                slotDiv.className = 'time-slot';
+                
+                const slotAppointments = dayAppointments.filter(apt => apt.time === slot.time);
+                const availableSpots = systemSettings.maxPersonsPerSlot - slotAppointments.length;
+                
+                if (slot.blocked) {
+                    slotDiv.classList.add('blocked');
+                } else if (availableSpots <= 0) {
+                    slotDiv.classList.add('full');
+                } else {
+                    slotDiv.classList.add('available');
+                    slotDiv.onclick = () => openAppointmentModal(date, slot.time);
+                }
+                
+                slotDiv.innerHTML = `
+                    <div class="slot-time">${slot.time}</div>
+                    <div class="slot-status">
+                        ${slot.blocked ? '已封鎖' : 
+                          availableSpots <= 0 ? '已滿額' : 
+                          `可預約 ${availableSpots}人`}
+                    </div>
+                    <div class="slot-appointments">
+                        ${slotAppointments.map(apt => `${apt.customerName} - ${apt.treatmentType || '諮詢'}`).join('<br>')}
+                    </div>
+                `;
+                
+                timeSlotsView.appendChild(slotDiv);
+            });
+        }
+
+        // 切換檢視模式
+        function switchView(view) {
+            currentView = view;
+            
+            // 更新按鈕狀態
+            document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // 顯示/隱藏相應檢視
+            const monthView = document.getElementById('monthView');
+            const timeSlotsView = document.getElementById('timeSlotsView');
+            
+            if (view === 'month') {
+                monthView.style.display = 'grid';
+                timeSlotsView.style.display = 'none';
+            } else if (view === 'day') {
+                monthView.style.display = 'none';
+                timeSlotsView.style.display = 'grid';
+                if (selectedDate) {
+                    showTimeSlotsForDate(selectedDate);
+                }
+            }
+        }
+
+        // 上一月
+        function previousMonth() {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            initializeCalendar();
+            updateStatistics();
+        }
+
+        // 下一月
+        function nextMonth() {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            initializeCalendar();
+            updateStatistics();
+        }
+
+        // 打開預約模態框
+        function openAppointmentModal(date = null, time = null) {
+            const modal = document.getElementById('appointmentModal');
+            modal.style.display = 'block';
+            
+            if (date) {
+                document.getElementById('appointmentDate').value = date.toISOString().split('T')[0];
+            }
+            
+            if (time) {
+                document.getElementById('appointmentTime').value = time;
+            }
+            
+            generateTimeSlots();
+        }
+
+        // 關閉預約模態框
+        function closeAppointmentModal() {
+            document.getElementById('appointmentModal').style.display = 'none';
+            document.getElementById('appointmentForm').reset();
+        }
+
+        // 生成時間選項
+        function generateTimeSlots() {
+            const timeSelect = document.getElementById('appointmentTime');
+            timeSelect.innerHTML = '<option value="">請選擇時間</option>';
+            
+            const startTime = systemSettings.startTime.split(':');
+            const endTime = systemSettings.endTime.split(':');
+            const startMinutes = parseInt(startTime[0]) * 60 + parseInt(startTime[1]);
+            const endMinutes = parseInt(endTime[0]) * 60 + parseInt(endTime[1]);
+            
+            for (let minutes = startMinutes; minutes < endMinutes; minutes += 15) {
+                const hours = Math.floor(minutes / 60);
+                const mins = minutes % 60;
+                const timeString = `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
+                
+                const option = document.createElement('option');
+                option.value = timeString;
+                option.textContent = timeString;
+                timeSelect.appendChild(option);
+            }
+        }
+
+        // 處理預約表單提交
+        document.getElementById('appointmentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const appointment = {
+                id: Date.now(),
+                customerName: document.getElementById('customerName').value,
+                customerPhone: document.getElementById('customerPhone').value,
+                date: document.getElementById('appointmentDate').value,
+                time: document.getElementById('appointmentTime').value,
+                treatmentType: document.getElementById('treatmentType').value,
+                source: document.getElementById('appointmentSource').value,
+                notes: document.getElementById('appointmentNotes').value,
+                createdAt: new Date().toISOString()
+            };
+            
+            // 衝突檢測
+            if (systemSettings.conflictDetection && checkConflict(appointment)) {
+                alert('此時段已滿或存在衝突，請選擇其他時間。');
+                return;
+            }
+            
+            // 添加預約
+            appointments.push(appointment);
+            
+            // 同步到Google Calendar
+            syncToGoogleCalendar(appointment);
+            
+            // 更新顯示
+            initializeCalendar();
+            updateStatistics();
+            closeAppointmentModal();
+            
+            alert('預約新增成功！');
+        });
+
+        // 檢查衝突
+        function checkConflict(newAppointment) {
+            const existingAppointments = appointments.filter(apt => 
+                apt.date === newAppointment.date && apt.time === newAppointment.time
+            );
+            
+            return existingAppointments.length >= systemSettings.maxPersonsPerSlot;
+        }
+
+        // 同步到Google Calendar
+        function syncToGoogleCalendar(appointment) {
+            // 這裡實現Google Calendar API同步
+            console.log('同步預約到Google Calendar:', appointment);
+        }
+
+        // 更新統計數據
+        function updateStatistics() {
+            const today = new Date().toISOString().split('T')[0];
+            const currentMonth = currentDate.getMonth();
+            const currentYear = currentDate.getFullYear();
+            
+            // 今日預約
+            const todayAppointments = appointments.filter(apt => apt.date === today).length;
+            document.getElementById('todayAppointments').textContent = todayAppointments;
+            
+            // 本月預約
+            const monthAppointments = appointments.filter(apt => {
+                const aptDate = new Date(apt.date);
+                return aptDate.getMonth() === currentMonth && aptDate.getFullYear() === currentYear;
+            }).length;
+            document.getElementById('monthAppointments').textContent = monthAppointments;
+            
+            // 衝突警告
+            const conflicts = detectConflicts();
+            document.getElementById('conflictCount').textContent = conflicts.length;
+            displayConflictWarnings(conflicts);
+            
+            // 可用時段
+            const availableSlots = calculateAvailableSlots();
+            document.getElementById('availableSlots').textContent = availableSlots;
+        }
+
+        // 檢測衝突
+        function detectConflicts() {
+            const conflicts = [];
+            const groupedAppointments = {};
+            
+            appointments.forEach(apt => {
+                const key = `${apt.date}-${apt.time}`;
+                if (!groupedAppointments[key]) {
+                    groupedAppointments[key] = [];
+                }
+                groupedAppointments[key].push(apt);
+            });
+            
+            Object.entries(groupedAppointments).forEach(([key, apts]) => {
+                if (apts.length > systemSettings.maxPersonsPerSlot) {
+                    conflicts.push({
+                        key: key,
+                        appointments: apts,
+                        excess: apts.length - systemSettings.maxPersonsPerSlot
+                    });
+                }
+            });
+            
+            return conflicts;
+        }
+
+        // 顯示衝突警告
+        function displayConflictWarnings(conflicts) {
+            const warningsDiv = document.getElementById('conflictWarnings');
+            warningsDiv.innerHTML = '';
+            
+            conflicts.forEach(conflict => {
+                const [date, time] = conflict.key.split('-');
+                const warningDiv = document.createElement('div');
+                warningDiv.className = 'conflict-warning';
+                warningDiv.innerHTML = `
+                    <h5><i class="fas fa-exclamation-triangle"></i> 預約衝突警告</h5>
+                    <p><strong>${date} ${time}</strong> 時段預約人數超出限制</p>
+                    <p>當前預約：${conflict.appointments.length}人，限制：${systemSettings.maxPersonsPerSlot}人</p>
+                    <p>超出：${conflict.excess}人</p>
+                    <small>預約客戶：${conflict.appointments.map(apt => apt.customerName).join(', ')}</small>
+                `;
+                warningsDiv.appendChild(warningDiv);
+            });
+        }
+
+        // 計算可用時段
+        function calculateAvailableSlots() {
+            const today = new Date();
+            const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+            let availableCount = 0;
+            
+            for (let date = new Date(today); date <= endOfMonth; date.setDate(date.getDate() + 1)) {
+                const timeSlots = generateTimeSlotsForDate(date);
+                const dayAppointments = getAppointmentsForDate(date);
+                
+                timeSlots.forEach(slot => {
+                    if (!slot.blocked) {
+                        const slotAppointments = dayAppointments.filter(apt => apt.time === slot.time);
+                        const available = systemSettings.maxPersonsPerSlot - slotAppointments.length;
+                        if (available > 0) {
+                            availableCount += available;
+                        }
+                    }
+                });
+            }
+            
+            return availableCount;
+        }
+
+        // 載入系統設定
+        function loadSystemSettings() {
+            const saved = localStorage.getItem('appointmentSystemSettings');
+            if (saved) {
+                systemSettings = { ...systemSettings, ...JSON.parse(saved) };
+                
+                // 更新UI
+                document.getElementById('maxPersonsPerSlot').value = systemSettings.maxPersonsPerSlot;
+                document.getElementById('blockDuration').value = systemSettings.blockDuration;
+                document.getElementById('startTime').value = systemSettings.startTime;
+                document.getElementById('endTime').value = systemSettings.endTime;
+                document.getElementById('conflictDetection').value = systemSettings.conflictDetection.toString();
+            }
+        }
+
+        // 更新系統設定
+        function updateSystemSettings() {
+            systemSettings.maxPersonsPerSlot = parseInt(document.getElementById('maxPersonsPerSlot').value);
+            systemSettings.blockDuration = parseInt(document.getElementById('blockDuration').value);
+            systemSettings.startTime = document.getElementById('startTime').value;
+            systemSettings.endTime = document.getElementById('endTime').value;
+            systemSettings.conflictDetection = document.getElementById('conflictDetection').value === 'true';
+            
+            // 保存設定
+            localStorage.setItem('appointmentSystemSettings', JSON.stringify(systemSettings));
+            
+            // 重新生成日曆和統計
+            initializeCalendar();
+            generateTimeSlots();
+            updateStatistics();
+        }
+
+        // 點擊模態框外部關閉
+        window.onclick = function(event) {
+            const modal = document.getElementById('appointmentModal');
+            if (event.target === modal) {
+                closeAppointmentModal();
+            }
+        }
+
+        // 載入測試數據（可選）
+        function loadTestData() {
+            const testAppointments = [
+                {
+                    id: 1,
+                    customerName: '王小美',
+                    customerPhone: '0912345678',
+                    date: '2025-09-26',
+                    time: '10:00',
+                    treatmentType: '海菲秀',
+                    source: 'LINE',
+                    notes: '首次體驗',
+                    createdAt: new Date().toISOString()
+                },
+                {
+                    id: 2,
+                    customerName: '李小華',
+                    customerPhone: '0987654321',
+                    date: '2025-09-26',
+                    time: '10:00',
+                    treatmentType: '水光儀',
+                    source: '電話',
+                    notes: '',
+                    createdAt: new Date().toISOString()
+                }
+            ];
+            
+            appointments = testAppointments;
+            initializeCalendar();
+            updateStatistics();
+        }
+
+        // 如果需要測試數據，取消下面的註釋
+        // loadTestData();
+    </script>
+</body>
+</html>

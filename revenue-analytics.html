@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
+    <link rel="stylesheet" href="flos-style.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>營收分析儀表板 - 劉道玄諮詢師預約系統</title>
+    <title>營收分析儀表板 - 劉道玄曜診所雲整合系統</title>
     
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -178,6 +179,76 @@
             margin-right: 10px;
         }
         
+        /* 格子狀結算介面樣式 */
+        .staff-performance-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 1px;
+            background: rgba(212, 175, 55, 0.3);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+        
+        .grid-cell {
+            background: rgba(26, 26, 46, 0.9);
+            padding: 12px 8px;
+            text-align: center;
+            font-size: 0.9rem;
+            border: none;
+            transition: background-color 0.2s ease;
+        }
+        
+        .grid-cell.header {
+            background: rgba(212, 175, 55, 0.8);
+            color: #1a1a2e;
+            font-weight: bold;
+            font-size: 0.85rem;
+        }
+        
+        .grid-cell[contenteditable="true"] {
+            cursor: text;
+            background: rgba(52, 52, 72, 0.9);
+        }
+        
+        .grid-cell[contenteditable="true"]:hover {
+            background: rgba(72, 72, 92, 0.9);
+        }
+        
+        .grid-cell[contenteditable="true"]:focus {
+            background: rgba(92, 92, 112, 0.9);
+            outline: 2px solid rgba(212, 175, 55, 0.5);
+        }
+        
+        .performance-total .grid-cell {
+            background: rgba(212, 175, 55, 0.2);
+            font-weight: bold;
+            color: #d4af37;
+        }
+        
+        .staff-name {
+            font-weight: bold;
+            color: #d4af37;
+        }
+        
+        .commission-amount {
+            color: #28a745;
+            font-weight: bold;
+        }
+        
+        .settlement-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .settlement-actions .analytics-btn {
+            flex: 1;
+            min-width: 120px;
+            font-size: 0.85rem;
+            padding: 8px 12px;
+        }
+        
         .period-selector:focus {
             background: rgba(255,255,255,0.1);
             border-color: #d4af37;
@@ -199,19 +270,16 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="index.html">
-                            <i class="fas fa-home"></i> 首頁
-                        </a>
-                    </li>
+                        <a class="navbar-brand" href="index.html">
+                    <i class="fas fa-home me-2"></i>
+                    劉道玄曜診所雲整合系統
+                </a></li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="appointmentDropdown" role="button" data-bs-toggle="dropdown">
                             <i class="fas fa-calendar-alt"></i> 預約管理
                         </a>
                         <ul class="dropdown-menu bg-dark">
                             <li><a class="dropdown-item text-light" href="liu-daoxuan-calendar.html"><i class="fas fa-calendar"></i> 劉道玄行事曆</a></li>
-                            <li><a class="dropdown-item text-light" href="advanced-calendar-system.html"><i class="fas fa-brain"></i> AI 智能行事曆</a></li>
-                            <li><a class="dropdown-item text-light" href="appointment_scheduling_system.html"><i class="fas fa-clock"></i> 預約排程系統</a></li>
-                            <li><a class="dropdown-item text-light" href="appointment-form-management.html"><i class="fas fa-clipboard-list"></i> 預約表單管理</a></li>
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
@@ -482,6 +550,60 @@
                         <i class="fas fa-magic"></i> 執行預測分析
                     </button>
                 </div>
+
+                <!-- 人員業績結算 -->
+                <div class="revenue-panel">
+                    <h5><i class="fas fa-calculator"></i> 人員業績結算</h5>
+                    <div class="staff-performance-grid">
+                        <div class="performance-header">
+                            <div class="grid-cell header">姓名</div>
+                            <div class="grid-cell header">本月業績</div>
+                            <div class="grid-cell header">佣金率</div>
+                            <div class="grid-cell header">應得佣金</div>
+                        </div>
+                        <div class="performance-row" data-staff="張美麗">
+                            <div class="grid-cell staff-name">張美麗</div>
+                            <div class="grid-cell revenue" contenteditable="true">$45,000</div>
+                            <div class="grid-cell commission-rate" contenteditable="true">15%</div>
+                            <div class="grid-cell commission-amount">$6,750</div>
+                        </div>
+                        <div class="performance-row" data-staff="李小華">
+                            <div class="grid-cell staff-name">李小華</div>
+                            <div class="grid-cell revenue" contenteditable="true">$38,000</div>
+                            <div class="grid-cell commission-rate" contenteditable="true">12%</div>
+                            <div class="grid-cell commission-amount">$4,560</div>
+                        </div>
+                        <div class="performance-row" data-staff="王志明">
+                            <div class="grid-cell staff-name">王志明</div>
+                            <div class="grid-cell revenue" contenteditable="true">$52,000</div>
+                            <div class="grid-cell commission-rate" contenteditable="true">18%</div>
+                            <div class="grid-cell commission-amount">$9,360</div>
+                        </div>
+                        <div class="performance-row" data-staff="陳雅婷">
+                            <div class="grid-cell staff-name">陳雅婷</div>
+                            <div class="grid-cell revenue" contenteditable="true">$29,000</div>
+                            <div class="grid-cell commission-rate" contenteditable="true">10%</div>
+                            <div class="grid-cell commission-amount">$2,900</div>
+                        </div>
+                        <div class="performance-total">
+                            <div class="grid-cell total-label">總計</div>
+                            <div class="grid-cell total-revenue">$164,000</div>
+                            <div class="grid-cell total-avg">13.75%</div>
+                            <div class="grid-cell total-commission">$23,570</div>
+                        </div>
+                    </div>
+                    <div class="settlement-actions mt-3">
+                        <button class="analytics-btn me-2" onclick="calculateCommissions()">
+                            <i class="fas fa-calculator"></i> 重新計算
+                        </button>
+                        <button class="analytics-btn me-2" onclick="addStaffRow()">
+                            <i class="fas fa-plus"></i> 新增人員
+                        </button>
+                        <button class="analytics-btn" onclick="exportSettlement()">
+                            <i class="fas fa-file-excel"></i> 匯出結算表
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -534,6 +656,91 @@
     <script src="js/revenue-analytics.js"></script>
     
     <script>
+        // 格子狀結算功能
+        function calculateCommissions() {
+            const rows = document.querySelectorAll('.performance-row');
+            let totalRevenue = 0;
+            let totalCommission = 0;
+            let totalRate = 0;
+            
+            rows.forEach(row => {
+                const revenueCell = row.querySelector('.revenue');
+                const rateCell = row.querySelector('.commission-rate');
+                const commissionCell = row.querySelector('.commission-amount');
+                
+                const revenue = parseFloat(revenueCell.textContent.replace(/[$,]/g, '')) || 0;
+                const rate = parseFloat(rateCell.textContent.replace('%', '')) || 0;
+                const commission = revenue * (rate / 100);
+                
+                commissionCell.textContent = `$${commission.toLocaleString()}`;
+                
+                totalRevenue += revenue;
+                totalCommission += commission;
+                totalRate += rate;
+            });
+            
+            const avgRate = rows.length > 0 ? (totalRate / rows.length).toFixed(2) : 0;
+            
+            document.querySelector('.total-revenue').textContent = `$${totalRevenue.toLocaleString()}`;
+            document.querySelector('.total-commission').textContent = `$${totalCommission.toLocaleString()}`;
+            document.querySelector('.total-avg').textContent = `${avgRate}%`;
+        }
+        
+        function addStaffRow() {
+            const staffName = prompt('請輸入員工姓名：');
+            if (!staffName) return;
+            
+            const grid = document.querySelector('.staff-performance-grid');
+            const totalRow = document.querySelector('.performance-total');
+            
+            const newRow = document.createElement('div');
+            newRow.className = 'performance-row';
+            newRow.setAttribute('data-staff', staffName);
+            newRow.innerHTML = `
+                <div class="grid-cell staff-name">${staffName}</div>
+                <div class="grid-cell revenue" contenteditable="true">$0</div>
+                <div class="grid-cell commission-rate" contenteditable="true">10%</div>
+                <div class="grid-cell commission-amount">$0</div>
+            `;
+            
+            grid.insertBefore(newRow, totalRow);
+            
+            // 添加編輯事件監聽器
+            newRow.querySelectorAll('[contenteditable="true"]').forEach(cell => {
+                cell.addEventListener('blur', calculateCommissions);
+                cell.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        this.blur();
+                    }
+                });
+            });
+        }
+        
+        function exportSettlement() {
+            const rows = document.querySelectorAll('.performance-row');
+            let csvContent = "姓名,本月業績,佣金率,應得佣金\n";
+            
+            rows.forEach(row => {
+                const name = row.querySelector('.staff-name').textContent;
+                const revenue = row.querySelector('.revenue').textContent;
+                const rate = row.querySelector('.commission-rate').textContent;
+                const commission = row.querySelector('.commission-amount').textContent;
+                
+                csvContent += `${name},${revenue},${rate},${commission}\n`;
+            });
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `業績結算表_${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
         // 頁面初始化
         document.addEventListener('DOMContentLoaded', function() {
             if (typeof RevenueAnalytics !== 'undefined') {
@@ -546,6 +753,20 @@
             document.getElementById('periodSelector').addEventListener('change', function() {
                 window.revenueAnalytics.changePeriod(this.value);
             });
+            
+            // 初始化格子狀結算功能
+            document.querySelectorAll('[contenteditable="true"]').forEach(cell => {
+                cell.addEventListener('blur', calculateCommissions);
+                cell.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        this.blur();
+                    }
+                });
+            });
+            
+            // 初始計算
+            calculateCommissions();
         });
     </script>
 </body>

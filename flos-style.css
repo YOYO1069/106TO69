@@ -1,0 +1,205 @@
+/* FLOS醫美診所統一風格 CSS */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Microsoft JhengHei', Arial, sans-serif;
+    background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 50%, #1a1a1a 100%) !important;
+    min-height: 100vh;
+    color: #d4af37;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* FLOS風格背景紋理 - 覆蓋所有格子背景 */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 20% 20%, rgba(212, 175, 55, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(184, 134, 11, 0.12) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(218, 165, 32, 0.08) 0%, transparent 50%),
+        linear-gradient(45deg, transparent 30%, rgba(212, 175, 55, 0.03) 50%, transparent 70%) !important;
+    animation: lightMove 15s ease-in-out infinite;
+    z-index: -1;
+}
+
+@keyframes lightMove {
+    0%, 100% { transform: translateX(0) translateY(0) rotate(0deg); }
+    33% { transform: translateX(-20px) translateY(-20px) rotate(1deg); }
+    66% { transform: translateX(20px) translateY(20px) rotate(-1deg); }
+}
+
+/* 覆蓋所有可能的格子背景 */
+.container, .container-fluid, .main-content, .content, .page-content,
+.dashboard, .wrapper, .main-wrapper, .app-content, .page-wrapper {
+    background: transparent !important;
+}
+
+/* 統一卡片風格 */
+.card, .module-card, .function-card, .stats-card {
+    background: linear-gradient(145deg, rgba(42, 42, 42, 0.9), rgba(26, 26, 26, 0.9)) !important;
+    border: 2px solid rgba(212, 175, 55, 0.3) !important;
+    border-radius: 15px !important;
+    backdrop-filter: blur(10px) !important;
+    box-shadow: 
+        inset 0 1px 0 rgba(212, 175, 55, 0.1),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.3),
+        0 5px 15px rgba(0, 0, 0, 0.3),
+        0 0 0 1px rgba(212, 175, 55, 0.1) !important;
+}
+
+.card:hover, .module-card:hover, .function-card:hover {
+    background: linear-gradient(145deg, rgba(52, 52, 52, 0.95), rgba(36, 36, 36, 0.95)) !important;
+    border-color: rgba(212, 175, 55, 0.6) !important;
+    transform: translateY(-5px);
+    box-shadow: 
+        inset 0 2px 0 rgba(212, 175, 55, 0.2),
+        inset 0 -2px 0 rgba(0, 0, 0, 0.4),
+        0 15px 30px rgba(0, 0, 0, 0.4),
+        0 0 20px rgba(212, 175, 55, 0.2) !important;
+}
+
+/* 統一導航欄風格 */
+.navbar, .nav, .top-nav, .header {
+    background: rgba(26, 26, 26, 0.95) !important;
+    backdrop-filter: blur(20px) !important;
+    border-bottom: 2px solid rgba(212, 175, 55, 0.4) !important;
+    box-shadow: 0 2px 20px rgba(212, 175, 55, 0.1) !important;
+}
+
+.navbar-brand, .nav-link, .navbar-nav .nav-link {
+    color: rgba(212, 175, 55, 0.8) !important;
+    padding: 0.6rem 1.2rem !important;
+    border-radius: 8px !important;
+    border: 1px solid rgba(212, 175, 55, 0.2) !important;
+    background: linear-gradient(145deg, rgba(42, 42, 42, 0.6), rgba(26, 26, 26, 0.6)) !important;
+    backdrop-filter: blur(10px) !important;
+    margin: 0 0.25rem !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 
+        inset 0 1px 0 rgba(212, 175, 55, 0.1),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.2),
+        0 2px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
+.navbar-brand:hover, .nav-link:hover, .navbar-nav .nav-link:hover {
+    color: #d4af37 !important;
+    border-color: rgba(212, 175, 55, 0.5) !important;
+    background: linear-gradient(145deg, rgba(52, 52, 52, 0.8), rgba(36, 36, 36, 0.8)) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 
+        inset 0 1px 0 rgba(212, 175, 55, 0.2),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.3),
+        0 4px 12px rgba(0, 0, 0, 0.3),
+        0 0 10px rgba(212, 175, 55, 0.1) !important;
+}
+
+/* 統一按鈕風格 */
+.btn, button {
+    background: linear-gradient(145deg, rgba(42, 42, 42, 0.9), rgba(26, 26, 26, 0.9)) !important;
+    border: 1px solid rgba(212, 175, 55, 0.3) !important;
+    color: #d4af37 !important;
+    border-radius: 8px !important;
+    transition: all 0.3s ease !important;
+}
+
+.btn:hover, button:hover {
+    background: linear-gradient(145deg, rgba(52, 52, 52, 0.95), rgba(36, 36, 36, 0.95)) !important;
+    border-color: rgba(212, 175, 55, 0.6) !important;
+    color: #d4af37 !important;
+    transform: translateY(-2px);
+}
+
+/* 統一表格風格 */
+.table, table {
+    background: transparent !important;
+    color: #d4af37 !important;
+}
+
+.table th, .table td, table th, table td {
+    border-color: rgba(212, 175, 55, 0.2) !important;
+    color: #d4af37 !important;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background: rgba(42, 42, 42, 0.3) !important;
+}
+
+/* 統一表單風格 */
+.form-control, input, textarea, select {
+    background: rgba(42, 42, 42, 0.8) !important;
+    border: 1px solid rgba(212, 175, 55, 0.3) !important;
+    color: #d4af37 !important;
+    border-radius: 8px !important;
+}
+
+.form-control:focus, input:focus, textarea:focus, select:focus {
+    background: rgba(52, 52, 52, 0.9) !important;
+    border-color: rgba(212, 175, 55, 0.6) !important;
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.2) !important;
+    color: #d4af37 !important;
+}
+
+/* 統一文字顏色 */
+h1, h2, h3, h4, h5, h6 {
+    color: #d4af37 !important;
+}
+
+p, span, div, label {
+    color: rgba(212, 175, 55, 0.8) !important;
+}
+
+/* 統一模態框風格 */
+.modal-content {
+    background: linear-gradient(145deg, rgba(42, 42, 42, 0.95), rgba(26, 26, 26, 0.95)) !important;
+    border: 2px solid rgba(212, 175, 55, 0.4) !important;
+    border-radius: 15px !important;
+}
+
+.modal-header {
+    border-bottom: 1px solid rgba(212, 175, 55, 0.3) !important;
+}
+
+.modal-footer {
+    border-top: 1px solid rgba(212, 175, 55, 0.3) !important;
+}
+
+/* 覆蓋Bootstrap和其他框架的背景 */
+.bg-light, .bg-white, .bg-secondary, .bg-dark {
+    background: transparent !important;
+}
+
+/* 確保所有容器都是透明的 */
+.row, .col, .col-md-12, .col-lg-12, .col-sm-12,
+[class*="col-"], [class*="container"] {
+    background: transparent !important;
+}
+
+/* 特殊元素的金色效果 */
+.text-warning, .text-primary {
+    color: #d4af37 !important;
+}
+
+.border-warning, .border-primary {
+    border-color: rgba(212, 175, 55, 0.5) !important;
+}
+
+/* 確保日曆和特殊組件也使用FLOS風格 */
+.fc, .calendar, .datepicker {
+    background: transparent !important;
+}
+
+.fc-event, .calendar-event {
+    background: rgba(212, 175, 55, 0.2) !important;
+    border-color: #d4af37 !important;
+    color: #d4af37 !important;
+}

@@ -1,47 +1,31 @@
 {
-  "name": "liu-daoxuan-appointment-system",
-  "version": "1.0.0",
-  "description": "劉道玄醫師預約管理系統 - 整合 OpenAI AI 助理",
+  "name": "liu-daoxuan-clinic-system",
+  "version": "2.0.0",
+  "description": "劉道玄醫師診所內部管理整合系統",
   "main": "index.html",
   "scripts": {
-    "dev": "netlify dev",
+    "start": "netlify dev",
     "build": "echo 'No build step required'",
     "deploy": "netlify deploy --prod"
   },
-  "keywords": [
-    "medical",
-    "appointment",
-    "ai-assistant",
-    "netlify",
-    "openai"
-  ],
-  "author": "劉道玄醫師預約系統",
-  "license": "MIT",
   "dependencies": {
-    "@google-cloud/storage": "^7.7.0",
-    "@google/generative-ai": "^0.2.1",
-    "airtable": "^0.12.2",
-    "axios": "^1.6.2",
-    "crypto": "^1.0.1",
-    "form-data": "^4.0.0",
-    "google-auth-library": "^9.15.1",
-    "googleapis": "^129.0.0",
-    "node-fetch": "^2.6.7",
-    "openai": "^4.20.1"
+    "googleapis": "^128.0.0",
+    "@google-cloud/storage": "^7.5.0",
+    "node-fetch": "^2.6.7"
   },
   "devDependencies": {
     "netlify-cli": "^17.0.0"
   },
+  "keywords": [
+    "medical",
+    "clinic",
+    "appointment",
+    "google-calendar",
+    "healthcare"
+  ],
+  "author": "劉道玄醫師診所",
+  "license": "Private",
   "engines": {
     "node": ">=18.0.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/your-username/liu-daoxuan-appointment-system.git"
-  },
-  "netlify": {
-    "functions": {
-      "directory": "netlify/functions"
-    }
   }
 }

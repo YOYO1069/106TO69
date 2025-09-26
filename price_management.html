@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
+    <link rel="stylesheet" href="flos-style.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>價格管理 - 劉道玄醫美管理平台</title>
@@ -216,9 +217,6 @@
                         </a>
                         <ul class="dropdown-menu bg-dark">
                             <li><a class="dropdown-item text-light" href="liu-daoxuan-calendar.html"><i class="fas fa-calendar"></i> 劉道玄行事曆</a></li>
-                            <li><a class="dropdown-item text-light" href="advanced-calendar-system.html"><i class="fas fa-brain"></i> AI 智能行事曆</a></li>
-                            <li><a class="dropdown-item text-light" href="appointment_scheduling_system.html"><i class="fas fa-clock"></i> 預約排程系統</a></li>
-                            <li><a class="dropdown-item text-light" href="appointment-form-management.html"><i class="fas fa-clipboard-list"></i> 預約表單管理</a></li>
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
@@ -325,7 +323,7 @@
                                     <option value="new">新客戶</option>
                                     <option value="regular">一般客戶</option>
                                     <option value="vip">VIP客戶</option>
-                                    <option value="liu-daoxuan">劉道玄專屬</option>
+                                    <option value="liu-daoxuan">管理員</option>
                                 </select>
                             </div>
                             <div class="col-md-3">
@@ -334,7 +332,7 @@
                                     <option value="none">無促銷</option>
                                     <option value="first-time">首次體驗</option>
                                     <option value="package">套餐優惠</option>
-                                    <option value="member">會員專屬</option>
+                                    <option value="member">會員優惠</option>
                                 </select>
                             </div>
                         </div>
@@ -518,7 +516,7 @@
                         <div class="promotion-card">
                             <div class="d-flex justify-content-between align-items-start">
                                 <div>
-                                    <h6><i class="fas fa-crown"></i> 會員專屬優惠</h6>
+                                    <h6><i class="fas fa-crown"></i> 會員優惠優惠</h6>
                                     <p class="mb-2">會員額外享9折優惠</p>
                                     <small>長期有效</small>
                                 </div>
@@ -532,7 +530,7 @@
                         <div class="promotion-card">
                             <div class="d-flex justify-content-between align-items-start">
                                 <div>
-                                    <h6><i class="fas fa-heart"></i> 劉道玄專屬</h6>
+                                    <h6><i class="fas fa-heart"></i> 管理員</h6>
                                     <p class="mb-2">VIP客戶專屬價格</p>
                                     <small>需預約確認</small>
                                 </div>
@@ -570,7 +568,7 @@
                                 <th>原價</th>
                                 <th>會員價</th>
                                 <th>新客價</th>
-                                <th>劉道玄專屬</th>
+                                <th>管理員</th>
                                 <th>促銷價</th>
                                 <th>狀態</th>
                                 <th>操作</th>
@@ -807,7 +805,7 @@
                 'new': '新客戶',
                 'regular': '一般客戶',
                 'vip': 'VIP客戶',
-                'liu-daoxuan': '劉道玄專屬'
+                'liu-daoxuan': '管理員'
             };
             return types[type] || '一般客戶';
         }
@@ -825,7 +823,7 @@
             const promotions = {
                 'first-time': '首次體驗',
                 'package': '套餐優惠',
-                'member': '會員專屬'
+                'member': '會員優惠'
             };
             return promotions[promotion] || '';
         }

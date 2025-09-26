@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>數據備份系統 - FLOS曜診所</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="flos-style.css">
+    <style>
+        .backup-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .backup-card {
+            background: linear-gradient(145deg, rgba(42, 42, 42, 0.9), rgba(26, 26, 26, 0.9));
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .backup-status {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .status-indicator.online {
+            background: #28a745;
+        }
+
+        .status-indicator.offline {
+            background: #dc3545;
+        }
+
+        .status-indicator.warning {
+            background: #ffc107;
+        }
+
+        .backup-progress {
+            background: rgba(26, 26, 26, 0.5);
+            border-radius: 10px;
+            height: 8px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, #d4af37, #b8860b);
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        .backup-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: rgba(26, 26, 26, 0.3);
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .backup-item:hover {
+            background: rgba(212, 175, 55, 0.1);
+            border-color: rgba(212, 175, 55, 0.4);
+        }
+
+        .backup-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .backup-name {
+            font-weight: bold;
+            color: #d4af37;
+        }
+
+        .backup-details {
+            font-size: 0.875rem;
+            color: #aaa;
+        }
+
+        .backup-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-backup {
+            background: linear-gradient(145deg, #d4af37, #b8860b);
+            border: none;
+            color: #1a1a1a;
+            font-weight: bold;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-backup:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+        }
+
+        .btn-restore {
+            background: linear-gradient(145deg, #28a745, #20c997);
+            border: none;
+            color: white;
+            font-weight: bold;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-restore:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+        }
+
+        .btn-delete {
+            background: linear-gradient(145deg, #dc3545, #c82333);
+            border: none;
+            color: white;
+            font-weight: bold;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-delete:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
+        }
+
+        .auto-backup-settings {
+            background: rgba(26, 26, 26, 0.5);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .setting-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .setting-row:last-child {
+            border-bottom: none;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: #ccc;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .toggle-switch.active {
+            background: #d4af37;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+        }
+
+        .toggle-switch.active .toggle-slider {
+            transform: translateX(30px);
+        }
+
+        .storage-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .storage-card {
+            background: rgba(26, 26, 26, 0.5);
+            border-radius: 10px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .storage-icon {
+            font-size: 2rem;
+            color: #d4af37;
+            margin-bottom: 1rem;
+        }
+
+        .storage-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #d4af37;
+            margin-bottom: 0.5rem;
+        }
+
+        .storage-label {
+            color: #aaa;
+            font-size: 0.875rem;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        @media (max-width: 768px) {
+            .backup-container {
+                padding: 1rem;
+            }
+            
+            .backup-item {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: stretch;
+            }
+            
+            .backup-actions {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 導航欄 -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-clinic-medical me-2"></i>
+                FLOS曜診所 | 數據備份系統
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="index.html">首頁</a></li>
+                    <li class="nav-item"><a class="nav-link" href="appointment-core-system.html">預約</a></li>
+                    <li class="nav-item"><a class="nav-link" href="electronic-medical-records.html">病歷</a></li>
+                    <li class="nav-item"><a class="nav-link" href="treatment-management.html">療程</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="backup-container">
+        <!-- 系統狀態 -->
+        <div class="backup-card">
+            <h2><i class="fas fa-shield-alt me-2"></i>系統備份狀態</h2>
+            <div class="backup-status">
+                <div class="status-indicator online" id="backupStatus"></div>
+                <span id="statusText">備份系統運行正常</span>
+                <span class="ms-auto text-muted" id="lastBackupTime">最後備份：2024-09-25 14:30</span>
+            </div>
+            
+            <div class="backup-progress">
+                <div class="progress-bar" id="progressBar" style="width: 0%"></div>
+            </div>
+            <div class="d-flex justify-content-between">
+                <span>備份進度</span>
+                <span id="progressText">0%</span>
+            </div>
+        </div>
+
+        <!-- 快速操作 -->
+        <div class="backup-card">
+            <h3><i class="fas fa-bolt me-2"></i>快速操作</h3>
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <button class="btn btn-backup w-100" onclick="startFullBackup()">
+                        <i class="fas fa-database me-2"></i>完整備份
+                    </button>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <button class="btn btn-backup w-100" onclick="startIncrementalBackup()">
+                        <i class="fas fa-plus-circle me-2"></i>增量備份
+                    </button>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <button class="btn btn-restore w-100" onclick="showRestoreOptions()">
+                        <i class="fas fa-undo me-2"></i>還原數據
+                    </button>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <button class="btn btn-backup w-100" onclick="exportBackup()">
+                        <i class="fas fa-download me-2"></i>匯出備份
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 備份記錄 -->
+        <div class="backup-card">
+            <h3><i class="fas fa-history me-2"></i>備份記錄</h3>
+            <div id="backupList">
+                <!-- 備份項目將由JavaScript動態生成 -->
+            </div>
+        </div>
+
+        <!-- 自動備份設定 -->
+        <div class="backup-card">
+            <h3><i class="fas fa-cog me-2"></i>自動備份設定</h3>
+            <div class="auto-backup-settings">
+                <div class="setting-row">
+                    <div>
+                        <strong>啟用自動備份</strong>
+                        <div class="text-muted">系統將定期自動備份重要數據</div>
+                    </div>
+                    <div class="toggle-switch active" onclick="toggleAutoBackup(this)">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+                
+                <div class="setting-row">
+                    <div>
+                        <strong>備份頻率</strong>
+                        <div class="text-muted">設定自動備份的時間間隔</div>
+                    </div>
+                    <select class="form-select" style="width: 200px; background: rgba(42, 42, 42, 0.8); color: #d4af37; border: 1px solid rgba(212, 175, 55, 0.3);">
+                        <option value="daily">每日</option>
+                        <option value="weekly">每週</option>
+                        <option value="monthly">每月</option>
+                    </select>
+                </div>
+                
+                <div class="setting-row">
+                    <div>
+                        <strong>保留備份數量</strong>
+                        <div class="text-muted">設定要保留的備份檔案數量</div>
+                    </div>
+                    <input type="number" class="form-control" value="30" min="1" max="100" style="width: 100px; background: rgba(42, 42, 42, 0.8); color: #d4af37; border: 1px solid rgba(212, 175, 55, 0.3);">
+                </div>
+                
+                <div class="setting-row">
+                    <div>
+                        <strong>備份到雲端</strong>
+                        <div class="text-muted">將備份檔案同步到雲端儲存</div>
+                    </div>
+                    <div class="toggle-switch" onclick="toggleCloudBackup(this)">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 儲存空間資訊 -->
+        <div class="backup-card">
+            <h3><i class="fas fa-hdd me-2"></i>儲存空間資訊</h3>
+            <div class="storage-info">
+                <div class="storage-card">
+                    <div class="storage-icon">
+                        <i class="fas fa-server"></i>
+                    </div>
+                    <div class="storage-value">2.5 GB</div>
+                    <div class="storage-label">已使用空間</div>
+                </div>
+                
+                <div class="storage-card">
+                    <div class="storage-icon">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <div class="storage-value">47</div>
+                    <div class="storage-label">備份檔案數量</div>
+                </div>
+                
+                <div class="storage-card">
+                    <div class="storage-icon">
+                        <i class="fas fa-cloud"></i>
+                    </div>
+                    <div class="storage-value">1.8 GB</div>
+                    <div class="storage-label">雲端備份大小</div>
+                </div>
+                
+                <div class="storage-card">
+                    <div class="storage-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="storage-value">30 天</div>
+                    <div class="storage-label">平均保留時間</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 備份記錄數據
+        const backupRecords = [
+            {
+                id: 1,
+                name: '完整系統備份',
+                type: 'full',
+                date: '2024-09-25 14:30',
+                size: '245 MB',
+                status: 'completed'
+            },
+            {
+                id: 2,
+                name: '預約數據備份',
+                type: 'incremental',
+                date: '2024-09-25 12:00',
+                size: '12 MB',
+                status: 'completed'
+            },
+            {
+                id: 3,
+                name: '病歷數據備份',
+                type: 'incremental',
+                date: '2024-09-25 09:00',
+                size: '89 MB',
+                status: 'completed'
+            },
+            {
+                id: 4,
+                name: '療程數據備份',
+                type: 'incremental',
+                date: '2024-09-24 18:00',
+                size: '34 MB',
+                status: 'completed'
+            },
+            {
+                id: 5,
+                name: '完整系統備份',
+                type: 'full',
+                date: '2024-09-24 02:00',
+                size: '238 MB',
+                status: 'completed'
+            }
+        ];
+
+        // 初始化頁面
+        document.addEventListener('DOMContentLoaded', function() {
+            renderBackupList();
+            updateSystemStatus();
+        });
+
+        // 渲染備份列表
+        function renderBackupList() {
+            const backupList = document.getElementById('backupList');
+            let html = '';
+
+            backupRecords.forEach(record => {
+                const typeIcon = record.type === 'full' ? 'fas fa-database' : 'fas fa-plus-circle';
+                const typeColor = record.type === 'full' ? '#d4af37' : '#28a745';
+                
+                html += `
+                    <div class="backup-item">
+                        <div class="backup-info">
+                            <div class="backup-name">
+                                <i class="${typeIcon}" style="color: ${typeColor}; margin-right: 8px;"></i>
+                                ${record.name}
+                            </div>
+                            <div class="backup-details">
+                                ${record.date} | ${record.size} | 狀態：已完成
+                            </div>
+                        </div>
+                        <div class="backup-actions">
+                            <button class="btn btn-restore btn-sm" onclick="restoreBackup(${record.id})">
+                                <i class="fas fa-undo me-1"></i>還原
+                            </button>
+                            <button class="btn btn-backup btn-sm" onclick="downloadBackup(${record.id})">
+                                <i class="fas fa-download me-1"></i>下載
+                            </button>
+                            <button class="btn btn-delete btn-sm" onclick="deleteBackup(${record.id})">
+                                <i class="fas fa-trash me-1"></i>刪除
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            backupList.innerHTML = html;
+        }
+
+        // 更新系統狀態
+        function updateSystemStatus() {
+            const statusIndicator = document.getElementById('backupStatus');
+            const statusText = document.getElementById('statusText');
+            const lastBackupTime = document.getElementById('lastBackupTime');
+
+            // 模擬狀態更新
+            statusIndicator.className = 'status-indicator online';
+            statusText.textContent = '備份系統運行正常';
+            lastBackupTime.textContent = `最後備份：${new Date().toLocaleString('zh-TW')}`;
+        }
+
+        // 開始完整備份
+        function startFullBackup() {
+            if (!confirm('完整備份將需要較長時間，確定要開始嗎？')) return;
+            
+            showNotification('開始完整備份...', 'info');
+            simulateBackupProgress('完整系統備份');
+        }
+
+        // 開始增量備份
+        function startIncrementalBackup() {
+            showNotification('開始增量備份...', 'info');
+            simulateBackupProgress('增量數據備份');
+        }
+
+        // 模擬備份進度
+        function simulateBackupProgress(backupName) {
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            let progress = 0;
+
+            const interval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress > 100) progress = 100;
+
+                progressBar.style.width = progress + '%';
+                progressText.textContent = Math.round(progress) + '%';
+
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    showNotification(`${backupName}完成！`, 'success');
+                    
+                    // 添加新的備份記錄
+                    const newRecord = {
+                        id: Date.now(),
+                        name: backupName,
+                        type: backupName.includes('完整') ? 'full' : 'incremental',
+                        date: new Date().toLocaleString('zh-TW'),
+                        size: Math.round(Math.random() * 200 + 50) + ' MB',
+                        status: 'completed'
+                    };
+                    
+                    backupRecords.unshift(newRecord);
+                    renderBackupList();
+                    updateSystemStatus();
+                    
+                    // 重置進度條
+                    setTimeout(() => {
+                        progressBar.style.width = '0%';
+                        progressText.textContent = '0%';
+                    }, 2000);
+                }
+            }, 200);
+        }
+
+        // 還原備份
+        function restoreBackup(id) {
+            const record = backupRecords.find(r => r.id === id);
+            if (!record) return;
+
+            if (!confirm(`確定要還原「${record.name}」嗎？\n此操作將覆蓋當前數據！`)) return;
+
+            showNotification(`正在還原「${record.name}」...`, 'info');
+            
+            // 模擬還原過程
+            setTimeout(() => {
+                showNotification('數據還原完成！', 'success');
+            }, 3000);
+        }
+
+        // 下載備份
+        function downloadBackup(id) {
+            const record = backupRecords.find(r => r.id === id);
+            if (!record) return;
+
+            showNotification(`正在準備下載「${record.name}」...`, 'info');
+            
+            // 模擬下載
+            setTimeout(() => {
+                const link = document.createElement('a');
+                link.href = '#';
+                link.download = `${record.name}_${record.date.replace(/[: ]/g, '_')}.backup`;
+                link.click();
+                showNotification('備份檔案下載開始', 'success');
+            }, 1000);
+        }
+
+        // 刪除備份
+        function deleteBackup(id) {
+            const record = backupRecords.find(r => r.id === id);
+            if (!record) return;
+
+            if (!confirm(`確定要刪除「${record.name}」嗎？\n此操作無法復原！`)) return;
+
+            const index = backupRecords.findIndex(r => r.id === id);
+            if (index > -1) {
+                backupRecords.splice(index, 1);
+                renderBackupList();
+                showNotification('備份檔案已刪除', 'success');
+            }
+        }
+
+        // 匯出備份
+        function exportBackup() {
+            showNotification('正在準備匯出所有備份...', 'info');
+            
+            setTimeout(() => {
+                showNotification('備份匯出完成！', 'success');
+            }, 2000);
+        }
+
+        // 顯示還原選項
+        function showRestoreOptions() {
+            const modal = document.createElement('div');
+            modal.innerHTML = `
+                <div class="modal fade" id="restoreModal" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content" style="background: rgba(42, 42, 42, 0.95); color: #d4af37; border: 2px solid rgba(212, 175, 55, 0.3);">
+                            <div class="modal-header">
+                                <h5 class="modal-title">選擇還原選項</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label class="form-label">還原類型</label>
+                                    <select class="form-select" style="background: rgba(26, 26, 26, 0.8); color: #d4af37; border: 1px solid rgba(212, 175, 55, 0.3);">
+                                        <option>完整系統還原</option>
+                                        <option>預約數據還原</option>
+                                        <option>病歷數據還原</option>
+                                        <option>療程數據還原</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">還原時間點</label>
+                                    <input type="datetime-local" class="form-control" style="background: rgba(26, 26, 26, 0.8); color: #d4af37; border: 1px solid rgba(212, 175, 55, 0.3);">
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                                <button type="button" class="btn btn-restore" onclick="executeRestore()">開始還原</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            const bootstrapModal = new bootstrap.Modal(document.getElementById('restoreModal'));
+            bootstrapModal.show();
+        }
+
+        // 執行還原
+        function executeRestore() {
+            const modal = bootstrap.Modal.getInstance(document.getElementById('restoreModal'));
+            modal.hide();
+            showNotification('開始執行系統還原...', 'info');
+        }
+
+        // 切換自動備份
+        function toggleAutoBackup(element) {
+            element.classList.toggle('active');
+            const isActive = element.classList.contains('active');
+            showNotification(`自動備份已${isActive ? '啟用' : '停用'}`, isActive ? 'success' : 'info');
+        }
+
+        // 切換雲端備份
+        function toggleCloudBackup(element) {
+            element.classList.toggle('active');
+            const isActive = element.classList.contains('active');
+            showNotification(`雲端備份已${isActive ? '啟用' : '停用'}`, isActive ? 'success' : 'info');
+        }
+
+        // 通知系統
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            const colors = {
+                'success': '#28a745',
+                'error': '#dc3545',
+                'warning': '#ffc107',
+                'info': '#d4af37'
+            };
+            
+            notification.style.cssText = `
+                position: fixed;
+                top: 100px;
+                right: 20px;
+                background: rgba(42, 42, 42, 0.95);
+                border: 2px solid ${colors[type] || colors.info};
+                border-radius: 10px;
+                padding: 1rem 1.5rem;
+                color: ${colors[type] || colors.info};
+                z-index: 3000;
+                transform: translateX(400px);
+                transition: transform 0.3s ease;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+                max-width: 300px;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+
+            setTimeout(() => {
+                notification.style.transform = 'translateX(400px)';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 4000);
+        }
+    </script>
+</body>
+</html>
