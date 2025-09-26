@@ -1207,10 +1207,21 @@
                 currentUserRole = roleInfo.role;
                 currentUserName = roleInfo.name;
                 
-                // 持久化存儲權限信息
+                // 持久化存儲權限信息，確保數據完整性
+                const loginTime = Date.now().toString();
                 localStorage.setItem('flos-user-role', currentUserRole);
                 localStorage.setItem('flos-user-name', currentUserName);
-                localStorage.setItem('flos-login-time', Date.now().toString());
+                localStorage.setItem('flos-login-time', loginTime);
+                
+                // 驗證存儲是否成功
+                const verifyRole = localStorage.getItem('flos-user-role');
+                const verifyName = localStorage.getItem('flos-user-name');
+                const verifyTime = localStorage.getItem('flos-login-time');
+                
+                if (verifyRole !== currentUserRole || verifyName !== currentUserName || verifyTime !== loginTime) {
+                    showNotification('權限存儲失敗，請重試', 'error');
+                    return;
+                }
                 
                 // 更新UI顯示
                 updateRoleDisplay();
@@ -1455,33 +1466,51 @@
 
         // 頁面載入完成後的初始化
         document.addEventListener('DOMContentLoaded', function() {
-            showNotification('劉道玄曜診所雲整合系統已就緒', 'success');
+            // 延遲顯示系統就緒訊息，避免與權限恢復訊息衝突
+            setTimeout(() => {
+                if (!currentUserRole) {
+                    showNotification('劉道玄曜診所雲整合系統已就緒', 'success');
+                }
+            }, 200);
             
-            // 檢查是否有儲存的權限狀態
+            // 頁面載入時恢復權限狀態
             const savedRole = localStorage.getItem('flos-user-role');
             const savedName = localStorage.getItem('flos-user-name');
             const loginTime = localStorage.getItem('flos-login-time');
             
             // 檢查登入是否過期（24小時）
-            const isExpired = loginTime && (Date.now() - parseInt(loginTime)) > (24 * 60 * 60 * 1000);
+            let isExpired = false;
+            if (loginTime) {
+                const timeDiff = Date.now() - parseInt(loginTime);
+                isExpired = timeDiff > (24 * 60 * 60 * 1000);
+            }
             
-            if (savedRole && savedName && !isExpired) {
+            if (savedRole && savedName && loginTime && !isExpired) {
                 // 恢復權限狀態
                 currentUserRole = savedRole;
                 currentUserName = savedName;
-                updateRoleDisplay();
-                enableRoleFeatures();
-                showNotification(`歡迎回來，${currentUserName}！`, 'info');
-            } else if (isExpired) {
+                
+                // 延遲執行UI更新，確保DOM完全載入
+                setTimeout(() => {
+                    updateRoleDisplay();
+                    enableRoleFeatures();
+                    updateMainPageFeatures();
+                    showNotification(`歡迎回來，${currentUserName}！權限已恢復`, 'success');
+                }, 100);
+            } else if (savedRole && isExpired) {
                 // 清除過期的權限信息
                 localStorage.removeItem('flos-user-role');
                 localStorage.removeItem('flos-user-name');
                 localStorage.removeItem('flos-login-time');
+                showNotification('登入已過期，請重新驗證權限', 'warning');
+                // 初始化卡片顯示狀態
+                setTimeout(() => {
+                    updateMainPageFeatures();
+                }, 100);
+            } else {
+                // 沒有保存的權限，初始化卡片顯示狀態
+                setTimeout(() => {
+                    updateMainPageFeatures();
+                }, 100);
             }
-            
-            // 初始化卡片顯示狀態
-            updateMainPageFeatures();
         });
-    </script>
-</body>
-</html>
