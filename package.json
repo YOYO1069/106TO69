@@ -11,7 +11,8 @@
   "dependencies": {
     "googleapis": "^128.0.0",
     "@google-cloud/storage": "^7.5.0",
-    "node-fetch": "^2.6.7"
+    "node-fetch": "^2.6.7",
+    "@google/generative-ai": "^0.2.1"
   },
   "devDependencies": {
     "netlify-cli": "^17.0.0"

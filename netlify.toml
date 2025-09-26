@@ -1,0 +1,4 @@
+[build]
+  publish = "."
+  command = "cp -R . /opt/build/ /opt/build/ && echo 'Static site deployed'"
+
