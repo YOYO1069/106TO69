@@ -288,13 +288,11 @@
                     </div>
                 </div>
 
-                <!-- AI 智能管理中心 -->
                 <div class="card home-card module-card ai-center fade-in-up magic-glow" onclick="toggleAdminPanel()" style="border: 2px solid #d4af37; cursor: pointer;">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-start mb-3">
                             <div class="card-title magic-text">
                                 <i class="fas fa-brain" style="color: #d4af37; text-shadow: 0 0 15px #d4af37;"></i>
-                                AI 智能管理中心
                             </div>
                             <span class="badge-custom badge-ai" style="background: #d4af37; color: #1a1f2e;">AI</span>
                         </div>
@@ -456,7 +454,6 @@
             }, 500);
         }
 
-        // AI 智能管理中心切換函數
         function toggleAdminPanel() {
             // 檢查管理員權限
             if (!window.isAdminAuthenticated) {
@@ -475,7 +472,6 @@
             const panel = document.getElementById('quad-integration-panel');
             if (panel.style.display === 'none' || panel.style.display === '') {
                 panel.style.display = 'block';
-                MedicalPlatform.showAlert('AI 智能管理中心已啟用', 'info');
             } else {
                 panel.style.display = 'none';
             }

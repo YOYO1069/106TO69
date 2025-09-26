@@ -375,7 +375,6 @@
             font-weight: 500;
         }
 
-        /* AI 智能管理中心 */
         .ai-management {
             background: 
                 linear-gradient(135deg, 
@@ -531,9 +530,7 @@
                 <div class="feature-icon">
                     <i class="fas fa-robot"></i>
                 </div>
-                <h4 class="feature-title">AI 智能管理中心</h4>
                 <p class="feature-description">
-                    智能 • 管理員專用AI助理，數據分析，智能洞察，系統優化建議
                 </p>
                 <small class="text-muted d-block mt-2">
                     <i class="fas fa-lock me-1"></i>
@@ -587,7 +584,6 @@
         document.querySelector('.ai-management').addEventListener('click', function() {
             const password = prompt('請輸入管理員密鑰：');
             if (password === 'liu_daoxuan_admin_2024') {
-                alert('✅ AI 智能管理中心已啟用！\n\n功能包含：\n• 服務狀態監控\n• AI 智能洞察\n• 數據分析報告\n• 系統優化建議');
             } else if (password !== null) {
                 alert('❌ 密鑰錯誤，無法存取管理功能');
             }

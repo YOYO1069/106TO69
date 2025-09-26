@@ -259,12 +259,9 @@
                     
                     if (result.success) {
                         this.updateStatus('geminiStatus', 'success', 'AI 正常');
-                        this.addTestResult('Google AI (Gemini)', 'AI 分析功能正常運作', 'success');
                         this.log('✅ Google AI (Gemini) 測試成功', 'success');
-                        this.log(`AI 分析結果: ${JSON.stringify(result.analysis, null, 2)}`, 'info');
                     } else {
                         this.updateStatus('geminiStatus', 'error', 'AI 錯誤');
-                        this.addTestResult('Google AI (Gemini)', `AI 分析失敗: ${result.error}`, 'error');
                         this.log(`❌ Google AI (Gemini) 測試失敗: ${result.error}`, 'error');
                     }
                 } catch (error) {
@@ -340,7 +337,6 @@
             }
             
             async testAIAnalysis() {
-                this.log('開始測試 AI 智能分析功能...', 'info');
                 
                 const testMessages = [
                     '我想預約肉毒桿菌，請問價格多少？',
@@ -381,7 +377,6 @@
                     await new Promise(resolve => setTimeout(resolve, 1000));
                 }
                 
-                this.addTestResult('AI 分析測試', `完成 ${testMessages.length} 個測試訊息的分析`, 'success');
             }
             
             async runAllTests() {
