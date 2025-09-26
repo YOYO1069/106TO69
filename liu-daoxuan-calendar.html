@@ -4,7 +4,7 @@
     <link rel="stylesheet" href="flos-style.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>預約管理系統 - 劉道玄曜診所雲整合系統</title>
+    <title>劉道玄曜診所雲整合系統</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://apis.google.com/js/api.js"></script>
     <script src="https://accounts.google.com/gsi/client"></script>
@@ -395,7 +395,7 @@
     <script src="js/main.js"></script>
     
 
-    <script src="js/ai-assistant.js"></script>
+    <script src="js/enhanced-calendar-integration.js"></script>
     <script src="js/integration-manager.js"></script>
     <script src="js/quad-integration-manager.js"></script>
     <script src="js/social-integration.js"></script>
@@ -614,50 +614,60 @@
         }
 
         // 同步行事曆
-        function syncCalendar() {
-            MedicalPlatform.showAlert('正在同步Google日曆...', 'info');
-            
-            // 重新載入Google Calendar iframe
-            setTimeout(() => {
-                const iframe = document.querySelector('.google-calendar-container iframe');
-                if (iframe) {
-                    const currentSrc = iframe.src;
-                    iframe.src = '';
-                    setTimeout(() => {
-                        iframe.src = currentSrc;
+        async function syncCalendar() {
+            try {
+                if (typeof MedicalPlatform !== 'undefined') {
+                    MedicalPlatform.showAlert('正在同步Google日曆...', 'info');
+                }
+                
+                // 使用增強版日曆整合系統
+                if (window.CalendarIntegration) {
+                    await window.CalendarIntegration.syncCalendar();
+                    
+                    if (typeof MedicalPlatform !== 'undefined') {
                         MedicalPlatform.showAlert('Google日曆已同步完成', 'success');
-                    }, 500);
+                    }
+                } else {
+                    // 備用同步方法
+                    const iframe = document.querySelector('.google-calendar-container iframe');
+                    if (iframe) {
+                        const currentSrc = iframe.src;
+                        iframe.src = '';
+                        setTimeout(() => {
+                            iframe.src = currentSrc;
+                            if (typeof MedicalPlatform !== 'undefined') {
+                                MedicalPlatform.showAlert('Google日曆已重新載入', 'success');
+                            }
+                        }, 500);
+                    }
                 }
                 
                 // 同時更新FullCalendar（如果需要）
                 if (typeof calendar !== 'undefined' && calendar) {
-                    // 添加劉道玄的機器貓日程示例到FullCalendar
-                    const robotCatEvents = [
+                    // 添加診所預約示例到FullCalendar
+                    const clinicEvents = [
                         {
-                            id: 'robot-cat-1',
-                            title: '道玄養的機器貓 - 定期檢查',
-                            start: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0] + 'T10:00:00',
-                            end: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0] + 'T10:30:00',
-                            className: 'fc-event-personal',
-                            backgroundColor: '#ff6b6b',
-                            borderColor: '#ff5252'
-                        },
-                        {
-                            id: 'robot-cat-2',
-                            title: '道玄養的機器貓 - 餵食時間',
-                            start: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] + 'T18:00:00',
-                            end: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] + 'T18:15:00',
-                            className: 'fc-event-personal',
-                            backgroundColor: '#4ecdc4',
-                            borderColor: '#26a69a'
+                            id: 'clinic-1',
+                            title: '劉道玄醫師 - 諮詢時間',
+                            start: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0] + 'T14:00:00',
+                            end: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0] + 'T17:00:00',
+                            className: 'fc-event-doctor',
+                            backgroundColor: '#dc143c',
+                            borderColor: '#b71c1c'
                         }
                     ];
                     
-                    robotCatEvents.forEach(event => {
+                    clinicEvents.forEach(event => {
                         calendar.addEvent(event);
                     });
                 }
-            }, 1000);
+                
+            } catch (error) {
+                console.error('同步失敗:', error);
+                if (typeof MedicalPlatform !== 'undefined') {
+                    MedicalPlatform.showAlert('同步失敗，請稍後再試', 'error');
+                }
+            }
         }
 
         // 匯出行事曆

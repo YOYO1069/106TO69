@@ -8,6 +8,7 @@
     <title>劉道玄曜診所雲整合系統</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="js/integration-system.js"></script>
+    <script src="js/permission-system.js"></script>
     <script src="js/enhanced_google_calendar_sync.js"></script>
     <script src="js/appointment_manager.js"></script>
     <script src="js/calendar_integration.js"></script>
@@ -427,28 +428,7 @@
             }
         }
 
-        /* 中心隱藏卡片 */
-        .ai-card {
-            display: none;
-            border-color: rgba(138, 43, 226, 0.5);
-            background: linear-gradient(145deg, rgba(52, 32, 62, 0.9), rgba(26, 16, 36, 0.9));
-        }
 
-        .ai-card.active {
-            display: block;
-            animation: fadeInUp 0.5s ease;
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
     </style>
 </head>
 <body>
@@ -484,7 +464,7 @@
         <!-- 功能卡片網格 -->
         <div class="function-grid">
             <!-- 預約管理 -->
-            <div class="function-card" onclick="navigateToModule('liu-daoxuan-calendar.html')">
+            <div class="function-card" onclick="navigateToModule('liu-daoxuan-calendar.html', event)">
                 <div class="badge core">核心</div>
                 <div class="function-icon">
                     <i class="fas fa-calendar-alt"></i>
@@ -497,18 +477,18 @@
                         <div class="stat-label">今日預約</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-number">15</div>
+                        <div class="stat-number">0</div>
                         <div class="stat-label">本週預約</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-number">85%</div>
-                        <div class="stat-label">滿載率</div>
+                        <div class="stat-number">0%</div>
+                        <div class="stat-label">滿約率</div>
                     </div>
                 </div>
             </div>
 
             <!-- 病歷系統 -->
-            <div class="function-card" onclick="navigateToModule('electronic-medical-records.html')">
+            <div class="function-card" onclick="navigateToModule('electronic-medical-records.html', event)">
                 <div class="function-icon">
                     <i class="fas fa-file-medical"></i>
                 </div>
@@ -531,7 +511,7 @@
             </div>
 
             <!-- 療程管理 -->
-            <div class="function-card" onclick="navigateToModule('treatment-management.html')">
+            <div class="function-card" onclick="navigateToModule('treatment-management.html', event)">
                 <div class="function-icon">
                     <i class="fas fa-spa"></i>
                 </div>
@@ -554,7 +534,7 @@
             </div>
 
             <!-- 同意書管理 -->
-            <div class="function-card" onclick="navigateToModule('consent_forms.html')">
+            <div class="function-card" onclick="navigateToModule('consent_forms.html', event)">
                 <div class="badge core">核心</div>
                 <div class="function-icon">
                     <i class="fas fa-file-signature"></i>
@@ -578,7 +558,7 @@
             </div>
 
             <!-- 業績管理 -->
-            <div class="function-card" onclick="navigateToModule('performance-management.html')">
+            <div class="function-card" onclick="navigateToModule('performance-management.html', event)">
                 <div class="function-icon">
                     <i class="fas fa-trophy"></i>
                 </div>
@@ -601,7 +581,7 @@
             </div>
 
             <!-- 智能排程 -->
-            <div class="function-card" onclick="navigateToModule('smart_scheduling.html')">
+            <div class="function-card" onclick="navigateToModule('smart_scheduling.html', event)">
                 <div class="badge new">NEW</div>
                 <div class="function-icon">
                     <i class="fas fa-users-cog"></i>
@@ -611,7 +591,7 @@
             </div>
 
             <!-- 價格管理 -->
-            <div class="function-card" onclick="navigateToModule('price_management.html')">
+            <div class="function-card" onclick="navigateToModule('price_management.html', event)">
                 <div class="badge hot">HOT</div>
                 <div class="function-icon">
                     <i class="fas fa-dollar-sign"></i>
@@ -621,7 +601,7 @@
             </div>
 
             <!-- 員工福利 -->
-            <div class="function-card" onclick="navigateToModule('employee_benefits.html')">
+            <div class="function-card" data-permission="staff-management" onclick="navigateToModule('employee_benefits.html', event)">
                 <div class="badge">PRO</div>
                 <div class="function-icon">
                     <i class="fas fa-gift"></i>
@@ -631,7 +611,7 @@
             </div>
 
             <!-- 數據統計 -->
-            <div class="function-card" onclick="navigateToModule('data_statistics.html')">
+            <div class="function-card" data-permission="statistics" onclick="navigateToModule('data_statistics.html', event)">
                 <div class="function-icon">
                     <i class="fas fa-chart-line"></i>
                 </div>
@@ -639,11 +619,7 @@
                 <p class="function-description">營運分析・趨勢預測</p>
             </div>
 
-            <div class="function-card ai-card" id="ai-assistant" onclick="navigateToModule('smart-crm-system.html')">
-                <div class="function-icon">
-                    <i class="fas fa-brain"></i>
-                </div>
-            </div>
+
         </div>
     </div>
 
@@ -669,8 +645,18 @@
         });
 
         // 功能模組導航
-        function navigateToModule(page) {
-            window.location.href = page;
+        function navigateToModule(page, event) {
+            // 檢查是否需要權限驗證
+            const clickedCard = event ? event.target.closest('.function-card') : null;
+            const requiredPermission = clickedCard?.getAttribute('data-permission');
+            
+            if (requiredPermission && window.PermissionSystem) {
+                window.PermissionSystem.requestPermission(requiredPermission, () => {
+                    window.location.href = page;
+                });
+            } else {
+                window.location.href = page;
+            }
         }
 
         // 設定面板

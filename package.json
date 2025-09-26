@@ -5,17 +5,16 @@
   "main": "index.html",
   "scripts": {
     "start": "netlify dev",
-
     "deploy": "netlify deploy --prod"
   },
   "dependencies": {
-    "googleapis": "^128.0.0",
     "@google-cloud/storage": "^7.5.0",
-    "node-fetch": "^2.6.7",
-    "@google/generative-ai": "^0.2.1"
+    "@google/generative-ai": "^0.2.1",
+    "googleapis": "^128.0.0",
+    "node-fetch": "^2.6.7"
   },
   "devDependencies": {
-    "netlify-cli": "^17.0.0"
+    "netlify-cli": "^23.7.3"
   },
   "keywords": [
     "medical",

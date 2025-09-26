@@ -1,0 +1,90 @@
+functionsDirectory = "/home/ubuntu/106TO69/netlify/functions"
+functionsDirectoryOrigin = "default"
+plugins = []
+headers = []
+
+[build]
+publish = "/home/ubuntu/106TO69"
+publishOrigin = "config"
+commandOrigin = "config"
+command = "cp -R . /opt/build/ && echo 'Static site deployed'"
+functions = "/home/ubuntu/106TO69/netlify/functions"
+
+[build.environment]
+SECRETS_SCAN_ENABLED = "false"
+
+[build.processing]
+
+[build.processing.css]
+
+[build.processing.html]
+
+[build.processing.images]
+
+[build.processing.js]
+
+[build.services]
+
+[functions]
+
+[functions."*"]
+
+[[redirects]]
+from = "/*"
+to = "/index.html"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/api/*"
+to = "/.netlify/functions/:splat"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/css/*"
+to = "/css/:splat"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/js/*"
+to = "/js/:splat"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/assets/*"
+to = "/assets/:splat"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
