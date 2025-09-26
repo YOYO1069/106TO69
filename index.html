@@ -1210,6 +1210,11 @@
                 currentUserRole = roleInfo.role;
                 currentUserName = roleInfo.name;
                 
+                // 持久化存儲權限信息
+                localStorage.setItem('flos-user-role', currentUserRole);
+                localStorage.setItem('flos-user-name', currentUserName);
+                localStorage.setItem('flos-login-time', Date.now().toString());
+                
                 // 更新UI顯示
                 updateRoleDisplay();
                 
@@ -1369,10 +1374,19 @@
         function resetRole() {
             currentUserRole = 'employee';
             currentUserName = '一般員工';
+            
+            // 清除localStorage中的權限信息
+            localStorage.removeItem('flos-user-role');
+            localStorage.removeItem('flos-user-name');
+            localStorage.removeItem('flos-login-time');
+            
             updateRoleDisplay();
             
             // 重置設定面板
             document.getElementById('roleFeatures').innerHTML = '<p class="text-muted">請輸入權限代碼以啟用功能</p>';
+            
+            // 隱藏需要權限的功能卡片
+            updateMainPageFeatures();
             
             showNotification('權限已重置', 'info');
             logUserActivity('權限重置', '用戶重置了權限設定');
@@ -1446,12 +1460,30 @@
         document.addEventListener('DOMContentLoaded', function() {
             showNotification('劉道玄曜診所雲整合系統已就緒', 'success');
             
-            // 初始化卡片顯示狀態（隱藏需要權限的卡片）
-            updateMainPageFeatures();
+            // 檢查是否有儲存的權限狀態
+            const savedRole = localStorage.getItem('flos-user-role');
+            const savedName = localStorage.getItem('flos-user-name');
+            const loginTime = localStorage.getItem('flos-login-time');
             
-            // 檢查是否有儲存的權限狀態（可選）
-            // const savedRole = localStorage.getItem('flos-current-role');
-            // if (savedRole) { ... }
+            // 檢查登入是否過期（24小時）
+            const isExpired = loginTime && (Date.now() - parseInt(loginTime)) > (24 * 60 * 60 * 1000);
+            
+            if (savedRole && savedName && !isExpired) {
+                // 恢復權限狀態
+                currentUserRole = savedRole;
+                currentUserName = savedName;
+                updateRoleDisplay();
+                enableRoleFeatures();
+                showNotification(`歡迎回來，${currentUserName}！`, 'info');
+            } else if (isExpired) {
+                // 清除過期的權限信息
+                localStorage.removeItem('flos-user-role');
+                localStorage.removeItem('flos-user-name');
+                localStorage.removeItem('flos-login-time');
+            }
+            
+            // 初始化卡片顯示狀態
+            updateMainPageFeatures();
         });
     </script>
 </body>
