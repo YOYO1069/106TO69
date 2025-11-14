@@ -1,5 +1,6 @@
 functionsDirectory = "/home/ubuntu/netlify-site/netlify/functions"
-functionsDirectoryOrigin = "default"
+functionsDirectoryOrigin = "config-v1"
+redirectsOrigin = "config"
 plugins = []
 headers = []
 
@@ -7,7 +8,7 @@ headers = []
 publish = "/home/ubuntu/netlify-site"
 publishOrigin = "config"
 commandOrigin = "config"
-command = "cp -R . /opt/build/ && echo 'Static site deployed'"
+command = "echo 'Static site deployed'"
 functions = "/home/ubuntu/netlify-site/netlify/functions"
 
 [build.environment]
@@ -28,30 +29,6 @@ SECRETS_SCAN_ENABLED = "false"
 [functions]
 
 [functions."*"]
-
-[[redirects]]
-from = "/*"
-to = "/index.html"
-status = 200.0
-force = false
-
-[redirects.query]
-
-[redirects.conditions]
-
-[redirects.headers]
-
-[[redirects]]
-from = "/api/*"
-to = "/.netlify/functions/:splat"
-status = 200.0
-force = false
-
-[redirects.query]
-
-[redirects.conditions]
-
-[redirects.headers]
 
 [[redirects]]
 from = "/css/*"
@@ -80,6 +57,30 @@ force = false
 [[redirects]]
 from = "/assets/*"
 to = "/assets/:splat"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/api/*"
+to = "/.netlify/functions/:splat"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/*"
+to = "/index.html"
 status = 200.0
 force = false
 
