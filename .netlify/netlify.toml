@@ -1,14 +1,14 @@
-functionsDirectory = "/home/ubuntu/106TO69/netlify/functions"
+functionsDirectory = "/home/ubuntu/netlify-site/netlify/functions"
 functionsDirectoryOrigin = "default"
 plugins = []
 headers = []
 
 [build]
-publish = "/home/ubuntu/106TO69"
+publish = "/home/ubuntu/netlify-site"
 publishOrigin = "config"
 commandOrigin = "config"
 command = "cp -R . /opt/build/ && echo 'Static site deployed'"
-functions = "/home/ubuntu/106TO69/netlify/functions"
+functions = "/home/ubuntu/netlify-site/netlify/functions"
 
 [build.environment]
 SECRETS_SCAN_ENABLED = "false"
