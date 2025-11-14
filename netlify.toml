@@ -1,7 +1,17 @@
 [build]
   publish = "."
-  command = "cp -R . /opt/build/ && echo 'Static site deployed'"
+  command = "echo 'Static site deployed'"
+  functions = "netlify/functions"
 
 [build.environment]
   SECRETS_SCAN_ENABLED = "false"
 
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
