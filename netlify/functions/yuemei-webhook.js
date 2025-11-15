@@ -1,7 +1,7 @@
 const crypto = require('crypto');
 const { createClient } = require('@supabase/supabase-js');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
-const { treatmentKnowledge, generalFAQ, searchTreatment, searchFAQ, recommendTreatment } = require('./knowledge-base');
+const { getTreatmentKnowledge, generalFAQ, searchTreatment, searchFAQ, recommendTreatment } = require('./knowledge-base');
 
 // LINE Bot 設定
 const LINE_CHANNEL_SECRET = process.env.LINE_CHANNEL_SECRET;
@@ -32,6 +32,9 @@ async function handleSmartCustomerService(userId, userMessage, conversationHisto
 
   try {
     const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-exp' });
+    
+    // 載入療程知識庫
+    const treatmentKnowledge = await getTreatmentKnowledge();
     
     // 準備知識庫內容
     const knowledgeContext = `
@@ -380,6 +383,9 @@ function generateAftercareMessage(treatment) {
 
 // 智能客服主處理函數
 async function handleIntelligentCustomerService(userId, userMessage, replyToken) {
+  // 載入療程知識庫
+  const treatmentKnowledge = await getTreatmentKnowledge();
+  
   // 取得對話狀態
   let state = conversationStates.get(userId) || { history: [], context: {} };
   state.history = state.history || [];

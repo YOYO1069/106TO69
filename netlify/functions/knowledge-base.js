@@ -1,330 +1,74 @@
-// FLOS 曜診所療程知識庫
+// 療程知識庫 - 從 Supabase 動態載入
+const { createClient } = require('@supabase/supabase-js');
 
-const treatmentKnowledge = {
-  '水光針': {
-    name: '水光針',
-    emoji: '💧',
-    category: 'hydration',
-    description: '水光針是一種微創注射療程，將玻尿酸、維生素等營養成分注入真皮層，快速補水、提亮膚色，讓肌膚呈現水潤光澤。',
-    benefits: [
-      '深層補水，改善乾燥',
-      '提亮膚色，均勻膚質',
-      '細緻毛孔，緊緻肌膚',
-      '淡化細紋，延緩老化'
-    ],
-    suitableFor: [
-      '肌膚乾燥缺水',
-      '膚色暗沉無光澤',
-      '毛孔粗大',
-      '細紋初現',
-      '想要快速改善膚質'
-    ],
-    notSuitableFor: [
-      '孕婦或哺乳期婦女',
-      '對玻尿酸過敏者',
-      '皮膚有傷口或感染',
-      '正在服用抗凝血藥物'
-    ],
-    duration: '30-45 分鐘',
-    recovery: '無恢復期，可立即上妝',
-    effect: '立即見效，效果可維持 3-6 個月',
-    priceRange: 'NT$ 8,000 - 15,000',
-    aftercare: {
-      immediate: [
-        '治療後 6 小時內避免碰水',
-        '當天不要化妝',
-        '避免用手觸摸治療部位',
-        '可能有輕微紅腫，屬正常現象'
-      ],
-      firstWeek: [
-        '加強保濕，使用溫和保養品',
-        '避免去角質和酸類產品',
-        '避免三溫暖、泡溫泉',
-        '做好防曬（SPF30 以上）',
-        '多喝水，促進代謝'
-      ],
-      longTerm: [
-        '建議每 3-4 個月施打一次',
-        '持續做好保濕和防曬',
-        '保持規律作息',
-        '避免熬夜和過度日曬'
-      ]
-    },
-    faq: [
-      {
-        q: '水光針會痛嗎？',
-        a: '治療前會敷麻藥，過程中只有輕微刺痛感，大多數人都能接受。'
-      },
-      {
-        q: '多久打一次效果最好？',
-        a: '建議初期連續 3 次，每次間隔 3-4 週，之後每 3-6 個月保養一次。'
-      },
-      {
-        q: '打完可以立即上班嗎？',
-        a: '可以！水光針無恢復期，治療後可立即恢復正常作息，隔天即可正常上妝。'
-      }
-    ]
-  },
+const SUPABASE_URL = process.env.SUPABASE_URL || 'https://clzjdlykhjwrlksyjlfz.supabase.co';
+const SUPABASE_KEY = process.env.SUPABASE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNsempkbHlraGp3cmxrc3lqbGZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3OTM2ODAsImV4cCI6MjA3NTM2OTY4MH0.V6QAoh4N2aSF5CgDYfKTnY8cMQnDV3AYilj7TbpWJcU';
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// 療程資料緩存
+let treatmentCache = null;
+let cacheTimestamp = 0;
+const CACHE_TTL = 5 * 60 * 1000; // 5 分鐘
+
+/**
+ * 從 Supabase 載入療程知識庫
+ */
+async function loadTreatmentsFromSupabase() {
+  const now = Date.now();
   
-  '微針': {
-    name: '微針',
-    emoji: '💉',
-    category: 'microneedle',
-    description: '微針療程利用細微針頭在皮膚表面製造微小通道，刺激膠原蛋白增生，改善膚質、縮小毛孔、淡化痘疤。',
-    benefits: [
-      '刺激膠原蛋白增生',
-      '改善痘疤和凹洞',
-      '縮小毛孔',
-      '提升肌膚緊緻度',
-      '改善細紋和皺紋'
-    ],
-    suitableFor: [
-      '痘疤、凹洞',
-      '毛孔粗大',
-      '膚質粗糙',
-      '細紋、皺紋',
-      '想要改善膚質'
-    ],
-    notSuitableFor: [
-      '孕婦或哺乳期婦女',
-      '皮膚有傷口或感染',
-      '蟹足腫體質',
-      '正在服用A酸'
-    ],
-    duration: '60-90 分鐘',
-    recovery: '3-5 天輕微紅腫',
-    effect: '1-2 週後逐漸顯現，3-6 個月效果最佳',
-    priceRange: 'NT$ 6,000 - 12,000',
-    aftercare: {
-      immediate: [
-        '治療後 24 小時內避免碰水',
-        '當天不要化妝',
-        '可能有紅腫、輕微滲血，屬正常現象',
-        '冰敷可舒緩不適'
-      ],
-      firstWeek: [
-        '使用醫師建議的修復產品',
-        '避免去角質和酸類產品',
-        '避免游泳、三溫暖',
-        '嚴格防曬（SPF50+）',
-        '避免化濃妝'
-      ],
-      longTerm: [
-        '建議療程 3-5 次，每次間隔 4-6 週',
-        '持續保濕和防曬',
-        '避免過度日曬',
-        '保持良好作息'
-      ]
-    },
-    faq: [
-      {
-        q: '微針會留疤嗎？',
-        a: '不會。微針造成的是可控的微小傷口，會自然癒合，不會留疤。'
-      },
-      {
-        q: '做完微針可以化妝嗎？',
-        a: '建議 24-48 小時後再化妝，讓皮膚充分修復。'
-      },
-      {
-        q: '微針和飛梭雷射哪個好？',
-        a: '兩者效果相似，但微針恢復期較短，適合不想請假的上班族。'
-      }
-    ]
-  },
-
-  '除毛': {
-    name: '雷射除毛',
-    emoji: '✨',
-    category: 'hairremoval',
-    description: '使用雷射能量破壞毛囊，達到永久減少毛髮的效果，讓肌膚光滑細緻。',
-    benefits: [
-      '永久減少毛髮生長',
-      '肌膚光滑細緻',
-      '減少毛囊炎',
-      '節省刮毛時間',
-      '避免刮毛造成的黑色素沉澱'
-    ],
-    suitableFor: [
-      '想要永久除毛',
-      '毛髮濃密',
-      '經常有毛囊炎',
-      '對刮毛、蜜蠟除毛過敏'
-    ],
-    notSuitableFor: [
-      '孕婦',
-      '皮膚曬傷或有傷口',
-      '正在服用光敏感藥物',
-      '白髮或金髮（雷射對深色毛髮效果較好）'
-    ],
-    duration: '依部位而定，15-60 分鐘',
-    recovery: '無恢復期',
-    effect: '需 6-8 次療程，每次間隔 4-8 週',
-    priceRange: 'NT$ 2,000 - 20,000（依部位）',
-    aftercare: {
-      immediate: [
-        '治療後可能有輕微紅腫',
-        '冰敷可舒緩不適',
-        '當天避免熱水澡',
-        '避免刺激性保養品'
-      ],
-      firstWeek: [
-        '加強保濕',
-        '嚴格防曬（SPF50+）',
-        '避免去角質',
-        '避免游泳、三溫暖',
-        '不要拔毛，可以刮毛'
-      ],
-      longTerm: [
-        '完整療程需 6-8 次',
-        '每次間隔 4-8 週',
-        '持續防曬',
-        '避免過度日曬'
-      ]
-    },
-    faq: [
-      {
-        q: '雷射除毛會痛嗎？',
-        a: '有輕微刺痛感，像橡皮筋彈到的感覺，大多數人都能接受。'
-      },
-      {
-        q: '為什麼需要多次療程？',
-        a: '因為毛髮有生長週期，雷射只對生長期的毛髮有效，所以需要多次治療。'
-      },
-      {
-        q: '雷射除毛真的永久嗎？',
-        a: '可以達到永久減少 80-90% 的毛髮，少數毛髮可能會再生，但會變細軟。'
-      }
-    ]
-  },
-
-  '肉毒': {
-    name: '肉毒桿菌',
-    emoji: '💫',
-    category: 'botox',
-    description: '注射肉毒桿菌素放鬆肌肉，撫平動態紋，也可用於瘦小臉、改善國字臉。',
-    benefits: [
-      '撫平抬頭紋、魚尾紋、皺眉紋',
-      '瘦小臉、改善國字臉',
-      '改善咀嚼肌肥大',
-      '提升臉部線條',
-      '預防皺紋加深'
-    ],
-    suitableFor: [
-      '動態紋明顯',
-      '咀嚼肌發達（國字臉）',
-      '想要預防皺紋',
-      '想要瘦小臉'
-    ],
-    notSuitableFor: [
-      '孕婦或哺乳期婦女',
-      '對肉毒桿菌過敏',
-      '重症肌無力患者',
-      '正在服用特定藥物'
-    ],
-    duration: '15-30 分鐘',
-    recovery: '無恢復期',
-    effect: '3-7 天開始作用，2 週效果最佳，可維持 4-6 個月',
-    priceRange: 'NT$ 5,000 - 20,000（依部位和劑量）',
-    aftercare: {
-      immediate: [
-        '治療後 4 小時內保持直立',
-        '避免按摩注射部位',
-        '避免劇烈運動',
-        '不要趴睡'
-      ],
-      firstWeek: [
-        '避免高溫環境（三溫暖、熱瑜珈）',
-        '避免按摩臉部',
-        '正常保養即可',
-        '多做表情運動（幫助肉毒均勻分布）'
-      ],
-      longTerm: [
-        '建議每 4-6 個月施打一次',
-        '定期回診評估',
-        '保持良好生活習慣'
-      ]
-    },
-    faq: [
-      {
-        q: '打肉毒會僵硬不自然嗎？',
-        a: '不會。專業醫師會精準控制劑量和位置，保持自然表情。'
-      },
-      {
-        q: '肉毒效果可以維持多久？',
-        a: '通常 4-6 個月，因個人代謝而異。'
-      },
-      {
-        q: '打肉毒會上癮嗎？',
-        a: '不會上癮，但因為效果好，很多人會選擇定期施打保養。'
-      }
-    ]
-  },
-
-  '電音波': {
-    name: '電音波拉提',
-    emoji: '🔊',
-    category: 'hifu',
-    description: '結合電波和音波能量，深層加熱刺激膠原蛋白增生，達到緊緻拉提、改善鬆弛的效果。',
-    benefits: [
-      '緊緻拉提，改善鬆弛',
-      '改善法令紋、木偶紋',
-      '提升臉部輪廓',
-      '刺激膠原蛋白增生',
-      '改善雙下巴'
-    ],
-    suitableFor: [
-      '臉部鬆弛下垂',
-      '法令紋、木偶紋明顯',
-      '雙下巴',
-      '想要緊緻拉提',
-      '預防老化'
-    ],
-    notSuitableFor: [
-      '孕婦',
-      '裝有心律調節器',
-      '臉部有金屬植入物',
-      '皮膚有傷口或感染'
-    ],
-    duration: '60-90 分鐘',
-    recovery: '無恢復期',
-    effect: '立即有感，1-3 個月效果最佳，可維持 1-2 年',
-    priceRange: 'NT$ 30,000 - 80,000',
-    aftercare: {
-      immediate: [
-        '治療後可能有輕微紅腫',
-        '加強保濕',
-        '避免高溫環境',
-        '可立即上妝'
-      ],
-      firstWeek: [
-        '持續保濕',
-        '做好防曬',
-        '避免三溫暖、泡溫泉',
-        '多喝水，促進代謝'
-      ],
-      longTerm: [
-        '效果會在 1-3 個月持續改善',
-        '建議每 1-2 年施打一次',
-        '保持良好生活習慣',
-        '持續保養'
-      ]
-    },
-    faq: [
-      {
-        q: '電音波會痛嗎？',
-        a: '治療時會有熱感和輕微刺痛，但大多數人都能接受。'
-      },
-      {
-        q: '電音波和一般音波有什麼不同？',
-        a: '電音波結合電波和音波，作用層次更多，效果更全面。'
-      },
-      {
-        q: '做完電音波多久看到效果？',
-        a: '立即有緊緻感，1-3 個月效果最明顯，因為膠原蛋白需要時間增生。'
-      }
-    ]
+  // 檢查緩存
+  if (treatmentCache && (now - cacheTimestamp) < CACHE_TTL) {
+    return treatmentCache;
   }
-};
+  
+  try {
+    const { data, error } = await supabase
+      .from('treatments')
+      .select('*')
+      .order('id', { ascending: true });
+    
+    if (error) {
+      console.error('[Supabase] 載入療程失敗:', error);
+      return treatmentCache || {}; // 返回緩存或空物件
+    }
+    
+    // 轉換為 name 為 key 的物件
+    const knowledgeBase = {};
+    data.forEach(treatment => {
+      knowledgeBase[treatment.name] = {
+        name: treatment.name,
+        emoji: treatment.emoji,
+        category: treatment.category,
+        description: treatment.description,
+        benefits: treatment.benefits,
+        suitableFor: treatment.suitable_for,
+        notSuitableFor: treatment.not_suitable_for,
+        duration: treatment.duration,
+        recovery: treatment.recovery,
+        effect: treatment.effect,
+        priceRange: treatment.price_range,
+        aftercare: treatment.aftercare,
+        faq: treatment.faq
+      };
+    });
+    
+    treatmentCache = knowledgeBase;
+    cacheTimestamp = now;
+    console.log(`[Supabase] 成功載入 ${data.length} 個療程`);
+    return knowledgeBase;
+  } catch (err) {
+    console.error('[Supabase] 載入療程異常:', err);
+    return treatmentCache || {};
+  }
+}
+
+/**
+ * 取得療程知識庫（非同步）
+ */
+async function getTreatmentKnowledge() {
+  return await loadTreatmentsFromSupabase();
+}
 
 // 常見問題 FAQ
 const generalFAQ = [
@@ -333,15 +77,19 @@ const generalFAQ = [
     questions: [
       {
         q: '如何預約療程？',
-        a: '您可以直接在 LINE 中告訴我「我要預約」，或提供您的姓名、電話、希望的療程和時間，我會幫您安排。'
+        a: '您可以直接在 LINE 上告訴我「我要預約」，然後提供您的姓名、電話、希望的療程和時間，我會立即為您安排！'
       },
       {
-        q: '可以取消或改期嗎？',
-        a: '可以的！請提前 24 小時告知，您可以說「我要取消預約」或「我要改期」。'
+        q: '可以取消預約嗎？',
+        a: '可以的！請在預約時間前 24 小時告訴我「取消預約」，我會協助您處理。'
       },
       {
-        q: '預約需要付訂金嗎？',
-        a: '初次預約不需要訂金，但請準時赴約。如果無故爽約超過 2 次，之後預約需支付訂金。'
+        q: '如何查詢我的預約記錄？',
+        a: '請直接告訴我「查詢預約」，我會顯示您的所有預約記錄。'
+      },
+      {
+        q: '預約後會收到確認通知嗎？',
+        a: '會的！預約成功後您會立即收到確認訊息，預約前一天我也會提醒您。'
       }
     ]
   },
@@ -349,33 +97,16 @@ const generalFAQ = [
     category: '療程選擇',
     questions: [
       {
-        q: '我不知道適合什麼療程，怎麼辦？',
-        a: '沒問題！您可以告訴我您的膚質困擾，我會推薦適合的療程。也歡迎預約免費諮詢，讓專業醫師為您評估。'
+        q: '不知道該選什麼療程？',
+        a: '沒問題！告訴我您的膚質困擾（例如：乾燥、痘疤、毛孔粗大），我會推薦最適合您的療程。'
       },
       {
         q: '可以同時做多種療程嗎？',
-        a: '部分療程可以複合治療，但需要醫師評估。建議預約諮詢，讓醫師為您規劃最適合的療程組合。'
+        a: '可以的！但建議先由醫師評估，有些療程可以搭配，有些需要間隔時間。'
       },
       {
-        q: '第一次來需要注意什麼？',
-        a: '請提前 10 分鐘到達，填寫基本資料和同意書。建議素顏或淡妝，方便醫師評估膚況。'
-      }
-    ]
-  },
-  {
-    category: '價格和優惠',
-    questions: [
-      {
-        q: '療程價格包含什麼？',
-        a: '價格包含醫師諮詢、療程操作、術後衛教和保養品。部分療程會贈送術後修復面膜。'
-      },
-      {
-        q: '有優惠方案嗎？',
-        a: '我們定期推出優惠活動，也有療程套組優惠。加入官方 LINE 可以第一時間收到優惠訊息！'
-      },
-      {
-        q: '可以分期付款嗎？',
-        a: '可以！我們提供信用卡分期服務，詳情請洽櫃檯。'
+        q: '第一次來適合做什麼療程？',
+        a: '建議從溫和的療程開始，例如水光針或微針，讓肌膚逐步適應。'
       }
     ]
   },
@@ -384,68 +115,48 @@ const generalFAQ = [
     questions: [
       {
         q: '診所營業時間？',
-        a: '週一至週六 10:00-20:00，週日公休。國定假日營業時間請參考官網公告。'
+        a: 'FLOS 曜診所營業時間：\n週一至週五：10:00 - 20:00\n週六：10:00 - 18:00\n週日公休'
       },
       {
         q: '診所地址在哪裡？',
-        a: 'FLOS 曜診所位於台北市信義區，捷運市政府站步行 3 分鐘。詳細地址請參考官網。'
+        a: 'FLOS 曜診所位於台北市信義區，詳細地址請來電洽詢或預約時詢問。'
       },
       {
         q: '有停車場嗎？',
-        a: '診所樓下有特約停車場，消費滿額可折抵停車費。'
+        a: '診所附近有特約停車場，預約時我們會提供詳細資訊。'
       }
     ]
   }
 ];
 
-// 根據關鍵字搜尋療程
-function searchTreatment(keyword) {
-  const lowerKeyword = keyword.toLowerCase();
-  
-  for (const [name, info] of Object.entries(treatmentKnowledge)) {
-    // 檢查療程名稱
-    if (name.includes(keyword) || info.name.includes(keyword)) {
-      return info;
-    }
-    
-    // 檢查描述
-    if (info.description.includes(keyword)) {
-      return info;
-    }
-    
-    // 檢查適合對象
-    if (info.suitableFor.some(item => item.includes(keyword))) {
-      return info;
-    }
-  }
-  
-  return null;
-}
-
-// 根據問題搜尋 FAQ
-function searchFAQ(question) {
+/**
+ * 搜尋療程
+ */
+async function searchTreatment(keyword) {
+  const treatments = await getTreatmentKnowledge();
   const results = [];
   
-  // 搜尋療程 FAQ
-  for (const [name, info] of Object.entries(treatmentKnowledge)) {
-    for (const faq of info.faq) {
-      if (faq.q.includes(question) || faq.a.includes(question) || question.includes(name)) {
-        results.push({
-          treatment: name,
-          ...faq
-        });
-      }
+  for (const [name, info] of Object.entries(treatments)) {
+    if (name.includes(keyword) || 
+        info.description.includes(keyword) ||
+        info.benefits.some(b => b.includes(keyword))) {
+      results.push(info);
     }
   }
   
-  // 搜尋一般 FAQ
+  return results;
+}
+
+/**
+ * 搜尋 FAQ
+ */
+function searchFAQ(keyword) {
+  const results = [];
+  
   for (const category of generalFAQ) {
-    for (const faq of category.questions) {
-      if (faq.q.includes(question) || faq.a.includes(question)) {
-        results.push({
-          category: category.category,
-          ...faq
-        });
+    for (const qa of category.questions) {
+      if (qa.q.includes(keyword) || qa.a.includes(keyword)) {
+        results.push({ ...qa, category: category.category });
       }
     }
   }
@@ -453,41 +164,26 @@ function searchFAQ(question) {
   return results;
 }
 
-// 根據膚質問題推薦療程
-function recommendTreatment(skinConcern) {
+/**
+ * 根據膚質困擾推薦療程
+ */
+async function recommendTreatment(concern) {
+  const treatments = await getTreatmentKnowledge();
   const recommendations = [];
   
-  const concernKeywords = {
-    '乾燥': ['水光針'],
-    '缺水': ['水光針'],
-    '暗沉': ['水光針', '雷射'],
-    '痘疤': ['微針', '雷射'],
-    '凹洞': ['微針'],
-    '毛孔': ['微針', '水光針'],
-    '皺紋': ['肉毒', '電音波'],
-    '鬆弛': ['電音波'],
-    '下垂': ['電音波'],
-    '法令紋': ['肉毒', '電音波'],
-    '國字臉': ['肉毒'],
-    '毛髮': ['除毛'],
-    '除毛': ['除毛']
-  };
-  
-  for (const [keyword, treatments] of Object.entries(concernKeywords)) {
-    if (skinConcern.includes(keyword)) {
-      for (const treatment of treatments) {
-        if (!recommendations.includes(treatment)) {
-          recommendations.push(treatment);
-        }
-      }
+  for (const [name, info] of Object.entries(treatments)) {
+    // 檢查是否符合困擾
+    if (info.benefits.some(b => b.includes(concern)) ||
+        info.suitableFor.some(s => s.includes(concern))) {
+      recommendations.push(info);
     }
   }
   
-  return recommendations.map(name => treatmentKnowledge[name]).filter(Boolean);
+  return recommendations;
 }
 
 module.exports = {
-  treatmentKnowledge,
+  getTreatmentKnowledge,
   generalFAQ,
   searchTreatment,
   searchFAQ,
