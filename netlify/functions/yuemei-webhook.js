@@ -1013,6 +1013,454 @@ async function handleBookingFlow(userId, event) {
           type: 'text',
           text: '已取消預約流程。如需重新預約，請點擊下方選單的「預約」按鈕 🌸'
         }]);
+      
+      // ========== Rich Menu v5 新增功能 ==========
+      
+      case 'my_bookings':
+        // 我的預約 - 查詢個人預約列表
+        return await handleMyBookings(userId, event.replyToken);
+      
+      case 'ai_chat':
+        // 智能客服 - 啟動 AI 對話模式
+        state.state = 'AI_CHAT';
+        conversationStates.set(userId, state);
+        
+        return await replyMessage(event.replyToken, [{
+          type: 'flex',
+          altText: '智能客服',
+          contents: {
+            type: 'bubble',
+            size: 'mega',
+            header: {
+              type: 'box',
+              layout: 'vertical',
+              contents: [
+                {
+                  type: 'text',
+                  text: '💬 智能客服',
+                  weight: 'bold',
+                  size: 'xl',
+                  color: '#FFFFFF'
+                },
+                {
+                  type: 'text',
+                  text: '我是邊美醬，很高興為您服務！',
+                  size: 'sm',
+                  color: '#FFFFFF',
+                  margin: 'md'
+                }
+              ],
+              backgroundColor: '#E91E63',
+              paddingAll: '20px'
+            },
+            body: {
+              type: 'box',
+              layout: 'vertical',
+              contents: [
+                {
+                  type: 'text',
+                  text: '您可以詢問我：',
+                  size: 'md',
+                  weight: 'bold',
+                  margin: 'md'
+                },
+                {
+                  type: 'text',
+                  text: '• 療程介紹與效果\n• 術後護理建議\n• 常見問題解答\n• 價格與優惠資訊',
+                  size: 'sm',
+                  color: '#666666',
+                  wrap: true,
+                  margin: 'md'
+                },
+                {
+                  type: 'separator',
+                  margin: 'lg'
+                },
+                {
+                  type: 'text',
+                  text: '💡 請直接輸入您的問題，我會盡力為您解答！',
+                  size: 'xs',
+                  color: '#999999',
+                  wrap: true,
+                  margin: 'lg'
+                }
+              ],
+              paddingAll: '20px'
+            },
+            footer: {
+              type: 'box',
+              layout: 'vertical',
+              contents: [
+                {
+                  type: 'button',
+                  action: {
+                    type: 'postback',
+                    label: '🔙 返回主選單',
+                    data: 'action=exit_ai_chat'
+                  },
+                  style: 'secondary',
+                  height: 'sm'
+                }
+              ],
+              paddingAll: '20px'
+            }
+          }
+        }]);
+      
+      case 'exit_ai_chat':
+        // 退出 AI 對話模式
+        conversationStates.delete(userId);
+        return await replyMessage(event.replyToken, [{
+          type: 'text',
+          text: '已退出智能客服模式 👋\n\n如需其他服務，請點擊下方選單。'
+        }]);
+      
+      case 'treatments':
+        // 療程介紹 - 顯示療程 Carousel
+        return await replyMessage(event.replyToken, [
+          { type: 'text', text: '🎨 FLOS 曜診所療程介紹\n\n以下是我們提供的專業療程：' },
+          await generateTreatmentCarousel()
+        ]);
+      
+      case 'notifications':
+        // 通知設定
+        return await replyMessage(event.replyToken, [{
+          type: 'flex',
+          altText: '通知設定',
+          contents: {
+            type: 'bubble',
+            size: 'mega',
+            header: {
+              type: 'box',
+              layout: 'vertical',
+              contents: [
+                {
+                  type: 'text',
+                  text: '🔔 通知設定',
+                  weight: 'bold',
+                  size: 'xl',
+                  color: '#FFFFFF'
+                },
+                {
+                  type: 'text',
+                  text: '管理您的通知偏好',
+                  size: 'sm',
+                  color: '#FFFFFF',
+                  margin: 'md'
+                }
+              ],
+              backgroundColor: '#E91E63',
+              paddingAll: '20px'
+            },
+            body: {
+              type: 'box',
+              layout: 'vertical',
+              contents: [
+                {
+                  type: 'text',
+                  text: '目前可用的通知類型：',
+                  size: 'md',
+                  weight: 'bold',
+                  margin: 'md'
+                },
+                {
+                  type: 'box',
+                  layout: 'vertical',
+                  contents: [
+                    {
+                      type: 'box',
+                      layout: 'horizontal',
+                      contents: [
+                        {
+                          type: 'text',
+                          text: '📅 預約提醒',
+                          size: 'sm',
+                          flex: 2
+                        },
+                        {
+                          type: 'text',
+                          text: '✅ 已開啟',
+                          size: 'sm',
+                          color: '#4CAF50',
+                          align: 'end',
+                          flex: 1
+                        }
+                      ],
+                      margin: 'md'
+                    },
+                    {
+                      type: 'box',
+                      layout: 'horizontal',
+                      contents: [
+                        {
+                          type: 'text',
+                          text: '🎁 優惠通知',
+                          size: 'sm',
+                          flex: 2
+                        },
+                        {
+                          type: 'text',
+                          text: '✅ 已開啟',
+                          size: 'sm',
+                          color: '#4CAF50',
+                          align: 'end',
+                          flex: 1
+                        }
+                      ],
+                      margin: 'md'
+                    },
+                    {
+                      type: 'box',
+                      layout: 'horizontal',
+                      contents: [
+                        {
+                          type: 'text',
+                          text: '📢 最新消息',
+                          size: 'sm',
+                          flex: 2
+                        },
+                        {
+                          type: 'text',
+                          text: '✅ 已開啟',
+                          size: 'sm',
+                          color: '#4CAF50',
+                          align: 'end',
+                          flex: 1
+                        }
+                      ],
+                      margin: 'md'
+                    }
+                  ]
+                },
+                {
+                  type: 'separator',
+                  margin: 'lg'
+                },
+                {
+                  type: 'text',
+                  text: '💡 所有通知功能目前皆為開啟狀態，確保您不會錯過任何重要訊息！',
+                  size: 'xs',
+                  color: '#999999',
+                  wrap: true,
+                  margin: 'lg'
+                }
+              ],
+              paddingAll: '20px'
+            }
+          }
+        }]);
+      
+      case 'contact':
+        // 聯絡我們 - 顯示診所資訊
+        return await replyMessage(event.replyToken, [{
+          type: 'flex',
+          altText: '聯絡我們',
+          contents: {
+            type: 'bubble',
+            size: 'mega',
+            header: {
+              type: 'box',
+              layout: 'vertical',
+              contents: [
+                {
+                  type: 'text',
+                  text: '📞 聯絡我們',
+                  weight: 'bold',
+                  size: 'xl',
+                  color: '#FFFFFF'
+                },
+                {
+                  type: 'text',
+                  text: 'FLOS 曜診所',
+                  size: 'md',
+                  color: '#FFFFFF',
+                  margin: 'md'
+                }
+              ],
+              backgroundColor: '#E91E63',
+              paddingAll: '20px'
+            },
+            body: {
+              type: 'box',
+              layout: 'vertical',
+              contents: [
+                {
+                  type: 'box',
+                  layout: 'horizontal',
+                  contents: [
+                    {
+                      type: 'text',
+                      text: '📱',
+                      size: 'xl',
+                      flex: 0
+                    },
+                    {
+                      type: 'box',
+                      layout: 'vertical',
+                      contents: [
+                        {
+                          type: 'text',
+                          text: '聯絡電話',
+                          size: 'xs',
+                          color: '#999999'
+                        },
+                        {
+                          type: 'text',
+                          text: '02-1234-5678',
+                          size: 'md',
+                          weight: 'bold',
+                          margin: 'xs'
+                        }
+                      ],
+                      margin: 'md'
+                    }
+                  ],
+                  margin: 'lg'
+                },
+                {
+                  type: 'separator',
+                  margin: 'lg'
+                },
+                {
+                  type: 'box',
+                  layout: 'horizontal',
+                  contents: [
+                    {
+                      type: 'text',
+                      text: '📍',
+                      size: 'xl',
+                      flex: 0
+                    },
+                    {
+                      type: 'box',
+                      layout: 'vertical',
+                      contents: [
+                        {
+                          type: 'text',
+                          text: '診所地址',
+                          size: 'xs',
+                          color: '#999999'
+                        },
+                        {
+                          type: 'text',
+                          text: '台北市信義區信義路五段7號',
+                          size: 'sm',
+                          wrap: true,
+                          margin: 'xs'
+                        }
+                      ],
+                      margin: 'md'
+                    }
+                  ],
+                  margin: 'lg'
+                },
+                {
+                  type: 'separator',
+                  margin: 'lg'
+                },
+                {
+                  type: 'box',
+                  layout: 'horizontal',
+                  contents: [
+                    {
+                      type: 'text',
+                      text: '⏰',
+                      size: 'xl',
+                      flex: 0
+                    },
+                    {
+                      type: 'box',
+                      layout: 'vertical',
+                      contents: [
+                        {
+                          type: 'text',
+                          text: '營業時間',
+                          size: 'xs',
+                          color: '#999999'
+                        },
+                        {
+                          type: 'text',
+                          text: '週一至週五 10:00-20:00\n週六 10:00-18:00\n週日公休',
+                          size: 'sm',
+                          wrap: true,
+                          margin: 'xs'
+                        }
+                      ],
+                      margin: 'md'
+                    }
+                  ],
+                  margin: 'lg'
+                },
+                {
+                  type: 'separator',
+                  margin: 'lg'
+                },
+                {
+                  type: 'box',
+                  layout: 'horizontal',
+                  contents: [
+                    {
+                      type: 'text',
+                      text: '💬',
+                      size: 'xl',
+                      flex: 0
+                    },
+                    {
+                      type: 'box',
+                      layout: 'vertical',
+                      contents: [
+                        {
+                          type: 'text',
+                          text: 'LINE 官方帳號',
+                          size: 'xs',
+                          color: '#999999'
+                        },
+                        {
+                          type: 'text',
+                          text: '@flos-clinic',
+                          size: 'sm',
+                          margin: 'xs'
+                        }
+                      ],
+                      margin: 'md'
+                    }
+                  ],
+                  margin: 'lg'
+                }
+              ],
+              paddingAll: '20px'
+            },
+            footer: {
+              type: 'box',
+              layout: 'vertical',
+              contents: [
+                {
+                  type: 'button',
+                  action: {
+                    type: 'uri',
+                    label: '📞 撥打電話',
+                    uri: 'tel:02-1234-5678'
+                  },
+                  style: 'primary',
+                  color: '#E91E63',
+                  height: 'md'
+                },
+                {
+                  type: 'button',
+                  action: {
+                    type: 'uri',
+                    label: '🗺️ 查看地圖',
+                    uri: 'https://maps.google.com/?q=台北市信義區信義路五段7號'
+                  },
+                  style: 'secondary',
+                  height: 'md',
+                  margin: 'sm'
+                }
+              ],
+              paddingAll: '20px'
+            }
+          }
+        }]);
     }
   }
   
@@ -1482,6 +1930,142 @@ function validateSignature(body, signature) {
     .update(body)
     .digest('base64');
   return hash === signature;
+}
+
+/**
+ * 我的預約 - 查詢個人預約列表
+ */
+async function handleMyBookings(userId, replyToken) {
+  try {
+    // 從 Supabase 查詢該用戶的預約
+    const { data: bookings, error } = await supabase
+      .from('yuemeiBookings')
+      .select('*')
+      .eq('line_user_id', userId)
+      .in('status', ['pending', 'confirmed'])
+      .order('preferred_date', { ascending: true })
+      .limit(5);
+    
+    if (error) {
+      console.error('[Supabase] 查詢預約失敗:', error);
+      return await replyMessage(replyToken, [{
+        type: 'text',
+        text: '❗ 查詢失敗，請稍後再試。'
+      }]);
+    }
+    
+    if (!bookings || bookings.length === 0) {
+      return await replyMessage(replyToken, [{
+        type: 'text',
+        text: '🔍 您目前沒有待確認或已確認的預約。\n\n如需預約，請點擊下方選單的「預約」按鈕 🌸'
+      }]);
+    }
+    
+    // 生成預約列表 Carousel
+    const bubbles = bookings.map(booking => {
+      const statusEmoji = booking.status === 'confirmed' ? '✅' : '⏳';
+      const statusText = booking.status === 'confirmed' ? '已確認' : '待確認';
+      
+      return {
+        type: 'bubble',
+        size: 'micro',
+        header: {
+          type: 'box',
+          layout: 'vertical',
+          contents: [
+            {
+              type: 'text',
+              text: `${statusEmoji} ${statusText}`,
+              weight: 'bold',
+              size: 'sm',
+              color: '#FFFFFF'
+            }
+          ],
+          backgroundColor: booking.status === 'confirmed' ? '#4CAF50' : '#FF9800',
+          paddingAll: '12px'
+        },
+        body: {
+          type: 'box',
+          layout: 'vertical',
+          contents: [
+            {
+              type: 'text',
+              text: booking.treatment_name || booking.treatment_category,
+              weight: 'bold',
+              size: 'md',
+              wrap: true
+            },
+            {
+              type: 'text',
+              text: `📅 ${booking.preferred_date}`,
+              size: 'sm',
+              color: '#666666',
+              margin: 'md'
+            },
+            {
+              type: 'text',
+              text: `⏰ ${booking.preferred_time}`,
+              size: 'sm',
+              color: '#666666',
+              margin: 'xs'
+            },
+            {
+              type: 'text',
+              text: `👤 ${booking.customer_name}`,
+              size: 'sm',
+              color: '#666666',
+              margin: 'xs'
+            }
+          ],
+          paddingAll: '12px'
+        },
+        footer: {
+          type: 'box',
+          layout: 'vertical',
+          contents: [
+            {
+              type: 'button',
+              action: {
+                type: 'postback',
+                label: '📝 修改預約',
+                data: `action=modify_booking&booking_id=${booking.id}`
+              },
+              style: 'primary',
+              color: '#E91E63',
+              height: 'sm'
+            },
+            {
+              type: 'button',
+              action: {
+                type: 'postback',
+                label: '❌ 取消預約',
+                data: `action=cancel_booking_confirm&booking_id=${booking.id}`
+              },
+              style: 'secondary',
+              height: 'sm',
+              margin: 'sm'
+            }
+          ],
+          paddingAll: '12px'
+        }
+      };
+    });
+    
+    return await replyMessage(replyToken, [{
+      type: 'flex',
+      altText: '您的預約記錄',
+      contents: {
+        type: 'carousel',
+        contents: bubbles
+      }
+    }]);
+  } catch (error) {
+    console.error('[Query Bookings] Error:', error);
+    return await replyMessage(replyToken, [{
+      type: 'text',
+      text: '❗ 查詢失敗，請稍後再試。'
+    }]);
+  }
 }
 
 /**
