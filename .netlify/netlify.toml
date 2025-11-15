@@ -31,6 +31,18 @@ SECRETS_SCAN_ENABLED = "false"
 [functions."*"]
 
 [[redirects]]
+from = "/api/*"
+to = "/.netlify/functions/:splat"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
 from = "/css/*"
 to = "/css/:splat"
 status = 200.0
@@ -70,7 +82,7 @@ force = false
 from = "/api/*"
 to = "/.netlify/functions/:splat"
 status = 200.0
-force = false
+force = true
 
 [redirects.query]
 

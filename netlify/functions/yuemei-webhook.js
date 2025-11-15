@@ -206,7 +206,7 @@ function generateDateSelection(step, totalSteps) {
         },
         style: 'primary',
         color: '#E91E63',
-        height: 'sm',
+        height: 'md',
         flex: 1,
         margin: 'xs'
       })),
@@ -275,7 +275,7 @@ function generateTimeSelection(dayOfWeek, step, totalSteps) {
         },
         style: 'primary',
         color: '#E91E63',
-        height: 'sm',
+        height: 'md',
         flex: 1,
         margin: 'xs'
       })),
@@ -572,16 +572,77 @@ async function handleBookingFlow(userId, event) {
         state.state = BOOKING_STATES.INPUT_NAME;
         conversationStates.set(userId, state);
         
+        // 使用 LIFF 表單輸入姓名和電話
+        const liffUrl = `https://rad-paletas-14483a.netlify.app/liff-form.html?userId=${userId}`;
+        
         return await replyMessage(event.replyToken, [{
-          type: 'text',
-          text: `您選擇了：${time} ⏰\n\n請輸入您的姓名：`,
-          quickReply: {
-            items: [
-              { type: 'action', action: { type: 'message', label: '王小明', text: '王小明' } },
-              { type: 'action', action: { type: 'message', label: '李小華', text: '李小華' } },
-              { type: 'action', action: { type: 'message', label: '張小美', text: '張小美' } },
-              { type: 'action', action: { type: 'message', label: '陳小強', text: '陳小強' } }
-            ]
+          type: 'flex',
+          altText: '請填寫預約資料',
+          contents: {
+            type: 'bubble',
+            size: 'mega',
+            header: {
+              type: 'box',
+              layout: 'vertical',
+              contents: [
+                {
+                  type: 'text',
+                  text: `✅ 時段已選擇`,
+                  weight: 'bold',
+                  size: 'lg',
+                  color: '#FFFFFF'
+                },
+                {
+                  type: 'text',
+                  text: `您選擇了：${time}`,
+                  size: 'sm',
+                  color: '#FFFFFF',
+                  margin: 'xs'
+                }
+              ],
+              backgroundColor: '#9C27B0',
+              paddingAll: '20px'
+            },
+            body: {
+              type: 'box',
+              layout: 'vertical',
+              contents: [
+                {
+                  type: 'text',
+                  text: '👉 請點擊下方按鈕填寫預約資料',
+                  size: 'md',
+                  color: '#333333',
+                  wrap: true,
+                  margin: 'md'
+                },
+                {
+                  type: 'text',
+                  text: '• 姓名\n• 聯絡電話',
+                  size: 'sm',
+                  color: '#666666',
+                  margin: 'md'
+                }
+              ],
+              paddingAll: '20px'
+            },
+            footer: {
+              type: 'box',
+              layout: 'vertical',
+              contents: [
+                {
+                  type: 'button',
+                  action: {
+                    type: 'uri',
+                    label: '📝 填寫預約資料',
+                    uri: liffUrl
+                  },
+                  style: 'primary',
+                  color: '#E91E63',
+                  height: 'md'
+                }
+              ],
+              paddingAll: '20px'
+            }
           }
         }]);
       
@@ -613,6 +674,31 @@ async function handleBookingFlow(userId, event) {
   // 處理文字訊息
   if (event.type === 'message' && event.message.type === 'text') {
     const text = event.message.text.trim();
+    
+    // 處理 LIFF 表單回傳資料
+    if (text.startsWith('LIFF_FORM_DATA:')) {
+      try {
+        const formData = JSON.parse(text.replace('LIFF_FORM_DATA:', ''));
+        
+        if (state.state === BOOKING_STATES.INPUT_NAME) {
+          state.bookingData.name = formData.name;
+          state.bookingData.phone = formData.phone;
+          state.state = BOOKING_STATES.SELECT_DOCTOR;
+          conversationStates.set(userId, state);
+          
+          return await replyMessage(event.replyToken, [
+            { type: 'text', text: `收到您的資料！\n姓名：${formData.name}\n電話：${formData.phone} ✅` },
+            generateDoctorSelection(4, 5)
+          ]);
+        }
+      } catch (error) {
+        console.error('Error parsing LIFF form data:', error);
+        return await replyMessage(event.replyToken, [{
+          type: 'text',
+          text: '❗ 資料處理失敗，請重新填寫'
+        }]);
+      }
+    }
     
     // 根據當前狀態處理輸入
     switch (state.state) {

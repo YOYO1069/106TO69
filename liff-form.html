@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>預約資料填寫</title>
+  <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #FFC0CB 0%, #FFB6C1 100%);
+      min-height: 100vh;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .container {
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .header h1 {
+      color: #E91E63;
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+    
+    .header p {
+      color: #666;
+      font-size: 14px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    label {
+      display: block;
+      color: #333;
+      font-weight: 600;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+    
+    input[type="text"],
+    input[type="tel"] {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #E0E0E0;
+      border-radius: 10px;
+      font-size: 16px;
+      transition: border-color 0.3s;
+    }
+    
+    input:focus {
+      outline: none;
+      border-color: #E91E63;
+    }
+    
+    .hint {
+      font-size: 12px;
+      color: #999;
+      margin-top: 4px;
+    }
+    
+    .error {
+      color: #F44336;
+      font-size: 12px;
+      margin-top: 4px;
+      display: none;
+    }
+    
+    .submit-btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #E91E63 0%, #D81B60 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    
+    .submit-btn:active {
+      transform: scale(0.98);
+    }
+    
+    .submit-btn:disabled {
+      background: #CCC;
+      cursor: not-allowed;
+    }
+    
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 20px;
+    }
+    
+    .loading-spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #E91E63;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 10px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🌸 預約資料填寫</h1>
+      <p>請填寫您的姓名和聯絡電話</p>
+    </div>
+    
+    <form id="bookingForm">
+      <div class="form-group">
+        <label for="name">姓名 *</label>
+        <input 
+          type="text" 
+          id="name" 
+          name="name" 
+          placeholder="請輸入您的姓名"
+          required
+        >
+        <div class="error" id="nameError">請輸入姓名</div>
+      </div>
+      
+      <div class="form-group">
+        <label for="phone">聯絡電話 *</label>
+        <input 
+          type="tel" 
+          id="phone" 
+          name="phone" 
+          placeholder="0912345678"
+          required
+        >
+        <div class="hint">請輸入 10 碼手機號碼</div>
+        <div class="error" id="phoneError">請輸入正確的手機號碼</div>
+      </div>
+      
+      <button type="submit" class="submit-btn" id="submitBtn">
+        確認送出
+      </button>
+    </form>
+    
+    <div class="loading" id="loading">
+      <div class="loading-spinner"></div>
+      <p>處理中...</p>
+    </div>
+  </div>
+  
+  <script>
+    let liffId = null;
+    
+    // 從 URL 參數取得 LIFF ID
+    const urlParams = new URLSearchParams(window.location.search);
+    liffId = urlParams.get('liffId') || '2006706881-KyNMPNXq'; // 預設 LIFF ID（需要在 LINE Developers 建立）
+    
+    // 初始化 LIFF
+    liff.init({ liffId: liffId })
+      .then(() => {
+        if (!liff.isLoggedIn()) {
+          liff.login();
+        }
+      })
+      .catch((err) => {
+        console.error('LIFF initialization failed', err);
+        alert('初始化失敗，請稍後再試');
+      });
+    
+    // 表單驗證
+    function validatePhone(phone) {
+      const phoneRegex = /^09\d{8}$/;
+      return phoneRegex.test(phone);
+    }
+    
+    // 表單提交
+    document.getElementById('bookingForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const name = document.getElementById('name').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      
+      // 重置錯誤訊息
+      document.getElementById('nameError').style.display = 'none';
+      document.getElementById('phoneError').style.display = 'none';
+      
+      // 驗證
+      let hasError = false;
+      
+      if (!name) {
+        document.getElementById('nameError').style.display = 'block';
+        hasError = true;
+      }
+      
+      if (!validatePhone(phone)) {
+        document.getElementById('phoneError').style.display = 'block';
+        hasError = true;
+      }
+      
+      if (hasError) return;
+      
+      // 顯示載入中
+      document.getElementById('bookingForm').style.display = 'none';
+      document.getElementById('loading').style.display = 'block';
+      
+      // 發送資料回 LINE Bot
+      try {
+        const message = {
+          type: 'text',
+          text: `LIFF_FORM_DATA:${JSON.stringify({ name, phone })}`
+        };
+        
+        await liff.sendMessages([message]);
+        liff.closeWindow();
+      } catch (error) {
+        console.error('Error sending message', error);
+        alert('送出失敗，請稍後再試');
+        document.getElementById('bookingForm').style.display = 'block';
+        document.getElementById('loading').style.display = 'none';
+      }
+    });
+  </script>
+</body>
+</html>
