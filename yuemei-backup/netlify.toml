@@ -1,0 +1,26 @@
+[build]
+  publish = "."
+  command = "echo 'Static site deployed'"
+  functions = "netlify/functions"
+
+[build.environment]
+  SECRETS_SCAN_ENABLED = "false"
+
+# Functions 必須在 SPA fallback 之前
+[[redirects]]
+  from = "/.netlify/functions/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+  force = true
+
+# SPA fallback 放最後
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

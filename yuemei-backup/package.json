@@ -1,0 +1,32 @@
+{
+  "name": "liu-daoxuan-clinic-system",
+  "version": "2.0.0",
+  "description": "劉道玄醫師診所內部管理整合系統",
+  "main": "index.html",
+  "scripts": {
+    "start": "netlify dev",
+    "deploy": "netlify deploy --prod"
+  },
+  "dependencies": {
+    "@google-cloud/storage": "^7.5.0",
+    "@google/generative-ai": "^0.2.1",
+    "@supabase/supabase-js": "^2.81.1",
+    "googleapis": "^128.0.0",
+    "node-fetch": "^2.6.7"
+  },
+  "devDependencies": {
+    "netlify-cli": "^23.7.3"
+  },
+  "keywords": [
+    "medical",
+    "clinic",
+    "appointment",
+    "google-calendar",
+    "healthcare"
+  ],
+  "author": "劉道玄醫師診所",
+  "license": "Private",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
