@@ -529,13 +529,163 @@ async function handleBookingFlow(userId, event) {
     
     switch (action) {
       case 'start_booking':
-        // 開始預約流程
-        state.state = BOOKING_STATES.SELECT_TREATMENT;
+        // 開始預約流程 - 選擇單人或多人
+        state.state = 'SELECT_BOOKING_TYPE';
         state.bookingData = {};
+        conversationStates.set(userId, state);
+        
+        return await replyMessage(event.replyToken, [{
+          type: 'flex',
+          altText: '選擇預約類型',
+          contents: {
+            type: 'bubble',
+            size: 'mega',
+            header: {
+              type: 'box',
+              layout: 'vertical',
+              contents: [
+                {
+                  type: 'text',
+                  text: '📝 預約系統',
+                  weight: 'bold',
+                  size: 'xl',
+                  color: '#FFFFFF'
+                },
+                {
+                  type: 'text',
+                  text: '請選擇預約的類型',
+                  size: 'sm',
+                  color: '#FFFFFF',
+                  margin: 'md'
+                }
+              ],
+              backgroundColor: '#E91E63',
+              paddingAll: '20px'
+            },
+            body: {
+              type: 'box',
+              layout: 'vertical',
+              contents: [
+                {
+                  type: 'button',
+                  action: {
+                    type: 'postback',
+                    label: '👤 單人預約',
+                    data: 'action=single_booking'
+                  },
+                  style: 'primary',
+                  color: '#E91E63',
+                  height: 'md'
+                },
+                {
+                  type: 'button',
+                  action: {
+                    type: 'postback',
+                    label: '👥 多人預約',
+                    data: 'action=multi_booking'
+                  },
+                  style: 'primary',
+                  color: '#9C27B0',
+                  height: 'md',
+                  margin: 'md'
+                },
+                {
+                  type: 'text',
+                  text: 'ℹ️ 多人預約可一次為多位家人或朋友預約同一療程',
+                  size: 'xs',
+                  color: '#999999',
+                  wrap: true,
+                  margin: 'lg'
+                }
+              ],
+              paddingAll: '20px'
+            }
+          }
+        }]);
+      
+      case 'single_booking':
+        // 單人預約
+        state.state = BOOKING_STATES.SELECT_TREATMENT;
+        state.bookingData = { isMulti: false };
         conversationStates.set(userId, state);
         
         return await replyMessage(event.replyToken, [
           { type: 'text', text: '🌸 歡迎預約 FLOS 曜診所療程！\n\n請選擇您想要的療程：' },
+          await generateTreatmentCarousel()
+        ]);
+      
+      case 'multi_booking':
+        // 多人預約 - 選擇人數
+        state.state = 'SELECT_PERSON_COUNT';
+        state.bookingData = { isMulti: true };
+        conversationStates.set(userId, state);
+        
+        return await replyMessage(event.replyToken, [{
+          type: 'flex',
+          altText: '選擇人數',
+          contents: {
+            type: 'bubble',
+            size: 'mega',
+            header: {
+              type: 'box',
+              layout: 'vertical',
+              contents: [
+                {
+                  type: 'text',
+                  text: '👥 多人預約',
+                  weight: 'bold',
+                  size: 'xl',
+                  color: '#FFFFFF'
+                },
+                {
+                  type: 'text',
+                  text: '請選擇預約人數（最多 5 人）',
+                  size: 'sm',
+                  color: '#FFFFFF',
+                  margin: 'md'
+                }
+              ],
+              backgroundColor: '#9C27B0',
+              paddingAll: '20px'
+            },
+            body: {
+              type: 'box',
+              layout: 'vertical',
+              contents: [
+                {
+                  type: 'box',
+                  layout: 'horizontal',
+                  contents: [2, 3, 4, 5].map(n => ({
+                    type: 'button',
+                    action: {
+                      type: 'postback',
+                      label: `${n} 人`,
+                      data: `action=set_person_count&count=${n}`
+                    },
+                    style: 'primary',
+                    color: '#9C27B0',
+                    height: 'md',
+                    flex: 1,
+                    margin: 'xs'
+                  })),
+                  spacing: 'sm'
+                }
+              ],
+              paddingAll: '20px'
+            }
+          }
+        }]);
+      
+      case 'set_person_count':
+        // 設定預約人數
+        const personCount = parseInt(params.get('count'));
+        state.bookingData.personCount = personCount;
+        state.bookingData.persons = [];
+        state.state = BOOKING_STATES.SELECT_TREATMENT;
+        conversationStates.set(userId, state);
+        
+        return await replyMessage(event.replyToken, [
+          { type: 'text', text: `✅ 已選擇 ${personCount} 人預約\n\n請選擇療程：` },
           await generateTreatmentCarousel()
         ]);
       
@@ -650,6 +800,78 @@ async function handleBookingFlow(userId, event) {
         // 選擇醫師
         const doctor = params.get('doctor');
         state.bookingData.doctor = doctor === '不指定' ? null : doctor;
+        
+        // 如果是多人預約且還有人沒收集資料
+        if (state.bookingData.isMulti && (!state.bookingData.persons || state.bookingData.persons.length < state.bookingData.personCount)) {
+          const currentPerson = (state.bookingData.persons || []).length + 1;
+          const liffUrl = `https://rad-paletas-14483a.netlify.app/liff-form.html?userId=${userId}&person=${currentPerson}`;
+          
+          return await replyMessage(event.replyToken, [{
+            type: 'flex',
+            altText: `請填寫第 ${currentPerson} 位預約者資料`,
+            contents: {
+              type: 'bubble',
+              size: 'mega',
+              header: {
+                type: 'box',
+                layout: 'vertical',
+                contents: [
+                  {
+                    type: 'text',
+                    text: `📝 第 ${currentPerson} 位預約者 (${currentPerson}/${state.bookingData.personCount})`,
+                    weight: 'bold',
+                    size: 'lg',
+                    color: '#FFFFFF'
+                  }
+                ],
+                backgroundColor: '#9C27B0',
+                paddingAll: '20px'
+              },
+              body: {
+                type: 'box',
+                layout: 'vertical',
+                contents: [
+                  {
+                    type: 'text',
+                    text: '👉 請點擊下方按鈕填寫預約資料',
+                    size: 'md',
+                    color: '#333333',
+                    wrap: true,
+                    margin: 'md'
+                  },
+                  {
+                    type: 'text',
+                    text: '• 姓名\n• 聯絡電話',
+                    size: 'sm',
+                    color: '#666666',
+                    margin: 'md'
+                  }
+                ],
+                paddingAll: '20px'
+              },
+              footer: {
+                type: 'box',
+                layout: 'vertical',
+                contents: [
+                  {
+                    type: 'button',
+                    action: {
+                      type: 'uri',
+                      label: `📝 填寫第 ${currentPerson} 位資料`,
+                      uri: liffUrl
+                    },
+                    style: 'primary',
+                    color: '#9C27B0',
+                    height: 'md'
+                  }
+                ],
+                paddingAll: '20px'
+              }
+            }
+          }]);
+        }
+        
+        // 單人預約或多人預約已收集完成
         state.state = BOOKING_STATES.CONFIRM;
         conversationStates.set(userId, state);
         
@@ -661,12 +883,135 @@ async function handleBookingFlow(userId, event) {
         // 確認預約
         return await confirmBooking(userId, event.replyToken, state.bookingData);
       
+      case 'modify_booking':
+        // 修改預約
+        const modifyBookingId = parseInt(params.get('booking_id'));
+        return await handleModifyBooking(userId, event.replyToken, modifyBookingId);
+      
+      case 'modify_select_date':
+        // 修改預約 - 選擇日期
+        const modifyDate = params.get('date');
+        const modifyDayOfWeek = parseInt(params.get('dayOfWeek'));
+        state.modifyData = { date: modifyDate, dayOfWeek: modifyDayOfWeek };
+        state.state = 'MODIFY_SELECT_TIME';
+        conversationStates.set(userId, state);
+        
+        // 生成修改用的時段選擇（使用 modify_select_time action）
+        const times = generateTimeOptions(modifyDayOfWeek);
+        const timeRows = [];
+        for (let i = 0; i < times.length; i += 3) {
+          const rowTimes = times.slice(i, i + 3);
+          timeRows.push({
+            type: 'box',
+            layout: 'horizontal',
+            contents: rowTimes.map(t => ({
+              type: 'button',
+              action: {
+                type: 'postback',
+                label: t,
+                data: `action=modify_select_time&time=${t}`
+              },
+              style: 'primary',
+              color: '#E91E63',
+              height: 'md',
+              flex: 1,
+              margin: 'xs'
+            })),
+            spacing: 'sm'
+          });
+        }
+        
+        return await replyMessage(event.replyToken, [
+          { type: 'text', text: `新日期：${modifyDate} 📅\n\n請選擇新的時段：` },
+          {
+            type: 'flex',
+            altText: '請選擇時段',
+            contents: {
+              type: 'bubble',
+              size: 'mega',
+              header: {
+                type: 'box',
+                layout: 'vertical',
+                contents: [
+                  {
+                    type: 'text',
+                    text: '⏰ 選擇新時段 (2/2)',
+                    weight: 'bold',
+                    size: 'lg',
+                    color: '#FFFFFF'
+                  },
+                  {
+                    type: 'text',
+                    text: '請選擇您希望的預約時段',
+                    size: 'sm',
+                    color: '#FFFFFF',
+                    margin: 'xs'
+                  }
+                ],
+                backgroundColor: '#9C27B0',
+                paddingAll: '20px'
+              },
+              body: {
+                type: 'box',
+                layout: 'vertical',
+                contents: timeRows,
+                spacing: 'sm',
+                paddingAll: '20px'
+              }
+            }
+          }
+        ]);
+      
+      case 'modify_select_time':
+        // 修改預約 - 選擇時段
+        const modifyTime = params.get('time');
+        
+        try {
+          // 更新預約
+          const { error } = await supabase
+            .from('yuemeiBookings')
+            .update({
+              preferred_date: state.modifyData.date,
+              preferred_time: modifyTime,
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', state.modifyingBookingId)
+            .eq('line_user_id', userId);
+          
+          if (error) {
+            console.error('[Modify Booking] Update error:', error);
+            return await replyMessage(event.replyToken, [{
+              type: 'text',
+              text: '❗ 修改失敗，請稍後再試。'
+            }]);
+          }
+          
+          // 清除狀態
+          conversationStates.delete(userId);
+          
+          return await replyMessage(event.replyToken, [{
+            type: 'text',
+            text: `✅ 預約修改成功！\n\n新預約資訊：\n日期：${state.modifyData.date}\n時段：${modifyTime}\n\n我們會盡快與您聯絡確認新的預約時間 🌸`
+          }]);
+        } catch (error) {
+          console.error('[Modify Booking] Error:', error);
+          return await replyMessage(event.replyToken, [{
+            type: 'text',
+            text: '❗ 修改失敗，請稍後再試。'
+          }]);
+        }
+      
+      case 'cancel_booking_confirm':
+        // 確認取消預約
+        const cancelBookingId = parseInt(params.get('booking_id'));
+        return await handleCancelBooking(userId, event.replyToken, cancelBookingId);
+      
       case 'cancel_booking':
-        // 取消預約
+        // 取消預約流程
         conversationStates.delete(userId);
         return await replyMessage(event.replyToken, [{
           type: 'text',
-          text: '已取消預約。如需重新預約，請點擊下方選單的「預約」按鈕 🌸'
+          text: '已取消預約流程。如需重新預約，請點擊下方選單的「預約」按鈕 🌸'
         }]);
     }
   }
@@ -681,15 +1026,114 @@ async function handleBookingFlow(userId, event) {
         const formData = JSON.parse(text.replace('LIFF_FORM_DATA:', ''));
         
         if (state.state === BOOKING_STATES.INPUT_NAME) {
-          state.bookingData.name = formData.name;
-          state.bookingData.phone = formData.phone;
-          state.state = BOOKING_STATES.SELECT_DOCTOR;
-          conversationStates.set(userId, state);
-          
-          return await replyMessage(event.replyToken, [
-            { type: 'text', text: `收到您的資料！\n姓名：${formData.name}\n電話：${formData.phone} ✅` },
-            generateDoctorSelection(4, 5)
-          ]);
+          // 單人預約
+          if (!state.bookingData.isMulti) {
+            state.bookingData.name = formData.name;
+            state.bookingData.phone = formData.phone;
+            state.state = BOOKING_STATES.SELECT_DOCTOR;
+            conversationStates.set(userId, state);
+            
+            return await replyMessage(event.replyToken, [
+              { type: 'text', text: `收到您的資料！\n姓名：${formData.name}\n電話：${formData.phone} ✅` },
+              generateDoctorSelection(4, 5)
+            ]);
+          } else {
+            // 多人預約 - 收集第 N 位資料
+            if (!state.bookingData.persons) {
+              state.bookingData.persons = [];
+            }
+            state.bookingData.persons.push({
+              name: formData.name,
+              phone: formData.phone
+            });
+            
+            const currentCount = state.bookingData.persons.length;
+            const totalCount = state.bookingData.personCount;
+            
+            // 如果還有人沒收集，繼續收集
+            if (currentCount < totalCount) {
+              const nextPerson = currentCount + 1;
+              const liffUrl = `https://rad-paletas-14483a.netlify.app/liff-form.html?userId=${userId}&person=${nextPerson}`;
+              
+              return await replyMessage(event.replyToken, [
+                { type: 'text', text: `✅ 已收到第 ${currentCount} 位資料！\n姓名：${formData.name}\n電話：${formData.phone}\n\n請繼續填寫第 ${nextPerson} 位預約者資料：` },
+                {
+                  type: 'flex',
+                  altText: `請填寫第 ${nextPerson} 位預約者資料`,
+                  contents: {
+                    type: 'bubble',
+                    size: 'mega',
+                    header: {
+                      type: 'box',
+                      layout: 'vertical',
+                      contents: [
+                        {
+                          type: 'text',
+                          text: `📝 第 ${nextPerson} 位預約者 (${nextPerson}/${totalCount})`,
+                          weight: 'bold',
+                          size: 'lg',
+                          color: '#FFFFFF'
+                        }
+                      ],
+                      backgroundColor: '#9C27B0',
+                      paddingAll: '20px'
+                    },
+                    body: {
+                      type: 'box',
+                      layout: 'vertical',
+                      contents: [
+                        {
+                          type: 'text',
+                          text: '👉 請點擊下方按鈕填寫預約資料',
+                          size: 'md',
+                          color: '#333333',
+                          wrap: true,
+                          margin: 'md'
+                        },
+                        {
+                          type: 'text',
+                          text: '• 姓名\n• 聯絡電話',
+                          size: 'sm',
+                          color: '#666666',
+                          margin: 'md'
+                        }
+                      ],
+                      paddingAll: '20px'
+                    },
+                    footer: {
+                      type: 'box',
+                      layout: 'vertical',
+                      contents: [
+                        {
+                          type: 'button',
+                          action: {
+                            type: 'uri',
+                            label: `📝 填寫第 ${nextPerson} 位資料`,
+                            uri: liffUrl
+                          },
+                          style: 'primary',
+                          color: '#9C27B0',
+                          height: 'md'
+                        }
+                      ],
+                      paddingAll: '20px'
+                    }
+                  }
+                }
+              ]);
+            } else {
+              // 所有人資料收集完成，選擇醫師
+              state.state = BOOKING_STATES.SELECT_DOCTOR;
+              conversationStates.set(userId, state);
+              
+              const personsList = state.bookingData.persons.map((p, i) => `${i+1}. ${p.name} (${p.phone})`).join('\n');
+              
+              return await replyMessage(event.replyToken, [
+                { type: 'text', text: `✅ 所有預約者資料已收集完成！\n\n預約名單：\n${personsList}\n\n請選擇醫師：` },
+                generateDoctorSelection(4, 5)
+              ]);
+            }
+          }
         }
       } catch (error) {
         console.error('Error parsing LIFF form data:', error);
@@ -746,6 +1190,11 @@ async function handleBookingFlow(userId, event) {
       
       case BOOKING_STATES.IDLE:
       default:
+        // 檢查是否為查詢預約
+        if (text.includes('查詢') && text.includes('預約') || text.includes('我的預約')) {
+          return await handleQueryBookings(userId, event.replyToken);
+        }
+        
         // 檢查是否為預約相關關鍵字
         if (text.includes('預約') || text.includes('約診') || text.includes('掛號')) {
           state.state = BOOKING_STATES.SELECT_TREATMENT;
@@ -771,10 +1220,27 @@ async function handleBookingFlow(userId, event) {
  */
 async function confirmBooking(userId, replyToken, bookingData) {
   try {
-    // 儲存到 Supabase
-    const { data, error } = await supabase
-      .from('yuemeiBookings')
-      .insert([{
+    // 準備預約資料
+    let bookingsToInsert = [];
+    
+    if (bookingData.isMulti && bookingData.persons && bookingData.persons.length > 0) {
+      // 多人預約 - 批次建立
+      bookingsToInsert = bookingData.persons.map(person => ({
+        line_user_id: userId,
+        customer_name: person.name,
+        customer_phone: person.phone,
+        treatment_category: bookingData.treatment,
+        treatment_name: bookingData.treatment,
+        preferred_date: bookingData.date,
+        preferred_time: bookingData.time,
+        preferred_doctor: bookingData.doctor,
+        status: 'pending',
+        notes: `透過 LINE Bot 預約（多人預約，共 ${bookingData.persons.length} 人）`,
+        created_at: new Date().toISOString()
+      }));
+    } else {
+      // 單人預約
+      bookingsToInsert = [{
         line_user_id: userId,
         customer_name: bookingData.name,
         customer_phone: bookingData.phone,
@@ -786,7 +1252,13 @@ async function confirmBooking(userId, replyToken, bookingData) {
         status: 'pending',
         notes: `透過 LINE Bot 預約（按鈕式流程）`,
         created_at: new Date().toISOString()
-      }])
+      }];
+    }
+    
+    // 儲存到 Supabase
+    const { data, error } = await supabase
+      .from('yuemeiBookings')
+      .insert(bookingsToInsert)
       .select();
     
     if (error) {
@@ -1013,9 +1485,282 @@ function validateSignature(body, signature) {
 }
 
 /**
+ * 查詢預約
+ */
+async function handleQueryBookings(userId, replyToken) {
+  try {
+    // 從 Supabase 查詢該用戶的預約
+    const { data: bookings, error } = await supabase
+      .from('yuemeiBookings')
+      .select('*')
+      .eq('line_user_id', userId)
+      .in('status', ['pending', 'confirmed'])
+      .order('preferred_date', { ascending: true })
+      .limit(5);
+    
+    if (error) {
+      console.error('[Supabase] 查詢預約失敗:', error);
+      return await replyMessage(replyToken, [{
+        type: 'text',
+        text: '❗ 查詢失敗，請稍後再試。'
+      }]);
+    }
+    
+    if (!bookings || bookings.length === 0) {
+      return await replyMessage(replyToken, [{
+        type: 'text',
+        text: '🔍 您目前沒有待確認或已確認的預約。\n\n如需預約，請點擊下方選單的「預約」按鈕 🌸'
+      }]);
+    }
+    
+    // 生成預約列表 Carousel
+    const bubbles = bookings.map(booking => {
+      const statusEmoji = booking.status === 'confirmed' ? '✅' : '⏳';
+      const statusText = booking.status === 'confirmed' ? '已確認' : '待確認';
+      
+      return {
+        type: 'bubble',
+        size: 'micro',
+        header: {
+          type: 'box',
+          layout: 'vertical',
+          contents: [
+            {
+              type: 'text',
+              text: `${statusEmoji} ${statusText}`,
+              weight: 'bold',
+              size: 'sm',
+              color: '#FFFFFF'
+            }
+          ],
+          backgroundColor: booking.status === 'confirmed' ? '#4CAF50' : '#FF9800',
+          paddingAll: '12px'
+        },
+        body: {
+          type: 'box',
+          layout: 'vertical',
+          contents: [
+            {
+              type: 'text',
+              text: booking.treatment_name || booking.treatment_category,
+              weight: 'bold',
+              size: 'md',
+              wrap: true
+            },
+            {
+              type: 'text',
+              text: `📅 ${booking.preferred_date}`,
+              size: 'sm',
+              color: '#666666',
+              margin: 'md'
+            },
+            {
+              type: 'text',
+              text: `⏰ ${booking.preferred_time}`,
+              size: 'sm',
+              color: '#666666',
+              margin: 'xs'
+            },
+            {
+              type: 'text',
+              text: `👤 ${booking.customer_name}`,
+              size: 'sm',
+              color: '#666666',
+              margin: 'xs'
+            }
+          ],
+          paddingAll: '12px'
+        },
+        footer: {
+          type: 'box',
+          layout: 'vertical',
+          contents: [
+            {
+              type: 'button',
+              action: {
+                type: 'postback',
+                label: '📝 修改預約',
+                data: `action=modify_booking&booking_id=${booking.id}`
+              },
+              style: 'primary',
+              color: '#E91E63',
+              height: 'sm'
+            },
+            {
+              type: 'button',
+              action: {
+                type: 'postback',
+                label: '❌ 取消預約',
+                data: `action=cancel_booking_confirm&booking_id=${booking.id}`
+              },
+              style: 'secondary',
+              height: 'sm',
+              margin: 'sm'
+            }
+          ],
+          paddingAll: '12px'
+        }
+      };
+    });
+    
+    return await replyMessage(replyToken, [{
+      type: 'flex',
+      altText: '您的預約記錄',
+      contents: {
+        type: 'carousel',
+        contents: bubbles
+      }
+    }]);
+  } catch (error) {
+    console.error('[Query Bookings] Error:', error);
+    return await replyMessage(replyToken, [{
+      type: 'text',
+      text: '❗ 查詢失敗，請稍後再試。'
+    }]);
+  }
+}
+
+/**
+ * 修改預約
+ */
+async function handleModifyBooking(userId, replyToken, bookingId) {
+  try {
+    // 查詢預約詳情
+    const { data: booking, error } = await supabase
+      .from('yuemeiBookings')
+      .select('*')
+      .eq('id', bookingId)
+      .eq('line_user_id', userId)
+      .single();
+    
+    if (error || !booking) {
+      return await replyMessage(replyToken, [{
+        type: 'text',
+        text: '❗ 找不到預約記錄。'
+      }]);
+    }
+    
+    // 設定修改狀態
+    const state = conversationStates.get(userId) || { state: BOOKING_STATES.IDLE, bookingData: {} };
+    state.state = 'MODIFY_SELECT_DATE';
+    state.modifyingBookingId = bookingId;
+    state.originalBooking = booking;
+    conversationStates.set(userId, state);
+    
+    // 生成修改用的日期選擇（使用 modify_select_date action）
+    const dates = generateDateOptions();
+    const rows = [];
+    for (let i = 0; i < dates.length; i += 5) {
+      const rowDates = dates.slice(i, i + 5);
+      rows.push({
+        type: 'box',
+        layout: 'horizontal',
+        contents: rowDates.map(d => ({
+          type: 'button',
+          action: {
+            type: 'postback',
+            label: d.display,
+            data: `action=modify_select_date&date=${d.date}&dayOfWeek=${d.dayOfWeek}`
+          },
+          style: 'primary',
+          color: '#E91E63',
+          height: 'md',
+          flex: 1,
+          margin: 'xs'
+        })),
+        spacing: 'sm'
+      });
+    }
+    
+    return await replyMessage(replyToken, [
+      {
+        type: 'text',
+        text: `📝 修改預約\n\n原預約資訊：\n療程：${booking.treatment_name}\n日期：${booking.preferred_date}\n時段：${booking.preferred_time}\n\n請選擇新的預約日期：`
+      },
+      {
+        type: 'flex',
+        altText: '請選擇日期',
+        contents: {
+          type: 'bubble',
+          size: 'mega',
+          header: {
+            type: 'box',
+            layout: 'vertical',
+            contents: [
+              {
+                type: 'text',
+                text: '📅 選擇新日期 (1/2)',
+                weight: 'bold',
+                size: 'lg',
+                color: '#FFFFFF'
+              },
+              {
+                type: 'text',
+                text: '請選擇您希望的預約日期',
+                size: 'sm',
+                color: '#FFFFFF',
+                margin: 'xs'
+              }
+            ],
+            backgroundColor: '#9C27B0',
+            paddingAll: '20px'
+          },
+          body: {
+            type: 'box',
+            layout: 'vertical',
+            contents: rows,
+            spacing: 'sm',
+            paddingAll: '20px'
+          }
+        }
+      }
+    ]);
+  } catch (error) {
+    console.error('[Modify Booking] Error:', error);
+    return await replyMessage(replyToken, [{
+      type: 'text',
+      text: '❗ 修改失敗，請稍後再試。'
+    }]);
+  }
+}
+
+/**
+ * 確認取消預約
+ */
+async function handleCancelBooking(userId, replyToken, bookingId) {
+  try {
+    // 更新預約狀態為已取消
+    const { error } = await supabase
+      .from('yuemeiBookings')
+      .update({ status: 'cancelled', updated_at: new Date().toISOString() })
+      .eq('id', bookingId)
+      .eq('line_user_id', userId);
+    
+    if (error) {
+      console.error('[Cancel Booking] Error:', error);
+      return await replyMessage(replyToken, [{
+        type: 'text',
+        text: '❗ 取消失敗，請稍後再試。'
+      }]);
+    }
+    
+    return await replyMessage(replyToken, [{
+      type: 'text',
+      text: '✅ 預約已取消。\n\n如需重新預約，請點擊下方選單的「預約」按鈕 🌸'
+    }]);
+  } catch (error) {
+    console.error('[Cancel Booking] Error:', error);
+    return await replyMessage(replyToken, [{
+      type: 'text',
+      text: '❗ 取消失敗，請稍後再試。'
+    }]);
+  }
+}
+
+/**
  * Netlify Function Handler
  */
-exports.handler = async (event, context) => {
+exports.handler = async (event) => {ext) => {
   // 健康檢查
   if (event.httpMethod === 'GET') {
     return {

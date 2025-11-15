@@ -50,8 +50,8 @@ exports.handler = async (event, context) => {
       .from('yuemeiBookings')
       .select('*')
       .eq('status', 'confirmed')
-      .gte('preferredDate', tomorrow.toISOString())
-      .lte('preferredDate', tomorrowEnd.toISOString());
+      .gte('preferred_date', tomorrow.toISOString().split('T')[0])
+      .lte('preferred_date', tomorrowEnd.toISOString().split('T')[0]);
 
     if (error) {
       console.error('Failed to fetch bookings:', error);
@@ -73,7 +73,7 @@ exports.handler = async (event, context) => {
 
     for (const booking of bookings) {
       try {
-        await pushMessage(booking.lineUserId, [{
+        await pushMessage(booking.line_user_id, [{
           type: 'flex',
           altText: '預約提醒',
           contents: {
@@ -97,7 +97,7 @@ exports.handler = async (event, context) => {
                       spacing: 'sm',
                       contents: [
                         { type: 'text', text: '療程', color: '#aaaaaa', size: 'sm', flex: 2 },
-                        { type: 'text', text: `${booking.treatmentCategory} - ${booking.treatmentName}`, wrap: true, color: '#666666', size: 'sm', flex: 5 }
+                        { type: 'text', text: booking.treatment_name || booking.treatment_category, wrap: true, color: '#666666', size: 'sm', flex: 5 }
                       ]
                     },
                     {
@@ -106,7 +106,7 @@ exports.handler = async (event, context) => {
                       spacing: 'sm',
                       contents: [
                         { type: 'text', text: '日期', color: '#aaaaaa', size: 'sm', flex: 2 },
-                        { type: 'text', text: booking.preferredDate, wrap: true, color: '#666666', size: 'sm', flex: 5 }
+                        { type: 'text', text: booking.preferred_date, wrap: true, color: '#666666', size: 'sm', flex: 5 }
                       ]
                     },
                     {
@@ -115,7 +115,7 @@ exports.handler = async (event, context) => {
                       spacing: 'sm',
                       contents: [
                         { type: 'text', text: '時段', color: '#aaaaaa', size: 'sm', flex: 2 },
-                        { type: 'text', text: booking.preferredTime, wrap: true, color: '#666666', size: 'sm', flex: 5 }
+                        { type: 'text', text: booking.preferred_time, wrap: true, color: '#666666', size: 'sm', flex: 5 }
                       ]
                     }
                   ]
@@ -137,7 +137,7 @@ exports.handler = async (event, context) => {
         }]);
         
         successCount++;
-        console.log(`Reminder sent to user ${booking.lineUserId} for booking #${booking.id}`);
+        console.log(`Reminder sent to user ${booking.line_user_id} for booking #${booking.id}`);
       } catch (error) {
         failCount++;
         console.error(`Failed to send reminder for booking #${booking.id}:`, error);
