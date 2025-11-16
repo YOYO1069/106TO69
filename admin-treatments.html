@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>療程管理 - 邊美醬後台</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft JhengHei", sans-serif;
+      background: #f5f7fa;
+      color: #333;
+    }
+
+    /* Header - 與 dashboard 相同 */
+    .header {
+      background: linear-gradient(135deg, #E91E63, #9C27B0);
+      color: white;
+      padding: 20px 30px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .logo-icon {
+      font-size: 32px;
+    }
+
+    .header-title h1 {
+      font-size: 24px;
+      margin-bottom: 4px;
+    }
+
+    .header-title p {
+      font-size: 13px;
+      opacity: 0.9;
+    }
+
+    .header-right {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-weight: 500;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-white {
+      background: white;
+      color: #E91E63;
+    }
+
+    .btn-white:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: white;
+      border: 2px solid white;
+    }
+
+    .btn-outline:hover {
+      background: white;
+      color: #E91E63;
+    }
+
+    /* Container */
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 30px 20px;
+    }
+
+    /* Section */
+    .section {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      margin-bottom: 30px;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    /* Treatment Cards Grid */
+    .treatments-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+    }
+
+    .treatment-card {
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      padding: 20px;
+      transition: all 0.3s;
+    }
+
+    .treatment-card:hover {
+      border-color: #E91E63;
+      box-shadow: 0 4px 12px rgba(233, 30, 99, 0.15);
+      transform: translateY(-2px);
+    }
+
+    .treatment-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 12px;
+    }
+
+    .treatment-name {
+      font-size: 18px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .treatment-category {
+      font-size: 12px;
+      color: #666;
+      background: #f0f0f0;
+      padding: 4px 10px;
+      border-radius: 12px;
+    }
+
+    .treatment-description {
+      font-size: 14px;
+      color: #666;
+      line-height: 1.6;
+      margin-bottom: 16px;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .treatment-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-sm {
+      padding: 8px 16px;
+      font-size: 13px;
+      border-radius: 6px;
+    }
+
+    .btn-primary {
+      background: #E91E63;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #c2185b;
+    }
+
+    .btn-danger {
+      background: #f44336;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #d32f2f;
+    }
+
+    /* Loading */
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #999;
+    }
+
+    .spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #E91E63;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 16px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #999;
+    }
+
+    .empty-icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .treatments-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <div class="header">
+    <div class="header-left">
+      <div class="logo-icon">💖</div>
+      <div class="header-title">
+        <h1>療程管理</h1>
+        <p>管理診所療程資訊</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <a href="/admin-dashboard.html" class="btn btn-white">返回儀表板</a>
+      <button onclick="logout()" class="btn btn-outline">登出</button>
+    </div>
+  </div>
+
+  <!-- Main Container -->
+  <div class="container">
+    <!-- Treatments Section -->
+    <div class="section">
+      <div class="section-header">
+        <h2 class="section-title">療程列表</h2>
+        <button class="btn btn-primary" onclick="loadTreatments()">🔄 重新整理</button>
+      </div>
+
+      <div id="treatmentsContent">
+        <div class="loading">
+          <div class="spinner"></div>
+          <p>載入療程資料中...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Supabase 設定
+    const SUPABASE_URL = 'https://clzjdlykhjwrlksyjlfz.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNsempkbHlraGp3cmxrc3lqbGZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3OTM2ODAsImV4cCI6MjA3NTM2OTY4MH0.V6QAoh4N2aSF5CgDYfKTnY8cMQnDV3AYilj7TbpWJcU';
+
+    // 檢查登入狀態
+    function checkAuth() {
+      if (sessionStorage.getItem('adminAuth') !== 'true') {
+        window.location.href = '/admin-login.html';
+        return false;
+      }
+      
+      const loginTime = parseInt(sessionStorage.getItem('loginTime'));
+      const now = Date.now();
+      
+      if (now - loginTime > 24 * 60 * 60 * 1000) {
+        logout();
+        return false;
+      }
+      
+      return true;
+    }
+
+    // 登出
+    function logout() {
+      sessionStorage.removeItem('adminAuth');
+      sessionStorage.removeItem('loginTime');
+      window.location.href = '/admin-login.html';
+    }
+
+    // 載入療程列表
+    async function loadTreatments() {
+      try {
+        const response = await fetch(`${SUPABASE_URL}/rest/v1/treatments?select=*&order=created_at.desc`, {
+          headers: {
+            'apikey': SUPABASE_KEY,
+            'Authorization': `Bearer ${SUPABASE_KEY}`
+          }
+        });
+
+        const treatments = await response.json();
+        displayTreatments(treatments);
+      } catch (error) {
+        console.error('載入療程失敗:', error);
+        document.getElementById('treatmentsContent').innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">❌</div>
+            <p>載入失敗，請重新整理</p>
+          </div>
+        `;
+      }
+    }
+
+    // 顯示療程列表
+    function displayTreatments(treatments) {
+      const content = document.getElementById('treatmentsContent');
+      
+      if (treatments.length === 0) {
+        content.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">📭</div>
+            <p>目前沒有療程資料</p>
+          </div>
+        `;
+        return;
+      }
+
+      const html = `
+        <div class="treatments-grid">
+          ${treatments.map(treatment => `
+            <div class="treatment-card">
+              <div class="treatment-header">
+                <div class="treatment-name">${treatment.name}</div>
+                <div class="treatment-category">${treatment.category}</div>
+              </div>
+              <div class="treatment-description">${treatment.description}</div>
+              <div class="treatment-actions">
+                <button class="btn btn-primary btn-sm" onclick="viewTreatment(${treatment.id})">
+                  查看詳情
+                </button>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+
+      content.innerHTML = html;
+    }
+
+    // 查看療程詳情
+    function viewTreatment(treatmentId) {
+      alert(`療程詳情功能開發中...\n療程 ID: ${treatmentId}\n\n提示：目前可以直接在 Supabase 控制台編輯療程資料`);
+    }
+
+    // 初始化
+    if (checkAuth()) {
+      loadTreatments();
+    }
+  </script>
+</body>
+</html>
