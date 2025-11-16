@@ -130,6 +130,29 @@
             color: #999;
             font-size: 14px;
         }
+        
+        .admin-btn {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 14px 32px;
+            background: linear-gradient(135deg, #E91E63, #9C27B0);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(233, 30, 99, 0.3);
+        }
+        
+        .admin-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(233, 30, 99, 0.4);
+        }
+        
+        .admin-btn:active {
+            transform: translateY(0);
+        }
     </style>
 </head>
 <body>
@@ -166,6 +189,8 @@
         <div class="qr-hint">
             💡 請在 LINE 中搜尋「邊美醬」或掃描 QR Code 開始使用
         </div>
+        
+        <a href="/admin-login.html" class="admin-btn">🔐 後台管理</a>
         
         <div class="footer">
             © 2025 FLOS 曜診所 | Powered by Manus AI
