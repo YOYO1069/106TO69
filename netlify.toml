@@ -6,7 +6,7 @@
 [build.environment]
   SECRETS_SCAN_ENABLED = "false"
 
-# Functions 必須在 SPA fallback 之前
+# Functions 路由規則
 [[redirects]]
   from = "/.netlify/functions/*"
   to = "/.netlify/functions/:splat"
@@ -19,8 +19,5 @@
   status = 200
   force = true
 
-# SPA fallback 放最後
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+# 移除 SPA fallback，改用靜態檔案服務
+# 所有 .html 檔案都可以直接訪問
